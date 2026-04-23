@@ -417,7 +417,7 @@ def process_instance(
                 created_repos.add(rp.repo_name)
 
                 # Fix origin remote
-                remote_url = "https://github.com/Ethara-Ai/flask.git"
+                remote_url = f"https://github.com/{rp.mirror_name}.git"
                 subprocess.run(
                     f"git remote set-url origin {remote_url}",
                     cwd=repo_path,
