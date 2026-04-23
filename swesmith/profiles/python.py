@@ -11,7 +11,12 @@ from swebench.harness.constants import (
 )
 from swebench.harness.dockerfiles import get_dockerfile_env
 from swesmith.constants import LOG_DIR_ENV, ENV_NAME, INSTANCE_REF, ORG_NAME_DH
-from swesmith.profiles.base import RepoProfile, registry
+from swesmith.profiles.base import (
+    RepoProfile,
+    registry,
+    _strip_platform_from_dockerfile,
+    _build_with_buildx,
+)
 from swesmith.profiles.utils import INSTALL_BAZEL, INSTALL_CMAKE
 
 
@@ -43,8 +48,11 @@ class PythonProfile(RepoProfile):
         _helper = lambda tests: sorted(list(set([x.split("::", 1)[0] for x in tests])))
         return _helper(instance[FAIL_TO_PASS]), _helper(instance[PASS_TO_PASS])
 
-    def build_image(self):
-        BASE_IMAGE_KEY = f"{ORG_NAME_DH}/swesmith.x86_64"
+    def build_image(self, platform: str | None = None, output_tar: Path | None = None):
+        platforms = [p.strip() for p in platform.split(",")] if platform else []
+        is_multi = len(platforms) > 1
+        base_suffix = "base" if is_multi else self.arch
+        BASE_IMAGE_KEY = f"{self.org_dh}{self._image_sep}swesmith.{base_suffix}"
         HEREDOC_DELIMITER = "EOF_59812759871"
         PATH_TO_REQS = "swesmith_environment.yml"
 
@@ -69,6 +77,8 @@ class PythonProfile(RepoProfile):
             self.pltf, self.arch, "py", base_image_key=BASE_IMAGE_KEY
         )
         dockerfile = self._prepare_dockerfile(dockerfile)
+        if platform:
+            dockerfile = _strip_platform_from_dockerfile(dockerfile)
 
         env_dir = LOG_DIR_ENV / self.repo_name
         env_dir.mkdir(parents=True, exist_ok=True)
@@ -77,19 +87,30 @@ class PythonProfile(RepoProfile):
         with open(env_dir / "Dockerfile", "w") as f:
             f.write(dockerfile)
 
-        build_cmd = (
-            f"docker build --platform {self.pltf} --no-cache"
-            f" {self._docker_ssh_arg} {self._get_proxy_build_args()}"
-            f" -t {self.image_name} {env_dir}"
-        )
-        with open(env_dir / "build_image.log", "w") as log_file:
-            subprocess.run(
-                build_cmd,
-                check=True,
-                shell=True,
-                stdout=log_file,
-                stderr=subprocess.STDOUT,
+        if platform:
+            _build_with_buildx(
+                workdir=str(env_dir),
+                dockerfile_name="Dockerfile",
+                image_name=self.image_name,
+                platform_str=platform,
+                ssh_arg=self._docker_ssh_arg,
+                proxy_args=self._get_proxy_build_args(),
+                output_tar=output_tar,
             )
+        else:
+            build_cmd = (
+                f"docker build --platform {self.pltf} --no-cache"
+                f" {self._docker_ssh_arg} {self._get_proxy_build_args()}"
+                f" -t {self.image_name} {env_dir}"
+            )
+            with open(env_dir / "build_image.log", "w") as log_file:
+                subprocess.run(
+                    build_cmd,
+                    check=True,
+                    shell=True,
+                    stdout=log_file,
+                    stderr=subprocess.STDOUT,
+                )
 
     def log_parser(self, log: str) -> dict[str, str]:
         """Parser for test logs generated with PyTest framework"""

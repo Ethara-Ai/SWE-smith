@@ -103,6 +103,13 @@ def main(
     install_script = os.path.abspath(install_script)
 
     env = os.environ.copy()
+    # Strip virtualenv paths so conda's Python takes precedence in subprocesses
+    if "VIRTUAL_ENV" in env:
+        venv_bin = os.path.join(env["VIRTUAL_ENV"], "bin")
+        env["PATH"] = os.pathsep.join(
+            p for p in env.get("PATH", "").split(os.pathsep) if p != venv_bin
+        )
+        del env["VIRTUAL_ENV"]
     env["SWESMITH_PYTHON_VERSION"] = p.python_version
     profile_install_cmds = _profile_install_cmds(p)
     if profile_install_cmds:
@@ -177,7 +184,7 @@ def main(
         os.chdir("..")
         p._env_yml.parent.mkdir(parents=True, exist_ok=True)
         subprocess.run(
-            f"conda env export -n {ENV_NAME} > {p._env_yml}",
+            f"conda env export --no-builds -n {ENV_NAME} > {p._env_yml}",
             check=True,
             shell=True,
             stdout=subprocess.DEVNULL,

@@ -52,6 +52,129 @@ logger = logging.getLogger(__name__)
 _DEFAULT_SSH_KEYS = ["id_rsa", "id_ecdsa", "id_ecdsa_sk", "id_ed25519", "id_ed25519_sk"]
 
 
+def _detect_native_platform() -> str:
+    """Detect the native platform string for the host machine.
+
+    Returns 'linux/arm64' on ARM-based hosts (e.g. Apple Silicon),
+    'linux/amd64' otherwise.
+    """
+    machine = platform.machine().lower()
+    if machine in ("arm64", "aarch64"):
+        return "linux/arm64"
+    return "linux/amd64"
+
+
+def _strip_platform_from_dockerfile(content: str) -> str:
+    """Strip ``--platform=...`` from FROM lines so buildx resolves per-platform.
+
+    swebench Dockerfile templates embed ``FROM --platform={platform} ...``
+    which pins resolution to a single architecture.  For multi-arch buildx
+    builds this must be removed so the builder resolves the correct base image
+    variant for each target platform automatically.
+
+    Raises ``ValueError`` if *content* contains no FROM instruction at all
+    (likely not a valid Dockerfile).
+    """
+    if not re.search(r"^FROM\s", content, flags=re.MULTILINE):
+        raise ValueError(
+            "_strip_platform_from_dockerfile: input has no FROM instruction — "
+            "is this a valid Dockerfile?"
+        )
+    return re.sub(
+        r"^(FROM\s+)--platform=\S+\s+",
+        r"\1",
+        content,
+        flags=re.MULTILINE,
+    )
+
+
+def _build_with_buildx(
+    workdir: str,
+    dockerfile_name: str,
+    image_name: str,
+    platform_str: str,
+    ssh_arg: str = "",
+    proxy_args: str = "",
+    output_tar: Path | None = None,
+) -> None:
+    """Multi-arch build using ``docker buildx`` subprocess.
+
+    Mirrors the approach from multi-swe-bench's ``docker_util._build_with_buildx``:
+
+    * When *output_tar* is provided the image is exported as an OCI archive AND
+      loaded into the local Docker daemon.
+
+      - Single platform: both ``--output`` and ``--load`` in one invocation.
+      - Multi platform: first invocation exports the OCI tar; a second
+        invocation loads just the native platform from the buildx cache into
+        the daemon (near-instant since all layers are cached).
+
+    * When *output_tar* is ``None`` the image is simply loaded into the daemon
+      via ``--load``.
+    """
+    platforms = [p.strip() for p in platform_str.split(",")]
+    is_multi_platform = len(platforms) > 1
+
+    cmd = (
+        f"docker buildx build"
+        f" --platform {platform_str}"
+        f" -f {dockerfile_name}"
+        f" -t {image_name}"
+        f" --provenance=false --sbom=false"
+        f" --no-cache"
+    )
+    if ssh_arg:
+        cmd += f" {ssh_arg}"
+    if proxy_args:
+        cmd += f" {proxy_args}"
+
+    # Output strategy (mirrors multi-swe-bench):
+    #   output_tar + single platform → OCI tar AND --load in one command
+    #   output_tar + multi platform  → OCI tar only (--load in second pass)
+    #   no output_tar + single       → --load only
+    #   no output_tar + multi        → cache only (--load unsupported for multi)
+    if output_tar:
+        abs_tar = output_tar.resolve()
+        cmd += f" --output type=oci,dest={abs_tar}"
+        if not is_multi_platform:
+            cmd += " --load"
+    elif not is_multi_platform:
+        cmd += " --load"
+
+    cmd += " ."  # build context
+
+    subprocess.run(cmd, check=True, shell=True, cwd=workdir)
+
+    # Extract OCI tar to a directory for downstream --build-context usage
+    if output_tar:
+        abs_tar = output_tar.resolve()
+        oci_dir = Path(str(abs_tar) + ".d")
+        oci_dir.mkdir(parents=True, exist_ok=True)
+        subprocess.run(
+            ["tar", "-xf", str(abs_tar), "-C", str(oci_dir)],
+            check=True,
+        )
+
+    # Second pass for multi-platform + output_tar:
+    # Re-run buildx targeting only the native platform with --load.
+    # All layers are already cached from the first build → near-instant.
+    if output_tar and is_multi_platform:
+        native = _detect_native_platform()
+        load_cmd = (
+            f"docker buildx build"
+            f" --platform {native}"
+            f" -f {dockerfile_name}"
+            f" -t {image_name}"
+            f" --provenance=false --sbom=false"
+        )
+        if ssh_arg:
+            load_cmd += f" {ssh_arg}"
+        if proxy_args:
+            load_cmd += f" {proxy_args}"
+        load_cmd += " --load ."
+        subprocess.run(load_cmd, check=True, shell=True, cwd=workdir)
+
+
 def _find_ssh_key() -> Path | None:
     """Find an SSH private key: explicit env var first, then default paths."""
     key_path = os.getenv("GITHUB_USER_SSH_KEY")
@@ -218,8 +341,13 @@ class RepoProfile(ABC, metaclass=SingletonMeta):
         return " ".join(args)
 
     @property
+    def _image_sep(self) -> str:
+        """``/`` for Docker Hub orgs, ``:`` for registry URIs that already contain a repo path."""
+        return ":" if "/" in self.org_dh else "/"
+
+    @property
     def image_name(self) -> str:
-        return f"{self.org_dh}/swesmith.{self.arch}.{self.owner}_1776_{self.repo}.{self.commit[:8]}".lower()
+        return f"{self.org_dh}{self._image_sep}swesmith.{self.arch}.{self.owner}_1776_{self.repo}.{self.commit[:8]}".lower()
 
     @cached_property
     def _cache_image_exists(self) -> bool:
@@ -380,27 +508,49 @@ class RepoProfile(ABC, metaclass=SingletonMeta):
         )
         return content
 
-    def build_image(self):
-        """Build a Docker image (execution environment) for this repository profile."""
+    def build_image(self, platform: str | None = None, output_tar: Path | None = None):
+        """Build a Docker image (execution environment) for this repository profile.
+
+        Args:
+            platform: Comma-separated platform string for multi-arch buildx builds
+                (e.g. ``"linux/amd64,linux/arm64"``).  When *None* (the default)
+                the legacy single-arch ``docker build`` path is used — identical
+                to the original behavior.
+            output_tar: Path for OCI tar export (only used with buildx).
+        """
         env_dir = LOG_DIR_ENV / self.repo_name
         env_dir.mkdir(parents=True, exist_ok=True)
         dockerfile_path = env_dir / "Dockerfile"
+        dockerfile_content = self._prepare_dockerfile(self.dockerfile)
+        if platform:
+            dockerfile_content = _strip_platform_from_dockerfile(dockerfile_content)
         with open(dockerfile_path, "w") as f:
-            f.write(self._prepare_dockerfile(self.dockerfile))
+            f.write(dockerfile_content)
 
-        build_cmd = (
-            f"docker build -f {dockerfile_path} --platform {self.pltf}"
-            f" --no-cache {self._docker_ssh_arg} {self._get_proxy_build_args()}"
-            f" -t {self.image_name} ."
-        )
-        with open(env_dir / "build_image.log", "w") as log_file:
-            subprocess.run(
-                build_cmd,
-                check=True,
-                shell=True,
-                stdout=log_file,
-                stderr=subprocess.STDOUT,
+        if platform:
+            _build_with_buildx(
+                workdir=".",
+                dockerfile_name=str(dockerfile_path),
+                image_name=self.image_name,
+                platform_str=platform,
+                ssh_arg=self._docker_ssh_arg,
+                proxy_args=self._get_proxy_build_args(),
+                output_tar=output_tar,
             )
+        else:
+            build_cmd = (
+                f"docker build -f {dockerfile_path} --platform {self.pltf}"
+                f" --no-cache {self._docker_ssh_arg} {self._get_proxy_build_args()}"
+                f" -t {self.image_name} ."
+            )
+            with open(env_dir / "build_image.log", "w") as log_file:
+                subprocess.run(
+                    build_cmd,
+                    check=True,
+                    shell=True,
+                    stdout=log_file,
+                    stderr=subprocess.STDOUT,
+                )
 
     def create_mirror(self):
         """Create a mirror of this repository at the specified commit."""
@@ -570,7 +720,7 @@ class RepoProfile(ABC, metaclass=SingletonMeta):
             user=DOCKER_USER,
             detach=True,
             command="tail -f /dev/null",
-            platform="linux/x86_64",
+            platform=self.pltf,
             mem_limit="10g",
         )
         container.start()
@@ -596,12 +746,36 @@ class RepoProfile(ABC, metaclass=SingletonMeta):
         except subprocess.CalledProcessError as e:
             raise RuntimeError(f"Failed to pull Docker image {self.image_name}: {e}")
 
-    def push_image(self, rebuild_image: bool = False):
+    def push_image(self, rebuild_image: bool = False, platform: str | None = None):
+        """Push the Docker image to the registry.
+
+        Args:
+            rebuild_image: If True, remove and rebuild the image before pushing.
+            platform: Comma-separated platform string for multi-arch buildx push
+                (e.g. ``"linux/amd64,linux/arm64"``).  Uses ``docker buildx build
+                --push`` so the multi-arch manifest is pushed directly.
+                When *None* the legacy ``docker push`` is used.
+        """
         if rebuild_image:
             subprocess.run(f"docker rmi {self.image_name}", shell=True)
-            self.build_image()
-        assert self._cache_image_exists, "Image must be built or pulled before pushing"
-        subprocess.run(f"docker push {self.image_name}", shell=True)
+            self.build_image(platform=platform)
+        if platform:
+            env_dir = LOG_DIR_ENV / self.repo_name
+            push_cmd = (
+                f"docker buildx build"
+                f" --platform {platform}"
+                f" -f Dockerfile"
+                f" -t {self.image_name}"
+                f" --provenance=false --sbom=false"
+                f" {self._docker_ssh_arg} {self._get_proxy_build_args()}"
+                f" --push ."
+            )
+            subprocess.run(push_cmd, check=True, shell=True, cwd=str(env_dir))
+        else:
+            assert self._cache_image_exists, (
+                "Image must be built or pulled before pushing"
+            )
+            subprocess.run(f"docker push {self.image_name}", shell=True)
 
     def set_github_token(self, token: str):
         """Set a custom GitHub token and reset the API instance."""
