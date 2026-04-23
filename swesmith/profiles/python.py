@@ -79,7 +79,8 @@ class PythonProfile(RepoProfile):
 
         build_cmd = (
             f"docker build --platform {self.pltf} --no-cache"
-            f" {self._docker_ssh_arg} -t {self.image_name} {env_dir}"
+            f" {self._docker_ssh_arg} {self._get_proxy_build_args()}"
+            f" -t {self.image_name} {env_dir}"
         )
         with open(env_dir / "build_image.log", "w") as log_file:
             subprocess.run(

@@ -202,6 +202,21 @@ class RepoProfile(ABC, metaclass=SingletonMeta):
             return "--ssh default"
         return ""
 
+    def _get_proxy_build_args(self) -> str:
+        args = []
+        for var in (
+            "http_proxy",
+            "https_proxy",
+            "HTTP_PROXY",
+            "HTTPS_PROXY",
+            "no_proxy",
+            "NO_PROXY",
+        ):
+            val = os.environ.get(var, "")
+            if val:
+                args.append(f"--build-arg {var}={val}")
+        return " ".join(args)
+
     @property
     def image_name(self) -> str:
         return f"{self.org_dh}/swesmith.{self.arch}.{self.owner}_1776_{self.repo}.{self.commit[:8]}".lower()
@@ -308,6 +323,55 @@ class RepoProfile(ABC, metaclass=SingletonMeta):
             flags=re.MULTILINE,
         )
 
+        proxy_block = (
+            "\n"
+            'ARG http_proxy=""\n'
+            'ARG https_proxy=""\n'
+            'ARG HTTP_PROXY=""\n'
+            'ARG HTTPS_PROXY=""\n'
+            'ARG no_proxy="localhost,127.0.0.1,::1"\n'
+            'ARG NO_PROXY="localhost,127.0.0.1,::1"\n'
+            'ARG CA_CERT_PATH="/etc/ssl/certs/ca-certificates.crt"\n'
+            "\n"
+            "ENV http_proxy=${http_proxy} \\\n"
+            "    https_proxy=${https_proxy} \\\n"
+            "    HTTP_PROXY=${HTTP_PROXY} \\\n"
+            "    HTTPS_PROXY=${HTTPS_PROXY} \\\n"
+            "    no_proxy=${no_proxy} \\\n"
+            "    NO_PROXY=${NO_PROXY} \\\n"
+            "    SSL_CERT_FILE=${CA_CERT_PATH} \\\n"
+            "    REQUESTS_CA_BUNDLE=${CA_CERT_PATH} \\\n"
+            "    CURL_CA_BUNDLE=${CA_CERT_PATH} \\\n"
+            "    NODE_EXTRA_CA_CERTS=${CA_CERT_PATH} \\\n"
+            '    GONOSUMCHECK="*" \\\n'
+            '    GOFLAGS="-insecure" \\\n'
+            '    MAVEN_OPTS="-Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true" \\\n'
+            '    JAVA_TOOL_OPTIONS="-Djavax.net.ssl.trustStoreType=PKCS12"\n'
+        )
+        content = re.sub(
+            r'(ENV GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=accept-new")',
+            r"\1" + proxy_block,
+            content,
+            count=1,
+        )
+
+        ca_symlink_run = (
+            "RUN mkdir -p /etc/pki/tls/certs /etc/pki/ca-trust/extracted/pem /etc/ssl/certs && \\\n"
+            "    ln -sf /etc/ssl/certs/ca-certificates.crt /etc/pki/tls/certs/ca-bundle.crt && \\\n"
+            "    ln -sf /etc/ssl/certs/ca-certificates.crt /etc/ssl/cert.pem && \\\n"
+            "    ln -sf /etc/ssl/certs/ca-certificates.crt /etc/ssl/ca-bundle.pem && \\\n"
+            "    ln -sf /etc/ssl/certs/ca-certificates.crt /etc/pki/tls/cacert.pem && \\\n"
+            "    ln -sf /etc/ssl/certs/ca-certificates.crt /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem && \\\n"
+            "    ln -sf /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-bundle.crt\n\n"
+        )
+        content = re.sub(
+            r"^(RUN\s+)",
+            ca_symlink_run + r"\1",
+            content,
+            count=1,
+            flags=re.MULTILINE,
+        )
+
         content = re.sub(
             r"^RUN\s+(?!--mount=type=ssh)",
             "RUN --mount=type=ssh,required=false ",
@@ -326,7 +390,8 @@ class RepoProfile(ABC, metaclass=SingletonMeta):
 
         build_cmd = (
             f"docker build -f {dockerfile_path} --platform {self.pltf}"
-            f" --no-cache {self._docker_ssh_arg} -t {self.image_name} ."
+            f" --no-cache {self._docker_ssh_arg} {self._get_proxy_build_args()}"
+            f" -t {self.image_name} ."
         )
         with open(env_dir / "build_image.log", "w") as log_file:
             subprocess.run(
