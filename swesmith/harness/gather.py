@@ -330,7 +330,7 @@ def process_instance(
             print(f"[SKIP] {subfolder}: No validatable bugs")
         return [], set(), {"new_tasks": 0, "skipped": 1}
 
-    n_f2p = len(results[PASS_TO_FAIL])
+    n_f2p = len(results[FAIL_TO_PASS])
     n_p2p = len(results[PASS_TO_PASS])
     pr_exception = ".pr_" in subfolder and n_p2p == 0 and n_f2p > 0
     if not pr_exception and (KEY_TIMED_OUT in results or n_f2p == 0 or n_p2p == 0):
@@ -343,9 +343,7 @@ def process_instance(
     task_instance = {
         KEY_INSTANCE_ID: subfolder,
         KEY_PATCH: patch_content,
-        FAIL_TO_PASS: results[
-            PASS_TO_FAIL
-        ],  # Flip PASS_TO_FAIL to FAIL_TO_PASS following SWE-bench naming convention
+        FAIL_TO_PASS: results[FAIL_TO_PASS],
         PASS_TO_PASS: results[PASS_TO_PASS],
     }
     rp = registry.get_from_inst(task_instance)
@@ -419,7 +417,7 @@ def process_instance(
                 created_repos.add(rp.repo_name)
 
                 # Fix origin remote
-                remote_url = f"https://github.com/{rp.mirror_name}.git"
+                remote_url = "https://github.com/Ethara-Ai/flask.git"
                 subprocess.run(
                     f"git remote set-url origin {remote_url}",
                     cwd=repo_path,
