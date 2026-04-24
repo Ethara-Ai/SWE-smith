@@ -488,8 +488,8 @@ def process_instance(
 
         # Create branch etc
         cmds = [
-            "git config user.email 'swesmith@swesmith.ai'",
-            "git config user.name 'swesmith'",
+            "git config user.email 'valkyrie@ethara.ai'",
+            "git config user.name 'valkyrie'",
             "git config commit.gpgsign false",
             f"git checkout -b {subfolder}",
             "git add .",

@@ -590,8 +590,8 @@ class RepoProfile(ABC, metaclass=SingletonMeta):
             [
                 "rm -rf .git",
                 "git init",
-                'git config user.name "swesmith"',
-                'git config user.email "swesmith@anon.com"',
+                'git config user.name "valkyrie"',
+                'git config user.email "valkyrie@ethara.ai"',
                 "rm -rf .github/workflows",
                 "rm -rf .github/dependabot.y*",
                 "mv .gitignore .gitignore.bak 2>/dev/null; true",  # <-- temporarily hide .gitignore

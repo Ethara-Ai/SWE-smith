@@ -1761,11 +1761,11 @@ def gather_remote(
         )
         # Also configure user info
         subprocess.run(
-            ["git", "config", "--global", "user.email", "swesmith@swesmith.ai"],
+            ["git", "config", "--global", "user.email", "valkyrie@ethara.ai"],
             check=False,
         )
         subprocess.run(
-            ["git", "config", "--global", "user.name", "swesmith"], check=False
+            ["git", "config", "--global", "user.name", "valkyrie"], check=False
         )
     else:
         print("Warning: GITHUB_TOKEN not found in environment. Git push may fail.")
