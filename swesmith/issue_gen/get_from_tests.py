@@ -90,7 +90,18 @@ def run_command_in_container(instance: dict, command: str, rp: RepoProfile):
     instance_id = instance[KEY_INSTANCE_ID]
     image_name = instance[KEY_IMAGE_NAME]
 
-    # Start docker container
+    try:
+        subprocess.run(f"docker pull {image_name}", shell=True, check=True)
+    except subprocess.CalledProcessError as e:
+        hint = ""
+        if "/" in image_name:
+            hint = (
+                "\nFor ECR, authenticate first:\n"
+                "  aws ecr get-login-password --region <region> | "
+                "docker login --username AWS --password-stdin <ecr-uri>"
+            )
+        raise RuntimeError(f"Failed to pull Docker image {image_name}: {e}{hint}")
+
     container_name = f"swesmith.inst_gen.{instance_id}"
     container = client.containers.create(
         image=image_name,
@@ -98,7 +109,7 @@ def run_command_in_container(instance: dict, command: str, rp: RepoProfile):
         user=DOCKER_USER,
         detach=True,
         command="tail -f /dev/null",
-        platform="linux/x86_64",
+        platform=rp.pltf,
         mem_limit="10g",
     )
     container.start()

@@ -65,12 +65,15 @@ def build_base_image(
         arch: Architecture suffix for the image tag (used in single-arch legacy path).
     """
     org = registry_prefix or ORG_NAME_DH
-    sep = ":" if "/" in org else "/"
+    is_registry = "/" in org
     platforms = [p.strip() for p in platform_str.split(",")] if platform_str else []
     is_multi = len(platforms) > 1
-    image_name = (
-        f"{org}{sep}swesmith.base" if is_multi else f"{org}{sep}swesmith.{arch}"
-    )
+    if is_registry:
+        image_name = f"{org}/swe-base:latest"
+    elif is_multi:
+        image_name = f"{org}/swesmith.base"
+    else:
+        image_name = f"{org}/swesmith.{arch}"
 
     dockerfile_content = _DOCKERFILE_BASE_MULTIARCH.format(
         ubuntu_version=UBUNTU_VERSION,
@@ -108,6 +111,12 @@ def build_base_image(
                 subprocess.run(f"docker push {image_name}", check=True, shell=True)
 
     print(f"Base image built: {image_name}")
+
+    local_tag = "swesmith:base"
+    client = docker.from_env()
+    img = client.images.get(image_name)
+    img.tag("swesmith", tag="base")
+    print(f"Tagged {image_name} → {local_tag}")
 
 
 def build_profile_image(profile, push=False, platform=None, output_tar=None):
@@ -305,14 +314,14 @@ def main():
         "--registry",
         type=str,
         default=None,
-        help="Override registry prefix for image names (e.g. '123456789.dkr.ecr.us-east-1.amazonaws.com/swesmith'). "
-        "Defaults to 'swebench' (Docker Hub).",
+        help="Override registry prefix for image names (e.g. '426628337772.dkr.ecr.ap-south-1.amazonaws.com/valkyrie'). "
+        "Defaults to ORG_NAME_DH from env var SWESMITH_REGISTRY.",
     )
     parser.add_argument(
         "--build-base",
         action="store_true",
-        help="Build the base Ubuntu+conda image (swesmith.{arch}) before building env images. "
-        "Required when the base image doesn't exist locally or on the registry.",
+        help="Build the base image before building env images. "
+        "For registries: builds swe-base:latest. For Docker Hub: builds swesmith.{arch}.",
     )
 
     args = parser.parse_args()

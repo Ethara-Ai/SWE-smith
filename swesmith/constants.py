@@ -3,14 +3,18 @@ Purpose: Repo-wide constants
 """
 
 import hashlib
+import os
 import random
 import string
 
 from abc import abstractmethod
 from dataclasses import dataclass
+from dotenv import load_dotenv
 from enum import Enum
 from pathlib import Path
 from typing import Any
+
+load_dotenv()
 
 DEFAULT_PM_LIKELIHOOD = 0.2
 ENV_NAME = "testbed"
@@ -26,7 +30,7 @@ LOG_DIR_RUN_VALIDATION = Path("logs/run_validation")
 LOG_DIR_TASKS = Path("logs/task_insts")
 LOG_TEST_OUTPUT_PRE_GOLD = "test_output_pre_gold.txt"
 MAX_INPUT_TOKENS = 128000
-ORG_NAME_DH = "swebench"
+ORG_NAME_DH = os.environ.get("SWESMITH_REGISTRY", "etharaai")
 ORG_NAME_GH = "Ethara-Ai"
 PREFIX_BUG = "bug"
 PREFIX_METADATA = "metadata"

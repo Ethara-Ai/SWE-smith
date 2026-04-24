@@ -341,13 +341,15 @@ class RepoProfile(ABC, metaclass=SingletonMeta):
         return " ".join(args)
 
     @property
-    def _image_sep(self) -> str:
-        """``/`` for Docker Hub orgs, ``:`` for registry URIs that already contain a repo path."""
-        return ":" if "/" in self.org_dh else "/"
+    def _is_registry(self) -> bool:
+        """True when org_dh points to a registry URI (contains ``/``), not a plain Docker Hub org."""
+        return "/" in self.org_dh
 
     @property
     def image_name(self) -> str:
-        return f"{self.org_dh}{self._image_sep}swesmith.{self.arch}.{self.owner}_1776_{self.repo}.{self.commit[:8]}".lower()
+        if self._is_registry:
+            return f"{self.org_dh}/{self.owner}-{self.repo}:{self.commit[:8]}".lower()
+        return f"{self.org_dh}/swesmith.{self.arch}.{self.owner}_1776_{self.repo}.{self.commit[:8]}".lower()
 
     @cached_property
     def _cache_image_exists(self) -> bool:
@@ -740,11 +742,53 @@ class RepoProfile(ABC, metaclass=SingletonMeta):
         if self._cache_image_exists:
             return
 
-        # Image doesn't exist locally, try to pull it
         try:
             subprocess.run(f"docker pull {self.image_name}", shell=True, check=True)
         except subprocess.CalledProcessError as e:
-            raise RuntimeError(f"Failed to pull Docker image {self.image_name}: {e}")
+            hint = ""
+            if self._is_registry:
+                hint = (
+                    "\nFor ECR, authenticate first:\n"
+                    "  aws ecr get-login-password --region <region> | "
+                    "docker login --username AWS --password-stdin <ecr-uri>"
+                )
+            raise RuntimeError(
+                f"Failed to pull Docker image {self.image_name}: {e}{hint}"
+            )
+
+    def _ensure_base_image_local(self, remote_suffix: str) -> str:
+        """Pull ``{registry}/swesmith.{remote_suffix}`` and tag as ``swesmith:base`` if not already present."""
+        local_tag = "swesmith:base"
+        client = docker.from_env()
+
+        try:
+            client.images.get(local_tag)
+            return local_tag
+        except docker.errors.ImageNotFound:
+            pass
+
+        if self._is_registry:
+            remote_name = f"{self.org_dh}/swe-base:latest"
+        else:
+            remote_name = f"{self.org_dh}/swesmith.{remote_suffix}"
+        logger.info("Pulling base image: %s", remote_name)
+        try:
+            subprocess.run(f"docker pull {remote_name}", shell=True, check=True)
+        except subprocess.CalledProcessError as e:
+            hint = ""
+            if self._is_registry:
+                hint = (
+                    "\nFor ECR, authenticate first:\n"
+                    "  aws ecr get-login-password --region <region> | "
+                    "docker login --username AWS --password-stdin <ecr-uri>"
+                )
+            raise RuntimeError(f"Failed to pull base image {remote_name}: {e}{hint}")
+
+        img = client.images.get(remote_name)
+        img.tag("swesmith", tag="base")
+        logger.info("Tagged %s → %s", remote_name, local_tag)
+
+        return local_tag
 
     def push_image(self, rebuild_image: bool = False, platform: str | None = None):
         """Push the Docker image to the registry.

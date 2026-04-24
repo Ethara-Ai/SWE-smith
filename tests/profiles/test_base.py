@@ -354,12 +354,17 @@ def test_repo_profile_properties():
 
     # Test image_name property
     image_name = repo_profile.image_name
-    assert repo_profile.org_dh in image_name
-    assert "swesmith" in image_name
-    assert repo_profile.arch in image_name
-    assert repo_profile.owner in image_name
-    assert repo_profile.repo in image_name
-    assert repo_profile.commit[:8] in image_name
+    if repo_profile._is_registry:
+        expected_repo = f"{repo_profile.owner}-{repo_profile.repo}".lower()
+        assert expected_repo in image_name
+        assert image_name.endswith(f":{repo_profile.commit[:8]}")
+    else:
+        assert repo_profile.org_dh in image_name
+        assert "swesmith" in image_name
+        assert repo_profile.arch in image_name
+        assert repo_profile.owner in image_name
+        assert repo_profile.repo in image_name
+        assert repo_profile.commit[:8] in image_name
 
 
 def test_repo_profile_platform_detection():

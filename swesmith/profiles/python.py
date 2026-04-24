@@ -52,7 +52,7 @@ class PythonProfile(RepoProfile):
         platforms = [p.strip() for p in platform.split(",")] if platform else []
         is_multi = len(platforms) > 1
         base_suffix = "base" if is_multi else self.arch
-        BASE_IMAGE_KEY = f"{self.org_dh}{self._image_sep}swesmith.{base_suffix}"
+        BASE_IMAGE_KEY = self._ensure_base_image_local(base_suffix)
         HEREDOC_DELIMITER = "EOF_59812759871"
         PATH_TO_REQS = "swesmith_environment.yml"
 
