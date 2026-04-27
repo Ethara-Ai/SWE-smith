@@ -1,18 +1,129 @@
 """
-Purpose: Standalone script to download all SWEFT images
+Purpose: Standalone script to download all SWE-smith images.
 
-Usage: python -m swesmith.build_repo.download_images
+Supports both Docker Hub (default) and ECR registries.
+Set ``SWESMITH_REGISTRY`` to an ECR URI to pull from ECR instead of Docker Hub.
+
+Usage:
+    # Docker Hub (default)
+    python -m swesmith.build_repo.download_images --repo leveldb
+
+    # ECR (via env var)
+    SWESMITH_REGISTRY=<account>.dkr.ecr.<region>.amazonaws.com/<prefix> \
+        python -m swesmith.build_repo.download_images --repo leveldb
 """
 
 import argparse
-import docker
-import os
 import json
+import os
+import re
+import subprocess
+
+import docker
 import requests
 
 from swesmith.constants import ORG_NAME_DH
 
 TAG = "latest"
+
+
+def _parse_ecr_uri(registry: str) -> tuple[str, str]:
+    """Parse ECR URI into (region, base_uri).
+
+    Example:
+        '<account>.dkr.ecr.<region>.amazonaws.com/<prefix>'
+        -> ('<region>', '<account>.dkr.ecr.<region>.amazonaws.com')
+    """
+    m = re.match(
+        r"^(.+\.dkr\.ecr\.(.+?)\.amazonaws\.com)/.+$",
+        registry,
+    )
+    if not m:
+        raise ValueError(
+            f"Invalid ECR URI: {registry}. "
+            f"Expected format: <account>.dkr.ecr.<region>.amazonaws.com/<prefix>"
+        )
+    return m.group(2), m.group(1)
+
+
+def _ecr_docker_login(region: str, base_uri: str) -> None:
+    # Strip dummy credentials injected by dotenv so the AWS CLI
+    # falls back to ~/.aws/credentials for real IAM keys.
+    env = {
+        k: v
+        for k, v in os.environ.items()
+        if k not in ("AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_SESSION_TOKEN")
+    }
+    try:
+        password = subprocess.run(
+            ["aws", "ecr", "get-login-password", "--region", region],
+            capture_output=True,
+            text=True,
+            check=True,
+            env=env,
+        ).stdout.strip()
+    except subprocess.CalledProcessError as e:
+        raise RuntimeError(
+            f"Failed to get ECR login password for region {region}. "
+            f"Ensure AWS CLI is installed and credentials are configured.\n"
+            f"stderr: {e.stderr}"
+        ) from e
+
+    try:
+        subprocess.run(
+            ["docker", "login", "--username", "AWS", "--password-stdin", base_uri],
+            input=password,
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+    except subprocess.CalledProcessError as e:
+        raise RuntimeError(
+            f"Failed to docker login to {base_uri}.\nstderr: {e.stderr}"
+        ) from e
+
+    print(f"Authenticated to ECR: {base_uri}")
+
+
+def _main_ecr(repo: str | None, proceed: bool) -> None:
+    from swesmith.profiles.base import registry
+
+    region, base_uri = _parse_ecr_uri(ORG_NAME_DH)
+    _ecr_docker_login(region, base_uri)
+
+    all_profiles = registry.values()
+
+    if repo:
+        all_profiles = [p for p in all_profiles if repo.lower() in p.image_name.lower()]
+
+    if not all_profiles:
+        print(f"No profiles found{f' matching {repo!r}' if repo else ''}, exiting...")
+        return
+
+    seen = set()
+    profiles = []
+    for p in all_profiles:
+        if p.image_name not in seen:
+            seen.add(p.image_name)
+            profiles.append(p)
+
+    print(f"Found {len(profiles)} image(s):")
+    for idx, p in enumerate(profiles):
+        print(f"  - {p.image_name}")
+        if idx == 4:
+            print(f"  (+ {len(profiles) - 5} more...)")
+            break
+
+    if not proceed and input("Proceed with downloading images? (y/n): ").lower() != "y":
+        return
+
+    for p in profiles:
+        print(f"Pulling {p.image_name}...")
+        try:
+            p.pull_image()
+            print(f"  ✓ {p.image_name}")
+        except RuntimeError as e:
+            print(f"  ✗ Failed: {e}")
 
 
 def get_docker_hub_login():
@@ -77,7 +188,7 @@ def get_docker_repositories(username, token):
     return repositories
 
 
-def main(repo: str, proceed: bool = True):
+def _main_dockerhub(repo: str | None, proceed: bool) -> None:
     username, password = get_docker_hub_login()
     token = get_dockerhub_token(username, password)
     client = docker.from_env()
@@ -110,6 +221,18 @@ def main(repo: str, proceed: bool = True):
     for r in repos:
         print(f"Downloading {r['name']}...")
         client.images.pull(f"{ORG_NAME_DH}/{r['name']}:{TAG}")
+
+
+def main(repo: str | None = None, proceed: bool = True) -> None:
+    """Route to ECR or Docker Hub based on ``SWESMITH_REGISTRY``.
+
+    If the env var contains ``/`` it is treated as a registry URI (ECR);
+    otherwise Docker Hub is used.
+    """
+    if "/" in ORG_NAME_DH:
+        _main_ecr(repo, proceed)
+    else:
+        _main_dockerhub(repo, proceed)
 
 
 if __name__ == "__main__":
