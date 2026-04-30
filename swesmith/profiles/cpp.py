@@ -2480,7 +2480,11 @@ class Leveldbac691084(CppProfile):
     owner: str = "google"
     repo: str = "leveldb"
     commit: str = "ac691084fdc5546421a55b25e7653d450e5a25fb"
-    test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
+    test_cmd: str = "cd build && make -j$(nproc) && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
+    timeout: int = 300
+    bug_gen_dirs_exclude: list[str] = field(
+        default_factory=lambda: ["third_party", "benchmarks"]
+    )
 
     @property
     def dockerfile(self):
@@ -2497,7 +2501,7 @@ WORKDIR /{ENV_NAME}
 RUN git submodule update --init --recursive
 
 RUN mkdir build && cd build && \
-    cmake -DCMAKE_BUILD_TYPE=Release -DLEVELDB_BUILD_TESTS=ON -DLEVELDB_BUILD_BENCHMARKS=ON -DCMAKE_CXX_STANDARD=17 .. && \
+    cmake -DCMAKE_BUILD_TYPE=Debug -DLEVELDB_BUILD_TESTS=ON -DLEVELDB_BUILD_BENCHMARKS=ON -DCMAKE_CXX_STANDARD=17 -DCMAKE_CXX_FLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer" -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address,undefined" .. && \
     make -j$(nproc)
 
 CMD ["/bin/bash"]"""
