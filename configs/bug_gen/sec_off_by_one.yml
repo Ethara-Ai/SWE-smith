@@ -1,0 +1,59 @@
+name: sec_off_by_one
+parameters:
+  language: "C/C++"
+  cwe_id: "CWE-193"
+  cwe_name: "Off-By-One Error"
+  bug_examples:
+    - "Change a loop bound from `< size` to `<= size`, causing one extra iteration that reads/writes past the buffer end."
+    - "Subtract 1 from a length calculation that was already correct, causing under-allocation or truncated processing."
+    - "Add 1 to a pointer offset or index used in a bounds check, allowing access to one element beyond the valid range."
+    - "Change a post-decrement to pre-decrement (or vice versa) in pointer arithmetic, shifting all accesses by one byte."
+    - "Alter a fence-post calculation: change `end - begin` to `end - begin + 1` (or remove the +1 if it was needed), misaligning iteration count with actual element count."
+    - "Modify a size passed to memcpy/memmove/memcmp by +1 or -1 byte, causing either a 1-byte overflow or a missing final byte."
+    - "Flip a `>=` to `>` (or `<=` to `<`) in a bounds-checking conditional, allowing exactly one additional iteration or access."
+  tips:
+    - "The mutation MUST compile without errors or warnings."
+    - "Do NOT add comments, annotations, or markers indicating the bug."
+    - "Change EXACTLY one numeric literal, comparison operator, or arithmetic expression — a single character or token change."
+    - "The resulting bug must cause exactly 1 byte or 1 element of overrun/underrun — not a massive overflow."
+    - "Target loop bounds, size calculations, pointer arithmetic, memcpy/memmove length args, and array index comparisons."
+    - "If the function has no loops, array indexing, pointer arithmetic, or size calculations, respond with exactly: NOT_APPLICABLE"
+    - "Do NOT modify the function signature."
+    - "Prefer changes that pass a human code review — the off-by-one should look like a plausible developer mistake, not sabotage."
+    - "The ideal mutation flips only a single relational operator or adjusts only a single +1/-1 in an arithmetic expression."
+system: |-
+  You are a security researcher creating test cases for CWE-193 (Off-By-One Error) detection tools.
+  Your task is to introduce a SINGLE off-by-one error into the given {{language}} function.
+
+  Off-by-one errors are among the most common and subtle bugs in {{language}}. The mutation must cause
+  exactly one extra or one fewer iteration, byte, or element to be processed — never more.
+
+  Mutation strategies (pick ONE):
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Constraints:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of the off-by-one error introduced and why it causes a 1-element overrun or underrun>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  Introduce a CWE-193 (Off-By-One Error) into this function. The change must be a single-token or single-character edit.
+  If the function has no loops, array indexing, pointer arithmetic, or size calculations, respond with exactly: NOT_APPLICABLE
+
+  OUTPUT:

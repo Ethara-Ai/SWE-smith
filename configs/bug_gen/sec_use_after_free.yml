@@ -1,0 +1,94 @@
+name: sec_use_after_free
+parameters:
+  language: "C/C++"
+  cwe_id: "CWE-416"
+  cwe_name: "Use After Free"
+  bug_examples:
+    - "Refactor a function's error-handling path to call `delete` or `free()` on a buffer early (to 'clean up promptly'), then restructure the success path so it falls through to code that still writes a status byte or length field into the freed buffer. Simultaneously remove the nullptr assignment that originally guarded against post-free access. The UAF requires tracing both the early free on the error path and the stale pointer use on the success path — each change looks like reasonable cleanup in isolation."
+    - "In a function managing two aliased pointers to the same allocation (e.g., a raw pointer and an offset pointer like `base` and `cursor = base + offset`), move the `delete[] base` into a newly created early-return branch for an edge case, while the main path continues using `cursor` for writes. Also remove a null check on `base` that would have prevented the dereference. The aliasing means the freed `base` invalidates `cursor`, but this requires tracing pointer relationships across 3-4 code sites."
+    - "Restructure a function that processes elements from a container (vector, map, list) to cache a pointer or reference to an element before a section that may trigger container reallocation (e.g., `push_back`, `insert`, `reserve` with smaller capacity). Remove the post-reallocation re-fetch of the pointer that originally existed. Also add an 'optimization' that uses the cached stale pointer for a final comparison or write after the reallocation point. The iterator/pointer invalidation creates a UAF only when the container actually reallocates."
+    - "Move a `unique_ptr::reset()` or `shared_ptr.reset()` call earlier in the function as part of a 'resource cleanup refactor', then add a new optimization branch below that calls `.get()` on the now-empty smart pointer and dereferences the result. Also weaken the null check that guarded this branch from `if (ptr != nullptr && ptr->valid())` to just `if (ptr->valid())`, so the null dereference path is reached. The interaction between the early reset and the weakened guard creates the UAF."
+    - "In a function with RAII-style scoped ownership, restructure the code to move a scoped object (e.g., `std::unique_ptr`, `ScopedLock`, custom RAII wrapper) into a narrower inner scope 'for clarity', while code after that scope still uses the raw pointer or reference obtained from the RAII object before it was moved. Also remove a redundant-looking validity check after the scope that was actually the safety net. The narrower scope causes premature destruction, and the removed check eliminates the only guard against using the dangling pointer."
+    - "Refactor a callback-based function so that a captured pointer's lifetime is shortened: move the allocation into a conditional block while the callback registration remains outside it, and remove a reference-count increment (`AddRef`, `shared_from_this`, or `ref_count++`) that previously kept the object alive for the callback's duration. The callback now holds a dangling pointer when the conditional block exits and destroys the object, but this only triggers when the callback fires asynchronously after the block scope ends."
+    - "In a function that builds a linked structure (linked list, tree, graph node), reorder the node insertion so a child node is attached to the parent before the child is fully initialized, then add an 'optimization' that frees and reallocates the child's data buffer mid-initialization. The parent now holds a pointer to the child's old (freed) buffer. Also remove the re-linking step that originally updated the parent's pointer after reallocation. The UAF requires tracing the parent→child pointer through the free-and-realloc sequence."
+    - "Restructure a function that uses a temporary buffer: move the `free(tmp_buf)` from the end of the function to immediately after the main computation 'to reduce peak memory', then add a new error-recovery path that reads from `tmp_buf` to produce a diagnostic message. Also change the buffer variable from a raw pointer to a non-owning `span` or `string_view` that doesn't track validity. The error path uses the freed buffer, but only on specific failure conditions — the happy path never triggers the UAF."
+    - "In a function processing a queue or work-list, refactor to pop an item from the queue earlier (before processing it) rather than after, 'to allow concurrent producers to enqueue'. Then restructure the processing loop to reference the popped item's data for a final status update after additional queue operations that may have reused or freed the underlying memory. Remove the item-validity check that originally ran between popping and the status update. The UAF only triggers when the queue's internal storage is recycled between the pop and the status use."
+    - "Refactor a function with a `try`-like pattern (manual error codes, not C++ exceptions) to release a resource in the 'cleanup' section at the bottom, but restructure an error-handling branch mid-function to also use the resource after jumping to cleanup. Move the resource pointer out of a guarded scope into the function scope for 'reuse', creating a path where the pointer is used, freed in cleanup, then used again when the error branch's deferred operations execute. The double-use-after-free requires tracing the non-obvious control flow through the error-and-cleanup interaction."
+    - "In a function managing a cache or pool, add an 'eviction optimization' that frees the oldest entry when a new allocation is needed, while existing code still holds a pointer to that entry for a size comparison or hash lookup. Also remove the staleness flag check that would have detected the evicted entry. The UAF triggers only when the cache is full and eviction actually fires — otherwise the fast path never frees anything and the stale pointer is never reached."
+    - "Restructure a function that uses `realloc` or equivalent resize to handle the old pointer: cache the old pointer for a fallback copy operation, call realloc (which may free old memory and return new), then use the cached old pointer in the fallback path. Also remove the check `if (new_ptr != old_ptr)` that originally detected whether realloc moved the memory. When realloc moves the buffer, the cached old pointer is dangling, but the fallback path still reads from it."
+  tips:
+    - "The mutation MUST compile without errors or warnings."
+    - "Do NOT add comments, annotations, or markers indicating the bug."
+    - "The bug MUST span 10-15 modified lines across at least 2 distinct locations in the function."
+    - "The bug should look like a plausible developer refactoring, optimization, or cleanup — not sabotage."
+    - "The vulnerability should require tracing pointer aliasing, object lifetime, or ownership across the function to diagnose."
+    - "Avoid mutations that cause crashes on ALL inputs — the UAF should only trigger on specific execution paths, edge cases, or timing conditions."
+    - "Do NOT modify the function signature."
+    - "Think like a senior developer doing a well-intentioned refactor who accidentally shortens an object's lifetime or uses a stale pointer."
+    - "If the function is too simple (under 15 lines, no dynamic memory, no pointer aliasing, no object lifetime management), respond with exactly: NOT_APPLICABLE"
+    - "Combine changes: e.g., move a free/delete earlier AND remove a validity check elsewhere, so the bug is the INTERACTION between changes."
+    - "The modified code should pass a cursory code review — each individual change should look reasonable in isolation."
+    - "The freed memory should be accessed through a different variable, alias, or indirection than the one used to free it — direct free-then-use on the same line is too obvious."
+system: |-
+  You are a security researcher creating REALISTIC, HARD-TO-FIND test cases for CWE-416 (Use After Free) detection tools.
+  Your task is to introduce a subtle, multi-site use-after-free vulnerability into the given {{language}} function that simulates
+  a well-intentioned but flawed developer refactoring.
+
+  CWE-416 (Use After Free) occurs when a program continues to use a pointer after the memory it points to has been freed,
+  deleted, or invalidated. This includes:
+  - Explicit free/delete followed by dereference through an aliased pointer
+  - Smart pointer reset/move followed by use of a cached raw pointer
+  - Container reallocation invalidating iterators, references, or pointers to elements
+  - RAII scope narrowing causing premature destruction while references remain
+  - realloc() moving memory while code still holds the old pointer
+  - Callback capturing a pointer whose target is destroyed before the callback fires
+
+  The mutation MUST:
+  - Span 10-15 modified lines across at least 2 distinct locations in the function
+  - Look like a plausible developer refactoring, optimization, or resource cleanup
+  - Require tracing pointer aliasing, object lifetime, or ownership across the function to diagnose
+  - Only trigger on specific execution paths or edge cases, not crash on all inputs
+  - Compile without errors or warnings
+  - Access the freed memory through a DIFFERENT variable, alias, or indirection path than the one used to free it
+
+  Think of this as simulating a tired senior developer who refactors resource management for 'clarity' or 'efficiency'
+  and accidentally creates a path where freed memory is accessed through a stale alias.
+
+  Mutation strategies (pick the one best suited to the function, or combine):
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Constraints:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer MUST be formatted as follows:
+
+  Explanation:
+  <explanation of the use-after-free vulnerability: what memory is freed, through what alias/path it is accessed
+  after freeing, how the changes at different sites interact, and what execution path triggers the bug>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  Introduce a CWE-416 (Use After Free) vulnerability into this function by modifying 10-15 lines
+  across at least 2 distinct locations. The changes should look like a plausible developer refactoring
+  or optimization — each individual change should appear reasonable in isolation, but their INTERACTION
+  should create a path where freed/invalidated memory is accessed through a stale pointer or alias.
+
+  The bug must require tracing pointer aliasing or object lifetime across the function to diagnose.
+  The freed memory should be accessed through a DIFFERENT variable or indirection than the one used to free it.
+
+  If the function is too simple (under 15 lines, no dynamic memory, no pointer aliasing, no object lifetime management),
+  respond with exactly: NOT_APPLICABLE
+
+  OUTPUT:

@@ -1,0 +1,95 @@
+name: sec_oob_read
+parameters:
+  language: "C/C++"
+  cwe_id: "CWE-125"
+  cwe_name: "Out-of-bounds Read"
+  bug_examples:
+    - "Refactor a parsing function so it computes a 'remaining bytes' count once at the top from `buffer_size - header_offset`, but a later branch adjusts the read cursor forward (to skip optional fields) without decrementing the remaining count. Also relax a bounds check from `if (pos + field_len > end)` to `if (pos + field_len >= end)`, allowing reads at the exact boundary. Together, the stale remaining count and weakened check enable a multi-byte over-read on inputs with large optional headers."
+    - "Restructure a two-pass decode function (first pass: validate lengths, second pass: read data) so the validation pass uses a simplified length calculation that doesn't account for variable-length encoding (e.g., UTF-8 multi-byte, varint, escaped characters). Simultaneously, replace the per-byte read loop in the second pass with a bulk `memcpy` that trusts the precomputed length. On inputs with many multi-byte characters, the precomputed length underestimates the encoded size, but memcpy reads the full encoded length, going past the buffer."
+    - "In a function that reads structured records from a buffer, cache the 'number of records' from a header field and use it as the loop bound, but restructure the per-record parsing to consume variable-length fields that may extend beyond what the header promised. Also remove a secondary check `if (cursor > buffer_end) break;` inside the loop that was the safety net for malformed headers. The cached record count and removed inner check interact to allow reads past the buffer on inputs where field sizes don't match the header's claim."
+    - "Replace a safe iterative comparison (byte-by-byte with bounds tracking) with an 'optimized' bulk `memcmp` that computes the comparison length from the shorter of two buffers, but uses the wrong variable for one buffer's length (e.g., `allocated_size` instead of `data_length`). Also change the preceding length validation from `if (a_len != b_len) return MISMATCH` to `if (a_len > b_alloc) return MISMATCH` (checking allocation instead of data length). On buffers where data_length < allocated_size and the two data lengths differ, memcmp reads uninitialized bytes past actual data."
+    - "Refactor a Slice/string_view construction in a deserialization function: compute the slice length from a field in the serialized data, but add an 'alignment optimization' that rounds the length up to the next word boundary for the Slice while keeping the original length for a subsequent hash computation. Also remove the pre-existing check `if (aligned_len > remaining)` because it 'looked redundant' given the earlier unaligned check. On inputs where the unaligned length fits but the aligned length exceeds the buffer, the Slice reads past the allocation."
+    - "In a function that scans a byte sequence for a delimiter (like null terminator, newline, or record separator), change the scan loop to use a `do-while` instead of `while` ('to avoid an extra branch'), and simultaneously change the post-scan length calculation from `end - start` to `end - start + 1` to 'include the delimiter'. Also weaken the pre-scan bounds check from `start < buffer_end` to `start <= buffer_end`. Together these three changes allow reading 1-2 bytes past the buffer when the delimiter is at the exact end or missing entirely."
+    - "Restructure a function that reads a length-prefixed message to extract the length field using a wider type (e.g., `uint32_t` instead of `uint16_t` 'for future-proofing'), but keep the buffer allocation and bounds checking using the original narrower type. Also add a fast path that skips validation for 'small' messages (under 256 bytes) using the wider length. On crafted inputs where the wider length is large but the narrow truncation is small, the allocation is small but the read uses the full wide length."
+    - "In a binary search or lookup function over a sorted buffer, change the midpoint calculation and simultaneously adjust the comparison bounds. Replace `mid = (lo + hi) / 2` with `mid = (lo + hi + 1) / 2` 'to prefer right-biased search', and change the bounds update from `hi = mid - 1` to `hi = mid`. Also relax the initial bounds from `hi = count - 1` to `hi = count`. On arrays with specific sizes, the right-bias plus off-by-one in `hi` initialization causes a read one element past the valid range."
+    - "Refactor a multi-field record parser to pre-compute field offsets in an array at the top of the function, then use those offsets for reads in the body. Change the offset computation to not account for padding/alignment bytes between fields, while the actual record layout includes them. Also remove the per-field `if (offset + field_size > record_len)` check that previously caught misaligned reads. The precomputed offsets drift further from reality with each padded field, eventually causing reads past the record boundary for records with many fields."
+    - "In a function that copies and transforms data (e.g., case conversion, encoding normalization), cache the source length at the top, but the transformation may consume source bytes at a different rate than it produces output bytes (e.g., collapsing escape sequences reads more bytes than it writes). Restructure the read loop to use the output position as the loop counter instead of the source position, and remove the source-bounds check that was inside the loop. On inputs with few escape sequences, the output runs longer than the source, causing reads past the source buffer."
+    - "Restructure a function that reads from a circular/ring buffer to cache the 'available bytes' count before a read, but restructure the consumer logic to handle a wrap-around case by reading in two parts (before and after the wrap point). Change the wrap-point calculation to use total buffer size instead of available bytes, and remove the min-of-available-and-requested clamping. On reads that span the wrap point when available < requested, the second-part read extends past the valid data region into stale buffer contents."
+    - "In a function that validates and reads a nested data structure (e.g., TLV, protobuf-like), replace recursive bounds checking with a single top-level check 'for efficiency'. Change the inner parser from `if (inner_offset + inner_len > outer_end)` to `if (inner_offset + inner_len > total_buffer_end)` (checking against the wrong bound). Also add a fast-path skip for 'known-safe' tag types that bypasses even this weakened check. On deeply nested inputs where inner lengths are valid within the total buffer but exceed their containing element's bounds, reads go past the outer element's end."
+  tips:
+    - "The mutation MUST compile without errors or warnings."
+    - "Do NOT add comments, annotations, or markers indicating the bug."
+    - "The bug MUST span 10-15 modified lines across at least 2 distinct locations in the function."
+    - "The bug should look like a plausible developer refactoring, optimization, or cleanup — not sabotage."
+    - "The vulnerability should require tracing how a length, offset, or bounds variable flows through the function to diagnose."
+    - "Avoid mutations that cause crashes on ALL inputs — the OOB read should only trigger on specific buffer sizes, input patterns, or edge-case encodings."
+    - "Do NOT modify the function signature."
+    - "Think like a senior developer doing a well-intentioned performance optimization or code simplification who accidentally breaks a bounds invariant."
+    - "If the function is too simple (under 15 lines, no buffer reads, no index/pointer arithmetic, no length calculations), respond with exactly: NOT_APPLICABLE"
+    - "Combine changes: e.g., alter a length computation at one site AND weaken or remove a bounds check at another, so the bug is the INTERACTION between changes."
+    - "The modified code should pass a cursory code review — each individual change should look reasonable in isolation."
+    - "The over-read should go through a different code path or variable than the one where the bounds error was introduced — tracing the data flow between sites is what makes it hard to find."
+system: |-
+  You are a security researcher creating REALISTIC, HARD-TO-FIND test cases for CWE-125 (Out-of-bounds Read) detection tools.
+  Your task is to introduce a subtle, multi-site out-of-bounds read vulnerability into the given {{language}} function that simulates
+  a well-intentioned but flawed developer refactoring.
+
+  CWE-125 (Out-of-bounds Read) occurs when a program reads data past the end (or before the start) of an allocated buffer.
+  This can leak sensitive data (Heartbleed-style), cause crashes, or corrupt program state. Common causes include:
+  - Stale or incorrectly cached length/remaining-bytes variables
+  - Length computation that doesn't account for variable-length encoding or padding
+  - Bounds check against the wrong variable (total size vs remaining, allocated vs used)
+  - Removed secondary bounds check that was the safety net for malformed input
+  - Type mismatch in length fields (wider read type, narrower bounds check type)
+  - Off-by-one in loop bound or scan termination combined with weakened validation
+  - Precomputed offsets that drift from reality due to missing padding/alignment accounting
+
+  The mutation MUST:
+  - Span 10-15 modified lines across at least 2 distinct locations in the function
+  - Look like a plausible developer refactoring, optimization, or code simplification
+  - Require tracing how a length, offset, or bounds variable flows through the function to diagnose
+  - Only trigger on specific input patterns, buffer sizes, or edge cases — not crash on all inputs
+  - Compile without errors or warnings
+
+  Think of this as simulating a tired senior developer who optimizes a parsing or decoding function for performance
+  and accidentally breaks a bounds invariant at one site while making a seemingly unrelated simplification at another.
+  The bug is the INTERACTION between the changes.
+
+  Mutation strategies (pick the one best suited to the function, or combine):
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Constraints:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer MUST be formatted as follows:
+
+  Explanation:
+  <explanation of the OOB read vulnerability: what buffer is over-read, how the length/offset invariant is broken
+  across multiple sites, and what input pattern triggers the over-read>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  Introduce a CWE-125 (Out-of-bounds Read) vulnerability into this function by modifying 10-15 lines
+  across at least 2 distinct locations. The changes should look like a plausible developer optimization
+  or refactoring — each individual change should appear reasonable in isolation, but their INTERACTION
+  should create a path where a read goes past the buffer boundary.
+
+  The bug must require tracing how a length, offset, or bounds variable flows through the function to diagnose.
+  The over-read should happen through a different code path or variable than where the bounds error was introduced.
+
+  If the function is too simple (under 15 lines, no buffer reads, no index/pointer arithmetic, no length calculations),
+  respond with exactly: NOT_APPLICABLE
+
+  OUTPUT:

@@ -1,0 +1,119 @@
+name: sec_oob_write
+parameters:
+  language: "C/C++"
+  cwe_id: "CWE-MULTI"
+  cwe_name: "Comprehensive Security Vulnerability Patterns"
+  bug_examples:
+    - "CWE-787 (Out-of-bounds Write): Refactor a buffer management routine so the allocation size is computed from a stale or different variable (e.g., `old_capacity`) while a later fill loop uses the updated, larger variable (e.g., `new_size`). Additionally, remove a pre-existing bounds clamp that would have caught the mismatch. The two changes are 8-10 lines apart, so diagnosing the bug requires tracing how the allocation size diverges from the write length across two separate code regions."
+    - "CWE-787 (Out-of-bounds Write): Restructure a two-pass function (first pass computes size, second pass writes) so the size-computation pass uses an early-exit shortcut that skips counting delimiter or padding bytes, while the write pass still emits them. Simultaneously, replace the original safe per-byte copy with a bulk memcpy that trusts the precomputed size. The interaction between the undercount and the bulk copy creates a heap buffer overflow on inputs with many delimiters."
+    - "CWE-416 (Use After Free): In a function that manages two aliased pointers to the same allocation, move a `delete[]` or `free()` call into an error-handling branch that runs before the function's final use of the second alias. Also restructure the success path to reuse the freed pointer for a status write. The bug requires tracing pointer aliasing across the error and success paths to see that one path frees memory the other still writes to."
+    - "CWE-415 (Double Free): Refactor a function's cleanup logic so that an error path calls `delete` on a buffer, then falls through (instead of returning) to the normal cleanup block that also calls `delete` on the same buffer. Simultaneously, remove the nullptr assignment that originally prevented the double free. The two changes — removing the guard and altering the control flow — interact to produce a double-free only when the error path is taken."
+    - "CWE-190 (Integer Overflow): Replace a safe size computation that checked for overflow (e.g., `if (count > MAX / elem_size) return error`) with a 'simplified' multiplication `count * elem_size` cast to a narrower type (e.g., uint32_t from size_t), then use that narrower result for allocation while the subsequent write loop uses the original 64-bit product. On large inputs, the allocation is tiny due to truncation, but the write uses the full size, producing a massive heap overflow."
+    - "CWE-367 (TOCTOU Race Condition): Refactor a function that checks a container's size and then accesses elements so that the size is read into a local variable early, but a resize or reallocation happens between the check and use (e.g., a callback, a nested function call, or an iterator invalidation). Also weaken the bounds check to use the stale cached size instead of re-querying. The bug is the interaction between caching the size and the intervening mutation."
+    - "CWE-125 (Out-of-bounds Read): Change a parsing function so it computes a 'remaining bytes' length once at the top from the buffer size minus a header offset, but then a later branch adjusts the read cursor forward without updating the remaining count. Also relax a bounds check from `>=` to `>` so it permits reading exactly at the boundary. Together, the stale length and weakened check allow a 1-to-N byte over-read on inputs with large headers."
+    - "CWE-476 (NULL Pointer Dereference): Remove a null check on a pointer returned by a lookup function, and simultaneously add a new code path (e.g., an optimization shortcut) that dereferences the pointer before any remaining null checks. The original null check would have returned early, but now the shortcut path reaches a dereference unconditionally. Diagnosing this requires seeing that the removed guard protected the new early-use path."
+    - "CWE-754 (Improper Check): Remove an error-status check after a fallible operation (e.g., `if (!status.ok()) return;`) AND weaken a related downstream check from `if (result == nullptr)` to `if (result == nullptr && !retry)`, so the function proceeds with both an unhandled error and a null result on retry paths. The bug is the interaction: the first missing check allows a bad state, and the weakened second check fails to catch it."
+    - "CWE-670 (Incorrect Control Flow): Swap the bodies of two adjacent if/else branches AND reorder two initialization statements that depend on which branch was taken, so both the wrong branch executes and the subsequent computation uses a value from the wrong initialization. The control-flow swap alone might be caught, but combined with the reordered initialization, the function silently produces wrong results instead of crashing."
+    - "CWE-480 (Incorrect Operator) + Logic Change: Replace a logical AND (`&&`) with OR (`||`) in a safety check that guards a buffer write, AND change the corresponding else-branch to fall through instead of returning an error. Individually, the operator change broadens the condition and the fall-through removes the error exit; together, they allow unsafe writes that would have been caught by either the original operator or the original error return."
+    - "CWE-193 (Off-By-One) + Buffer Realloc: Change a reallocation size formula from `old_size * 2 + 1` to `old_size * 2` (dropping the +1 for the null terminator) AND change the subsequent fill loop bound from `< new_size` to `<= new_size`. The off-by-one in the allocation means the buffer is 1 byte short, and the off-by-one in the loop means it writes 1 byte extra — together they produce a 2-byte heap overflow that neither change would cause alone."
+    - "CWE-416 (Use After Free) + Iterator Invalidation: Refactor a loop that processes container elements to cache an iterator before a call that may resize the container (e.g., `push_back`, `insert`, `emplace`). Also remove the iterator-refresh logic that followed the resize. The cached iterator is invalidated by the resize, but the loop continues to dereference it. The bug requires understanding that the resize invalidated all iterators and the refresh was the safety net."
+    - "CWE-190 (Integer Overflow) + CWE-787 (OOB Write): In a serialization function, replace a checked addition (`SafeAdd(header_len, payload_len, &total)`) with plain `header_len + payload_len`, and simultaneously remove the `if (total > MAX_BUF)` guard that followed. When header_len + payload_len wraps around to a small value, the allocation is tiny, but the write loop uses the individual (large) lengths, producing a heap buffer overflow. The two changes — unsafe addition and removed guard — must both be present for the exploit."
+    - "CWE-125 (Out-of-bounds Read) + CWE-754 (Missing Check): In a deserialization function, replace a length validation `if (field_len > remaining)` with `if (field_len > total_size)` (checking against the wrong variable), and remove a secondary bounds check deeper in the function that would have caught the over-read. The first change allows field_len to exceed remaining bytes, and the removed secondary check eliminates the safety net, enabling reads past the buffer end on messages with many small fields."
+  tips:
+    - "The mutation MUST compile without errors or warnings."
+    - "Do NOT add comments, annotations, or markers indicating the bug."
+    - "The bug MUST span 10-15 modified lines across at least 2 distinct locations in the function."
+    - "The bug should look like a plausible developer refactoring, optimization, or cleanup — not sabotage."
+    - "The vulnerability should require tracing data flow or control flow across the function to diagnose."
+    - "Avoid mutations that crash on ALL inputs — the bug should only trigger on specific inputs or edge cases."
+    - "Do NOT modify the function signature."
+    - "Think like a senior developer doing a well-intentioned refactor who accidentally breaks a safety invariant."
+    - "If the function is too simple (under 15 lines, no buffers/pointers/allocations), respond with exactly: NOT_APPLICABLE"
+    - "Combine changes: e.g., weaken a guard at one location AND alter a computation at another, so the bug is the INTERACTION between changes."
+    - "The modified code should pass a cursory code review — each individual change should look reasonable in isolation."
+system: |-
+  You are a security researcher creating REALISTIC, HARD-TO-FIND vulnerability test cases for {{language}} security analysis tools.
+  Your task is to introduce a subtle, multi-site vulnerability into the given {{language}} function that simulates a well-intentioned
+  but flawed developer refactoring. The bug should require tracing data flow or control flow across the function to diagnose.
+
+  You should pick the MOST APPLICABLE vulnerability category for the given function from this catalog:
+
+  Vulnerability Catalog:
+  - CWE-787 (Out-of-bounds Write): Buffer overflows from undersized allocations, mismatched size computations, or bulk copies that exceed buffer bounds.
+  - CWE-416 (Use After Free): Accessing memory through a pointer or alias after it has been freed, deleted, or invalidated (e.g., iterator invalidation).
+  - CWE-415 (Double Free): Freeing the same memory twice due to overlapping error and normal cleanup paths with missing guards.
+  - CWE-190 (Integer Overflow/Wraparound): Arithmetic overflow in size calculations leading to undersized allocations, often via type truncation or unchecked multiplication.
+  - CWE-367 (TOCTOU Race Condition): Using a stale cached value (size, pointer, state) after an intervening operation invalidates it.
+  - CWE-125 (Out-of-bounds Read): Reading past buffer boundaries due to stale length tracking, wrong variable in bounds check, or missing secondary validation.
+  - CWE-476 (NULL Pointer Dereference): Removing a null guard and adding or exposing a code path that dereferences the pointer unconditionally.
+  - CWE-754 (Improper Check for Unusual Conditions): Removing or weakening error/null/bounds checks at multiple sites so safety nets are eliminated.
+  - CWE-670 (Always-Incorrect Control Flow): Swapping branch bodies or reordering dependent statements so the wrong path always executes.
+  - CWE-480 (Use of Incorrect Operator): Using the wrong operator in a safety check, combined with a related logic weakening elsewhere.
+  - CWE-193 (Off-By-One Error): Off-by-one in a size calculation or loop bound, combined with a related allocation or bounds change that amplifies the error.
+
+  Pick the CWE that is MOST NATURALLY APPLICABLE to the function's structure. The function's buffer handling, pointer
+  management, error checking, and control flow should guide your choice. Do NOT force a CWE that does not fit.
+
+  The mutation MUST:
+  - Span 10-15 modified lines across at least 2 distinct locations in the function
+  - Look like a plausible developer refactoring, optimization, or code cleanup
+  - Require tracing data flow or control flow across the function to diagnose
+  - Only trigger on specific inputs or edge cases, not crash on all inputs
+  - Compile without errors or warnings
+
+  Think of this as simulating a tired senior developer doing a well-intentioned refactor who accidentally breaks a
+  safety invariant at one site while making a seemingly unrelated improvement at another site. The bug is the
+  INTERACTION between the changes — each change looks reasonable in isolation.
+
+  Mutation strategies (pick the one best suited to the function, or combine):
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Constraints:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer MUST be formatted as follows:
+
+  CWE: <CWE-ID> (<CWE Name>)
+
+  Explanation:
+  <explanation of the vulnerability introduced: what CWE it represents, what data-flow or control-flow invariant
+  is broken, how the changes at different sites interact, and what input triggers the bug>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  Analyze this {{language}} function and pick the MOST APPLICABLE vulnerability category from the catalog
+  (CWE-787, CWE-416, CWE-415, CWE-190, CWE-367, CWE-125, CWE-476, CWE-754, CWE-670, CWE-480, CWE-193).
+
+  Then introduce a realistic, hard-to-diagnose vulnerability of that type by modifying 10-15 lines
+  across at least 2 distinct locations in the function. The changes should look like a plausible
+  developer refactoring or optimization — each individual change should appear reasonable in isolation,
+  but their INTERACTION should create the vulnerability.
+
+  The bug must require tracing data flow or control flow across the function to diagnose.
+
+  If the function is too simple (under 15 lines, no buffers, pointers, allocations, or complex control flow),
+  respond with exactly: NOT_APPLICABLE
+
+  OUTPUT (use this exact format):
+
+  CWE: <CWE-ID> (<CWE Name>)
+
+  Explanation:
+  <how the multi-site changes interact to create the vulnerability, and what input triggers it>
+
+  Bugged Code:
+  ```
+  <complete modified function>
+  ```

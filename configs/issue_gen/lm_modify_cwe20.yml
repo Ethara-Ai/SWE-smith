@@ -1,0 +1,55 @@
+name: lm_modify_cwe20
+parameters:
+  cwe_id: "CWE-20"
+  cwe_name: "Improper Input Validation"
+  bug_examples:
+    - "Remove a structural validation step inside a `DecodeFrom`/parser routine: delete the branch that returns a corruption/error status when a magic number, version, or required tag does not match."
+    - "Loosen a validation that rejects unknown or reserved values: change `if (type > kMaxKnownType) return Corruption();` to `if (type > kMaxKnownType) { /* fall through */ }`, so unknown types are silently accepted and passed downstream."
+    - "Turn a fail-closed validator into fail-open: flip `return Status::Corruption(...)` on the invalid path into `return Status::OK()` (or an equivalent success path), so malformed inputs are reported as valid."
+    - "Skip a CRC/checksum verification: remove or short-circuit the `if (actual_crc != expected_crc) return Corruption();` check, so blocks/records with tampered contents are accepted."
+    - "Accept out-of-range enum/tag values as a legitimate default: change `switch (tag) { case A: ...; case B: ...; default: return Corruption(); }` so the default silently falls back to `case A`'s behavior."
+    - "Drop a required-field presence check on a decoded struct: if a field must be set after decoding (e.g., `if (!handle.IsValid()) return Corruption();`), remove that post-decode check so the caller operates on a partially-initialized/invalid object."
+    - "Weaken a structural length check from `==` to `>=` (or to `<= max`), so records with unexpected framing still pass and are consumed downstream."
+    - "Remove a reject-path for mismatched footer/header sizes so a truncated or oversized structural region is accepted and flows into downstream parsing that trusts its shape."
+  tips:
+    - "The bug must be a realistic input-validation weakness (CWE-20) — the function silently accepts malformed/untrusted input that it previously rejected."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors; any removed validator must still leave the function returning a valid status/value on its happy path."
+    - "Do not add comments that hint at the flaw, weakened check, or CWE."
+    - "The bug should be subtle: the function should still behave correctly on well-formed inputs, and only misbehave when fed adversarial/corrupt data."
+    - "Prefer modifying exactly ONE validation check rather than restructuring the whole function."
+    - "Pair well with OOB or overflow bugs downstream — favor removing the validator that would have stopped a bad length/offset from propagating."
+    - "If the function has no input validation, no structural checks, no reject paths for malformed data (e.g., a pure computation helper, a trivial getter, or a function that only writes output), respond with `NO_GOOD_BUG_SITE` instead of forcing a contrived change."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-20 flaw (Improper Input Validation). The resulting function must still compile, keep its signature, and behave correctly on well-formed inputs — the flaw should only manifest when an adversary supplies malformed structural data (bad magic, truncated headers, mismatched checksums, out-of-range enums, impossible lengths) that the function used to reject but now silently accepts.
+
+  Concretely, some kinds of CWE-20 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-20 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-20 site (e.g., a pure computation helper, a trivial getter, or a function with no input validation to weaken), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:
