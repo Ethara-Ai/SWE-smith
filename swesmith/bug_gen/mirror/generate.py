@@ -17,7 +17,7 @@ import signal
 
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from dotenv import load_dotenv
-from litellm import completion, completion_cost
+from litellm import completion
 from multiprocessing import current_process
 from swebench.harness.constants import KEY_INSTANCE_ID
 from swesmith.bug_gen.utils import (
@@ -36,6 +36,7 @@ from swesmith.constants import (
     PREFIX_METADATA,
     INSTANCE_REF,
 )
+from swesmith.llm_pricing import safe_cost
 from swesmith.profiles import registry, RepoProfile
 from tqdm.auto import tqdm
 from unidiff import PatchSet
@@ -181,7 +182,7 @@ def recover_sweb_inst(inst, repo, model, api_key=None, log_path=None):
         )
 
         # Perform rewrite
-        cost = completion_cost(completion_response=response)
+        cost = safe_cost(response, model=model)
         metadata[KEY_COST] += cost
         metadata[INSTANCE_REF] = inst
         output = response.choices[0].message.content.strip()  # type: ignore

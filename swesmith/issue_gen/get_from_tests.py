@@ -17,7 +17,7 @@ import yaml
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datasets import load_dataset
-from litellm import completion, completion_cost
+from litellm import completion
 from pathlib import Path
 from swebench.harness.constants import (
     DOCKER_USER,
@@ -37,6 +37,7 @@ from swesmith.constants import (
     TEST_OUTPUT_START,
 )
 from swesmith.issue_gen.utils import get_test_function
+from swesmith.llm_pricing import safe_cost
 from swesmith.profiles import RepoProfile, registry
 from swesmith.profiles.python import PythonProfile
 from tqdm.auto import tqdm
@@ -220,7 +221,7 @@ def _process_instance(instance: dict, config_file: str | None, model: str | None
                 "test_output": test_output,
                 "test_src": test_src,
                 "generated": generated,
-                "cost": completion_cost(response) if generated else 0,
+                "cost": safe_cost(response, model=model) if generated else 0,
             },
             f,
             indent=2,

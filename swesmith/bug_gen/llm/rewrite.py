@@ -24,7 +24,6 @@ import yaml
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from litellm import completion
-from litellm.cost_calculator import completion_cost
 from swesmith.bug_gen.llm.utils import (
     PROMPT_KEYS,
     extract_code_block,
@@ -41,6 +40,7 @@ from swesmith.constants import (
     BugRewrite,
     CodeEntity,
 )
+from swesmith.llm_pricing import safe_cost
 from swesmith.profiles import registry
 from tqdm.auto import tqdm
 from tqdm.contrib.logging import logging_redirect_tqdm
@@ -140,7 +140,7 @@ def main(
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
         )
-        cost = completion_cost(completion_response=response)
+        cost = safe_cost(response, model=model)
         rewrite = BugRewrite(
             rewrite=code_block,
             explanation=explanation,

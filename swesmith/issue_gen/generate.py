@@ -22,7 +22,7 @@ import yaml
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datasets import load_dataset
 from dotenv import load_dotenv
-from litellm import completion, completion_cost
+from litellm import completion
 from litellm.utils import get_token_count
 from pathlib import Path
 from tqdm import tqdm
@@ -45,6 +45,7 @@ from swesmith.harness.utils import (
     run_patch_in_container,
 )
 from swesmith.issue_gen.utils import get_test_function
+from swesmith.llm_pricing import safe_cost
 from swesmith.profiles import registry
 from typing import Any, Literal
 from tenacity import (
@@ -390,7 +391,7 @@ class IssueGen:
         if self.portkey_model and self.portkey_model.config.litellm_model_name_override:
             model_for_cost = self.portkey_model.config.litellm_model_name_override
 
-        cost = completion_cost(response, model=model_for_cost)
+        cost = safe_cost(response, model=model_for_cost)
 
         metadata["cost"] = (0 if "cost" not in metadata else metadata["cost"]) + cost
 

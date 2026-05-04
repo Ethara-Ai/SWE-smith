@@ -105,7 +105,7 @@ def gen_bug_from_code_lm(
             BugRewrite(
                 rewrite=extract_code_block(message.content),
                 explanation=explanation,
-                cost=safe_cost(completion_response=response) / n_bugs,
+                cost=safe_cost(response, model=model) / n_bugs,
                 output=message.content,
                 strategy="llm",
                 cwe_id=configs.get("parameters", {}).get("cwe_id", ""),
