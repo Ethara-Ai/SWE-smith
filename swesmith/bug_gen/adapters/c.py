@@ -63,10 +63,15 @@ def get_entities_from_file_c(
     root = tree.root_node
     lines = file_content.splitlines()
 
-    def walk(node) -> None:
-        # stop if we've hit the limit
+    # Iterative traversal (stack-based) to avoid RecursionError on deeply
+    # nested tree-sitter parse trees (common in large FFmpeg files with
+    # heavy preprocessor chains or big initializer tables).
+    stack = [root]
+    while stack:
         if 0 <= max_entities == len(entities):
             return
+
+        node = stack.pop()
 
         # not checking for error nodes here because tree-sitter-c frequently
         # generates them parsing valid pre-processor directives
@@ -75,8 +80,11 @@ def get_entities_from_file_c(
             entities.append(build_entity(node, lines, file_path, CEntity))
             if 0 <= max_entities == len(entities):
                 return
+            # function bodies cannot contain nested function_definitions in C,
+            # so we don't need to descend further into this node.
+            continue
 
-        for child in node.children:
-            walk(child)
-
-    walk(root)
+        # push children in reverse so traversal order matches the original
+        # recursive (left-to-right) walk — not strictly required but keeps
+        # entity ordering stable for deterministic runs.
+        stack.extend(reversed(node.children))

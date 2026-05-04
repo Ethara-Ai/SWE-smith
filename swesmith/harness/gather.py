@@ -554,6 +554,13 @@ def process_instance(
                 subprocess.run(cmd, cwd=repo_path, **subprocess_args)
             if verbose:
                 print(f"[{subfolder}] Commit F2P test file(s) removal")
+        else:
+            cmd = "git commit --no-gpg-sign --allow-empty -m 'No test files to remove'"
+            if debug_subprocess:
+                print(f"[{subfolder}] {cmd}")
+            subprocess.run(cmd, cwd=repo_path, **subprocess_args)
+            if verbose:
+                print(f"[{subfolder}] Created placeholder commit (no F2P test files)")
 
         cmds = [
             f"git push origin {subfolder}",

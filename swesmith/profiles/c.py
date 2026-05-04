@@ -111,6 +111,50 @@ RUN make
         return test_status_map
 
 
+@dataclass
+class FFmpega65b3bfe(CProfile):
+    owner: str = "FFmpeg"
+    repo: str = "FFmpeg"
+    commit: str = "a65b3bfe9dacc3b20597ef199d0afdd8bc8128e2"
+    test_cmd: str = "make fate -j$(nproc) -k"
+
+    @property
+    def dockerfile(self):
+        return f"""FROM ubuntu:22.04
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+RUN apt-get update && apt-get install -y \
+    build-essential git nasm yasm pkg-config texinfo \
+    && rm -rf /var/lib/apt/lists/*
+RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN ./configure --disable-doc --disable-debug
+RUN make -j$(nproc)
+"""
+
+    def log_parser(self, log: str) -> dict[str, str]:
+        test_status_map = {}
+        tested = set()
+        failed = set()
+        for line in log.split("\n"):
+            match = re.match(r"^TEST\s+(.+)$", line.strip())
+            if match:
+                tested.add(match.group(1).strip())
+                continue
+            match = re.match(r"^Test (.+?) failed\.", line.strip())
+            if match:
+                failed.add(match.group(1).strip())
+        for name in tested:
+            if name in failed:
+                test_status_map[name] = TestStatus.FAILED.value
+            else:
+                test_status_map[name] = TestStatus.PASSED.value
+        for name in failed:
+            if name not in test_status_map:
+                test_status_map[name] = TestStatus.FAILED.value
+        return test_status_map
+
+
 # Register all C profiles with the global registry
 for name, obj in list(globals().items()):
     if (

@@ -75,12 +75,12 @@ def _apply_patch(
     """
     apply_succeeded = False
     for git_apply_cmd in GIT_APPLY_CMDS:
-        # Because gold patches = bug patches, so fix = revert
-        git_apply_cmd = (
-            f"{git_apply_cmd} {DOCKER_PATCH}"
-            if not is_gold
-            else f"{git_apply_cmd} --reverse {DOCKER_PATCH}"
-        )
+        if not is_gold:
+            git_apply_cmd = f"{git_apply_cmd} {DOCKER_PATCH}"
+        elif "-i" in git_apply_cmd:
+            git_apply_cmd = git_apply_cmd.replace("-i", f"-R -i {DOCKER_PATCH}")
+        else:
+            git_apply_cmd = f"{git_apply_cmd} --reverse {DOCKER_PATCH}"
         val = container.exec_run(
             git_apply_cmd, workdir=DOCKER_WORKDIR, user=DOCKER_USER
         )

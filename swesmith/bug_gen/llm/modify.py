@@ -28,7 +28,8 @@ import yaml
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dotenv import load_dotenv
 from litellm import completion
-from litellm.cost_calculator import completion_cost
+# from litellm.cost_calculator import completion_cost
+from swesmith.llm_pricing import safe_cost
 from swesmith.bug_gen.llm.utils import PROMPT_KEYS, extract_code_block
 from swesmith.bug_gen.utils import (
     apply_code_change,
@@ -104,9 +105,11 @@ def gen_bug_from_code_lm(
             BugRewrite(
                 rewrite=extract_code_block(message.content),
                 explanation=explanation,
-                cost=completion_cost(completion_response=response) / n_bugs,
+                cost=safe_cost(completion_response=response) / n_bugs,
                 output=message.content,
                 strategy="llm",
+                cwe_id=configs.get("parameters", {}).get("cwe_id", ""),
+                cwe_name=configs.get("parameters", {}).get("cwe_name", ""),
             )
         )
     return bugs
@@ -163,6 +166,8 @@ def main(
         cost, n_bugs_generated, n_generation_failed = sum([x.cost for x in bugs]), 0, 0
 
         for bug in bugs:
+            if bug.output.strip().upper().startswith("NOT_APPLICABLE"):
+                continue
             # Create artifacts
             bug_dir = get_bug_directory(log_dir, candidate)
             bug_dir.mkdir(parents=True, exist_ok=True)

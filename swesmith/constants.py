@@ -153,12 +153,16 @@ class BugRewrite:
         strategy: str,
         cost: float = 0,
         output: str = "",
+        cwe_id: str = "",
+        cwe_name: str = "",
     ):
         self.rewrite = rewrite
         self.explanation = explanation
         self.cost = cost
         self.strategy = strategy
         self.output = output
+        self.cwe_id = cwe_id
+        self.cwe_name = cwe_name
 
     def get_hash(self) -> str:
         """Generates a hash for the bug rewrite."""
@@ -166,13 +170,17 @@ class BugRewrite:
 
     def to_dict(self) -> dict[str, Any]:
         """Converts the bug rewrite to a dictionary."""
-        return {
+        d = {
             "cost": self.cost,
             "explanation": self.explanation,
             "output": self.output,
             "rewrite": self.rewrite,
             "strategy": self.strategy,
         }
+        if self.cwe_id:
+            d["cwe_id"] = self.cwe_id
+            d["cwe_name"] = self.cwe_name
+        return d
 
 
 def generate_hash(s):
