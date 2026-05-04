@@ -40,6 +40,8 @@ RUN apt-get update \
 RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN git submodule update --init --recursive
+ENV CFLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer" \
+    LDFLAGS="-fsanitize=address,undefined"
 RUN autoreconf -i \
     && ./configure \
     --disable-docs \
@@ -128,6 +130,8 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
 WORKDIR /{ENV_NAME}
+ENV CFLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer" \
+    LDFLAGS="-fsanitize=address,undefined"
 RUN ./configure --disable-doc --disable-debug
 RUN make -j$(nproc)
 """
