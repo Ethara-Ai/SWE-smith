@@ -19,12 +19,11 @@ from swebench.harness.constants import KEY_INSTANCE_ID
 PROMPT_SYSTEM = """Below I have given you information about a GitHub pull request. The information includes
 the problem statement describing the bug and the patch representing the changes made that
 successfully resolves the issue. Please categorize the difficulty of the original task based
-on this information. There are 4 levels of difficulty you can choose from:
+on this information. There are 3 levels of difficulty you can choose from:
 
-* <15 min fix
-* 15 min - 1 hour
-* 1-4 hours
-* >4 hours"""
+* easy
+* medium
+* hard"""
 
 PROMPT_INSTANCE = """### Input:
 **Problem Statement**

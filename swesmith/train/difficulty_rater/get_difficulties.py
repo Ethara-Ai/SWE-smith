@@ -2,33 +2,39 @@
 Purpose: Get difficulty ratings for different bugs
 
 Usage:
-python train/difficulty_rater/get_difficulties.py --base_url <base_url> --dataset_path <dataset_path>
+python train/difficulty_rater/get_difficulties.py --dataset_path <dataset_path> --model <model>
+
+Supports two modes:
+1. --base_url <url>: Use an OpenAI-compatible API (e.g., sglang server)
+2. --model <model>: Use any litellm-supported model (e.g., bedrock/converse/...)
 
 NOTE:
-Make sure the sglang server for the difficulty rating model is running.
+For --base_url mode, make sure the sglang server for the difficulty rating model is running.
 """
 
 import argparse
 import json
-import openai
 import os
-
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor, as_completed
+
+import openai
+from litellm import completion as litellm_completion
 from swebench.harness.constants import KEY_INSTANCE_ID
-from swesmith.train.difficulty_rater.create_datasets import (
-    PROMPT_SYSTEM,
-    PROMPT_INSTANCE,
-)
 from tqdm.auto import tqdm
 
-DIFFICULTY_SCORE = {"15 min - 1 hour": 5, "1-4 hours": 9, "<15 min fix": 1}
+from swesmith.train.difficulty_rater.create_datasets import (
+    PROMPT_INSTANCE,
+    PROMPT_SYSTEM,
+)
+
+DIFFICULTY_SCORE = {"medium": 5, "hard": 9, "easy": 1}
 
 
-def process_instance(client, instance):
+def process_instance_openai(client, model_name, instance):
     try:
         response = client.chat.completions.create(
-            model="gpt-4o",
+            model=model_name,
             messages=[
                 {"role": "system", "content": PROMPT_SYSTEM},
                 {"role": "user", "content": PROMPT_INSTANCE.format(**instance)},
@@ -36,28 +42,55 @@ def process_instance(client, instance):
             temperature=0,
             max_tokens=64,
         )
-        difficulty = response.choices[0].message.content.strip()
+        difficulty = response.choices[0].message.content.strip().lower()
         return {
             KEY_INSTANCE_ID: instance[KEY_INSTANCE_ID],
             "difficulty": difficulty,
         }
-    except:
+    except Exception as e:
+        print(f"Error processing {instance.get(KEY_INSTANCE_ID, '?')}: {e}")
+        return None
+
+
+def process_instance_litellm(model, instance):
+    try:
+        response = litellm_completion(
+            model=model,
+            messages=[
+                {"role": "system", "content": PROMPT_SYSTEM},
+                {"role": "user", "content": PROMPT_INSTANCE.format(**instance)},
+            ],
+            max_tokens=64,
+            temperature=0,
+        )
+        difficulty = response.choices[0].message.content.strip().lower()
         return {
             KEY_INSTANCE_ID: instance[KEY_INSTANCE_ID],
-            "difficulty": "error",
+            "difficulty": difficulty,
         }
+    except Exception as e:
+        print(f"Error processing {instance.get(KEY_INSTANCE_ID, '?')}: {e}")
+        return None
 
 
-def main(base_url, dataset_path, overwrite=False):
-    client = openai.Client(base_url=f"{base_url}/v1", api_key="swesmith")
+def main(dataset_path, base_url=None, model=None, openai_model="gpt-4o", overwrite=False):
+    if base_url and model:
+        raise ValueError("Cannot provide both --base_url and --model")
+    if not base_url and not model:
+        raise ValueError("Must provide either --base_url or --model")
 
-    dataset = None
+    client = None
+    if base_url:
+        client = openai.Client(base_url=f"{base_url}/v1", api_key="swesmith")
+
     if dataset_path.endswith(".json"):
         with open(dataset_path) as f:
             dataset = json.load(f)
     elif dataset_path.endswith(".jsonl"):
         with open(dataset_path) as f:
             dataset = [json.loads(line) for line in f.readlines()]
+    else:
+        raise ValueError(f"Unsupported file format: {dataset_path}")
 
     ext = ".json" if dataset_path.endswith(".json") else ".jsonl"
     difficulties_path = dataset_path.replace(ext, "_difficulties.jsonl")
@@ -76,19 +109,25 @@ def main(base_url, dataset_path, overwrite=False):
         mode = "a"
 
     print(f"Rating {len(dataset)} instances (will write to {difficulties_path})")
-    num_threads = 4  # Adjust based on API rate limits
+    num_threads = 4
     with (
         ThreadPoolExecutor(max_workers=num_threads) as executor,
         open(difficulties_path, mode) as f,
     ):
-        future_to_instance = {
-            executor.submit(process_instance, client, instance): instance
-            for instance in dataset
-        }
+        if base_url:
+            future_to_instance = {
+                executor.submit(process_instance_openai, client, openai_model, instance): instance
+                for instance in dataset
+            }
+        else:
+            future_to_instance = {
+                executor.submit(process_instance_litellm, model, instance): instance
+                for instance in dataset
+            }
 
         for future in tqdm(as_completed(future_to_instance), total=len(dataset)):
             result = future.result()
-            if result:  # Skip None values
+            if result:
                 f.write(json.dumps(result) + "\n")
                 id_to_diff[result[KEY_INSTANCE_ID]] = result["difficulty"]
 
@@ -98,6 +137,9 @@ def main(base_url, dataset_path, overwrite=False):
     for k in list(difficulty_dist.keys()):
         if k not in DIFFICULTY_SCORE:
             del difficulty_dist[k]
+    if sum(difficulty_dist.values()) == 0:
+        print("No valid difficulty ratings found")
+        return
     difficulty_rating = round(
         sum(
             DIFFICULTY_SCORE[rating] * count
@@ -115,7 +157,22 @@ if __name__ == "__main__":
         description="Get difficulty ratings for different bugs"
     )
     parser.add_argument(
-        "--base_url", type=str, required=True, help="Base URL of the Model API"
+        "--base_url",
+        type=str,
+        default=None,
+        help="Base URL of an OpenAI-compatible API (e.g., sglang server)",
+    )
+    parser.add_argument(
+        "--model",
+        type=str,
+        default=None,
+        help="litellm model string (e.g., bedrock/converse/...)",
+    )
+    parser.add_argument(
+        "--openai_model",
+        type=str,
+        default="gpt-4o",
+        help="Model name to send in OpenAI API requests (default: gpt-4o)",
     )
     parser.add_argument(
         "--dataset_path", type=str, required=True, help="Path to the dataset"
