@@ -1,0 +1,55 @@
+name: lm_modify_cwe670
+parameters:
+  cwe_id: "CWE-670"
+  cwe_name: "Always-Incorrect Control Flow Implementation"
+  bug_examples:
+    - "Swap the sense of a critical branch condition so the error path executes on valid input and the success path executes on invalid input: change `if (err != OK) return err;` to `if (err == OK) return err;`, so the function silently continues with a failed status on the valid path and aborts on success."
+    - "Replace a `break` in a switch-case with a fall-through to the next case, so the correct case executes and then unconditionally falls into the handler for a different case, corrupting state or performing an unintended operation."
+    - "Remove a `return` or `break` from an early-exit branch inside a loop, converting a guarded bail-out into dead code followed by unconditional continuation: the check fires but the function keeps going as if it didn't."
+    - "Invert a loop continuation condition: change `while (remaining > 0)` to `while (remaining <= 0)`, so the loop body never executes on valid input but spins on the zero/error case."
+    - "Swap the if/else bodies of a two-branch conditional without changing the predicate, so the true-action runs on the false condition and vice versa. The function still compiles and handles both paths — just the wrong ones."
+    - "Change a `do { ... } while (cond)` to `while (cond) { ... }`, skipping the first iteration that performs a mandatory initialization step. On inputs where `cond` is initially false, the body never runs and the function returns an uninitialized or stale result."
+    - "Move a state-transition assignment from before a conditional dispatch to after it, so the dispatch reads the previous state instead of the current one, causing the wrong handler to execute for one cycle before self-correcting."
+    - "Replace a `continue` with a `break` inside a retry/search loop, so the first non-matching iteration aborts the entire search instead of skipping to the next candidate."
+  tips:
+    - "The bug must be a realistic always-incorrect control-flow flaw (CWE-670) — the program's control flow is structurally wrong (inverted branch, wrong fall-through, swapped bodies, misplaced break/continue/return), not merely a wrong value or missing check."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors; the control flow must still be syntactically valid."
+    - "Do not add comments that hint at the flaw or mention control flow, branch, CWE, or bug."
+    - "The bug should be subtle: on the most common inputs the wrong branch may happen to produce the same result as the correct one (e.g., both branches return 0 for the common case), and only diverge on specific conditions."
+    - "Prefer modifying exactly ONE control-flow statement (one branch predicate, one break/continue/return, one fall-through) over restructuring the whole function."
+    - "Do NOT remove bounds checks or validation guards — that is CWE-20 / CWE-754 territory. Stay strictly in 'the control flow is structurally wrong' territory."
+    - "If the function is a trivial getter, a single-expression return, or a straight-line computation with no branches, loops, or switch statements, respond with `NO_GOOD_BUG_SITE` instead of forcing a contrived change."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-670 flaw (Always-Incorrect Control Flow Implementation). The resulting function must still compile, keep its signature, and behave correctly on the most common inputs — the flaw should be a structural control-flow error (inverted branch, wrong fall-through, swapped if/else bodies, misplaced break/continue/return) that causes the function to take the wrong path on specific conditions.
+
+  Concretely, some kinds of CWE-670 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-670 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-670 site (e.g., a trivial getter, a single-expression return, or a straight-line computation with no branches, loops, or switch statements), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

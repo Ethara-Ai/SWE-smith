@@ -1,0 +1,55 @@
+name: lm_modify_cwe190
+parameters:
+  cwe_id: "CWE-190"
+  cwe_name: "Integer Overflow or Wraparound"
+  bug_examples:
+    - "Remove an overflow guard before a size/length arithmetic expression: delete a check like `if (n > SIZE_MAX / elem_size) return error;` so a crafted large input can cause `n * elem_size` to wrap around to a small value used for allocation."
+    - "Replace a wider integer type with a narrower one in a size computation: change a `size_t` or `uint64_t` intermediate that accumulates lengths from an input stream into a `uint32_t` or `int`, so large values silently truncate."
+    - "Drop a bounds check on a length field decoded from untrusted bytes: remove the `if (length > max_allowed) return Corruption();` guard so an attacker-controlled varint or fixed-int can be any value, including one that overflows when multiplied/added later."
+    - "Change a strict `>` comparison on a size to a non-strict `>=` or a narrowed check (e.g., `if (a + b > limit)` → `if (a > limit)`), so the sum can exceed the limit when `b` is non-zero."
+    - "Replace a checked-addition helper (e.g., `CheckedAdd(a, b)` returning error on overflow) with a plain `a + b`, so a wraparound silently produces a too-small result."
+    - "Use the result of a subtraction between two unsigned values without verifying the minuend is larger — e.g., `remaining = buf_len - header_size;` without first checking `buf_len >= header_size` — so a malformed input underflows to a huge positive value."
+    - "Widen the accepted range of a length/offset field decoded from a file: change a 32-bit mask / 32-bit decode into a 64-bit read that is then narrowed later, preserving high bits that should have been rejected."
+    - "Remove a `size > available_bytes` precheck in a decoder so allocation proceeds based on an untrusted length that can be larger than what the input actually contains."
+  tips:
+    - "The bug must be a plausible, realistic integer-overflow or integer-underflow flaw — not a generic logic mutation."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors; types must still line up."
+    - "Do not add comments that hint at the flaw or mention overflow/underflow/CWE."
+    - "The bug should be subtle: the function should still behave correctly on typical inputs, and only misbehave on adversarial sizes decoded from untrusted data."
+    - "Prefer modifying exactly ONE validation/bounds-check statement over restructuring the whole function."
+    - "If multiple safe opportunities exist in a longer function, introduce the minimal change that is reachable from callers that consume untrusted bytes."
+    - "If the function has no size/length arithmetic, no allocation, no integer conversions, and no overflow-relevant computation (e.g., a trivial getter, a string formatter, a pure boolean helper), respond with `NO_GOOD_BUG_SITE` instead of forcing a contrived change."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-190 flaw (Integer Overflow or Wraparound) or the closely related CWE-191 (Integer Underflow). The resulting function must still compile, keep its signature, and behave correctly on benign inputs — the flaw should only manifest when an adversary supplies carefully crafted size/length/offset values (typically decoded from an untrusted file format or network payload).
+
+  Concretely, some kinds of CWE-190/191 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-190/191 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-190/191 site (e.g., a trivial getter, a string formatter, a boolean helper with no integer arithmetic), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

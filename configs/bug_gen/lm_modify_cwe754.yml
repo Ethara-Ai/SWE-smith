@@ -1,0 +1,55 @@
+name: lm_modify_cwe754
+parameters:
+  cwe_id: "CWE-754"
+  cwe_name: "Improper Check for Unusual or Exceptional Conditions"
+  bug_examples:
+    - "Remove a NULL/nullptr check before a pointer dereference: delete `if (ptr == NULL) return error;` so a NULL pointer from a failed allocation or missing lookup is dereferenced unconditionally."
+    - "Delete an error-code check after a system call or library function: remove `if (ret < 0) { handle_error(); return; }` after a `read()`, `write()`, `open()`, or `malloc()`, so the function continues with a failed/invalid return value (e.g., -1 as a file descriptor, NULL as a buffer pointer)."
+    - "Remove a check for an empty container before accessing its first element: delete `if (list.empty()) return default_value;` before `list[0]` or `list.front()`, so an empty input causes undefined behavior."
+    - "Drop a return-value check from a function that can fail and return a sentinel: remove the `if (result == INVALID_HANDLE)` or `if (result == std::string::npos)` check, so the sentinel value is used as if it were a valid handle/index."
+    - "Delete an EOF/end-of-stream check in a parsing loop: remove `if (pos >= end) return Corruption();` before reading the next token, so the parser walks past the end of the input buffer when given a truncated stream."
+    - "Remove a check for division by zero: delete `if (divisor == 0) return error;` or `if (count == 0) return 0;` before a division, so a zero denominator from unusual input causes a floating-point exception or undefined behavior."
+    - "Drop a file-existence or permission check before an operation: remove `if (!file_exists(path)) return error;` so the function proceeds to open/read a nonexistent file and the subsequent I/O call returns an error that is then not handled."
+    - "Remove an overflow/wraparound check on a counter increment: delete `if (counter == MAX_VALUE) return error;` before `counter++`, so the counter silently wraps around to zero on overflow, corrupting sequence numbers or indices."
+  tips:
+    - "The bug must be a realistic improper-check-for-exceptional-conditions flaw (CWE-754) — the program fails to check for an unusual but possible condition (NULL return, error code, empty input, EOF, zero divisor, overflow) before using the result. This is distinct from CWE-20 (Improper Input Validation) which is about external input; CWE-754 is about failing to check return values and exceptional runtime states."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors."
+    - "Do not add comments that hint at the flaw or mention check, error handling, CWE, or bug."
+    - "The bug should be subtle: on typical inputs the exceptional condition never arises (allocation succeeds, file exists, divisor is nonzero), so the function appears correct. The bug only manifests under resource pressure, with missing files, with empty inputs, or on error paths."
+    - "Prefer removing exactly ONE error check / return-value validation / exceptional-condition guard over restructuring the whole function."
+    - "Do NOT change arithmetic expressions or formulas — that is CWE-682 territory. Do NOT change buffer sizes or loop bounds — that is CWE-125/CWE-787 territory. Stay strictly in 'a check for an exceptional condition is missing' territory."
+    - "If the function has no error checks, no return-value validations, no NULL checks, no exceptional-condition guards (e.g., a trivial getter, a pure computation, or a function that only sets values without checking anything), respond with `NO_GOOD_BUG_SITE` instead of forcing a contrived change."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-754 flaw (Improper Check for Unusual or Exceptional Conditions). The resulting function must still compile, keep its signature, and behave correctly on typical inputs — the flaw should be a removed or weakened check for an exceptional runtime condition (NULL pointer, failed allocation, error return code, empty container, EOF, division by zero, overflow) that only manifests when that unusual condition actually occurs.
+
+  Concretely, some kinds of CWE-754 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-754 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-754 site (e.g., a trivial getter, a pure computation, or a function with no error checks or exceptional-condition guards to remove), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

@@ -1,0 +1,54 @@
+name: lm_modify_cwe125
+parameters:
+  cwe_id: "CWE-125"
+  cwe_name: "Out-of-bounds Read"
+  bug_examples:
+    - "Remove a bounds check before a pointer/array read: delete a guard like `if (p + n > limit) return Corruption();` before a `memcpy(dst, p, n)` or a `*p`/`p[i]` read, so a malformed length drives the read past the end of the buffer."
+    - "Shift a loop boundary from `< end` to `<= end` in a byte-scanning routine that walks a decoded buffer, causing a one-past-end read on the last iteration."
+    - "Replace a safe length-prefixed read helper (e.g., `GetLengthPrefixedSlice` that validates `length <= remaining`) with a raw pointer advance that trusts the decoded length unconditionally."
+    - "Skip a check that the remaining buffer is large enough for a fixed-size structural read (footer, block handle, record header): remove `if (remaining < sizeof(Header)) return Corruption();` before reading the header fields."
+    - "Use a decoded offset directly to index into a buffer without verifying it is within bounds: change `if (offset < size) return buf[offset];` to `return buf[offset];`, trusting the offset that came from an untrusted byte stream."
+    - "Weaken a check on a length-prefixed field from `length <= remaining` to `length <= buffer_capacity`, so a short input with a large declared length still passes the check and the subsequent read walks past the end."
+    - "Change an early `return` on a malformed-length path into a fall-through that continues to parse using the unchecked length, feeding the bad value into the next read."
+  tips:
+    - "The bug must be a realistic out-of-bounds read (CWE-125) — a read past the end of a buffer/array driven by untrusted input, not a random logic change."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors."
+    - "Do not add comments that hint at the flaw or mention bounds, OOB, or CWE."
+    - "The bug should be subtle: the function should still behave correctly on well-formed inputs, and only misread when parsing adversarial bytes."
+    - "Prefer modifying exactly ONE bounds check / length validation over restructuring the whole function."
+    - "If the function already has a length guard further down, you can still introduce the bug if an intermediate read happens before the remaining guard fires."
+    - "If the function has no buffer reads, no pointer arithmetic, no length/bounds checks, and no array indexing (e.g., a pure computation helper, a trivial getter, or a string formatter), respond with `NO_GOOD_BUG_SITE` instead of forcing a contrived change."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-125 flaw (Out-of-bounds Read). The resulting function must still compile, keep its signature, and behave correctly on benign inputs — the flaw should only manifest when an adversary supplies crafted byte sequences (typically a malformed block, footer, log record, or length-prefixed field from an untrusted file).
+
+  Concretely, some kinds of CWE-125 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-125 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-125 site (e.g., a pure computation helper, a trivial getter, or a string formatter with no buffer reads or pointer arithmetic), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:
