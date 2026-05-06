@@ -1,0 +1,61 @@
+name: lm_modify_cwe350
+parameters:
+  cwe_id: "CWE-350"
+  cwe_name: "Reliance on Reverse DNS Resolution for a Security-Critical Action"
+  bug_examples:
+    - "Use reverse DNS to verify client identity: add `const hostname = await dns.reverse(req.socket.remoteAddress); if (hostname[0].endsWith('.trusted.internal')) { grantAccess(); }`, trusting PTR records that the attacker controls for their IP."
+    - "Validate webhook source by reverse DNS instead of signature: change `if (verifySignature(body, secret, sig))` to `const host = await dns.reverse(req.ip); if (host[0].endsWith('.github.com')) { accept(); }`, which an attacker controlling their IP's PTR record can spoof."
+    - "Use reverse DNS for IP-based access control: add `const names = await dns.reverse(clientIp); const allowed = names.some(n => n.endsWith('.corp.example.com')); if (!allowed) deny();`, trusting PTR records that the IP owner controls."
+    - "Log and trust hostname from reverse DNS for audit trail: use `const hostname = (await dns.reverse(ip))[0] || ip` for access logs and decisions, which an attacker can set to any string by configuring their PTR record."
+    - "Verify service-to-service calls via reverse DNS: check `const callerHost = await dns.reverse(req.socket.remoteAddress); if (!callerHost[0].startsWith('svc-')) reject()`, trusting that only legitimate services have PTR records starting with 'svc-'."
+    - "Gate admin functionality on reverse DNS lookup: add `const rdns = await dns.reverse(req.ip); if (!rdns.some(h => h.includes('admin-workstation'))) return res.status(403).end()`, which an attacker controlling their PTR can trivially bypass."
+    - "Use reverse DNS to determine if a request is internal: add `const host = await dns.reverse(req.ip); const isInternal = host[0]?.endsWith('.internal'); if (isInternal) { skipAuthCheck(); }`, trusting attacker-controlled DNS."
+    - "Perform forward-confirmed reverse DNS but skip the forward verification: do `const rdns = await dns.reverse(ip)` but forget to verify `await dns.resolve(rdns[0])` resolves back to the same IP, so any PTR record is trusted without forward confirmation."
+  tips:
+    - "The bug must be a realistic CWE-350 flaw — a security-critical decision (authentication, authorization, access control) relies on REVERSE DNS resolution, which is controlled by whoever owns the IP address's PTR record and is trivially spoofable."
+    - "Do NOT introduce bugs better classified as CWE-290 (Authentication Bypass by Spoofing). CWE-350 is SPECIFICALLY about REVERSE DNS as the spoofing mechanism. CWE-290 covers broader spoofing (headers, IP claims). If the spoofed value comes from dns.reverse(), it's CWE-350."
+    - "Do NOT introduce bugs better classified as CWE-291 (Reliance on IP Address for Authentication). CWE-350 is about DNS-resolved HOSTNAMES. If the decision is based directly on the IP address (without DNS lookup), that's closer to CWE-291."
+    - "Do NOT introduce bugs better classified as CWE-807 (Reliance on Untrusted Inputs in a Security Decision). CWE-350 is the specific case where the untrusted input is reverse DNS. CWE-807 is the general parent."
+    - "Reverse DNS (PTR records) is controlled by the IP address owner. An attacker renting a VPS can set their PTR record to ANYTHING (e.g., `admin.yourcompany.com`). Forward-confirmed rDNS (check that forward lookup of the hostname resolves to the same IP) is slightly better but still unreliable."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors or syntax errors."
+    - "Do not add comments that hint at the flaw, DNS, reverse lookup, PTR, or CWE."
+    - "The bug should be subtle: the reverse DNS check looks like a reasonable security measure (verifying hostname), but PTR records are attacker-controlled and cannot be trusted for security decisions."
+    - "Prefer adding exactly ONE reverse DNS check used for a security decision (access control, admin gating, service authentication)."
+    - "High-value targets: internal service gating, admin panel access, webhook source verification, audit logging used for security decisions, IP-to-hostname resolution for access control lists."
+    - "If the function has no network access, no IP-based decisions, no DNS operations, no access control, respond with `NO_GOOD_BUG_SITE` instead of forcing a contrived change."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-350 flaw (Reliance on Reverse DNS Resolution for a Security-Critical Action). The resulting function must still compile, keep its signature, and perform access control — the flaw should base a security decision on reverse DNS lookup results, which are trivially spoofable by an attacker who controls their IP's PTR record.
+
+  CWE-350 is a specific child of CWE-290 (Authentication Bypass by Spoofing) targeting DNS as the spoofing vector. Reverse DNS (PTR records) is controlled by whoever owns the IP block — an attacker renting a VPS can set their PTR to any hostname. Security decisions based on these lookups (access control, authentication, trust boundaries) are trivially bypassable.
+
+  Concretely, some kinds of CWE-350 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-350 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-350 site (e.g., no network access, no IP-based decisions, no DNS operations), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

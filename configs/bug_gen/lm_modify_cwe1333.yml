@@ -1,0 +1,65 @@
+name: lm_modify_cwe1333
+parameters:
+  cwe_id: "CWE-1333"
+  cwe_name: "Inefficient Regular Expression Complexity"
+  bug_examples:
+    - "Add catastrophic backtracking via nested quantifiers: change a safe pattern like `/^[a-z]+$/` to `/^([a-z]+)+$/` that causes exponential backtracking on inputs like 'aaaaaaaaaaaaaaX' — the engine tries every possible partition."
+    - "Replace a non-backtracking pattern with overlapping alternation: change `/^\\w+@\\w+\\.\\w+$/` to `/^(\\w+\\.?)+@(\\w+\\.?)+$/` which has exponential worst-case complexity because `\\w` and `\\.?` create overlapping match possibilities."
+    - "Remove input length limit before regex matching: delete `if (input.length > 1000) return error;` before applying a regex that has polynomial backtracking, so long attacker-crafted strings cause ReDoS and hang the event loop."
+    - "Add overlapping character classes in alternation: change `/[a-z]+/` to `/([a-z]|[a-m])+/` where the character classes overlap, causing the regex engine to try exponentially many paths on non-matching suffixes."
+    - "Replace a bounded quantifier with an unbounded nested one: change `/\\d{1,5}/` to `/(\\d+)+/` which backtracks exponentially on strings of digits followed by a non-digit character."
+    - "Remove the regex timeout or safe regex library: delete `{ timeout: 1000 }` option or replace `new RE2(pattern)` (linear-time engine) with `new RegExp(pattern)` that has super-linear worst case on certain inputs."
+    - "Add a vulnerable lookahead that creates polynomial backtracking: change `/^\\w+$/` to `/^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$/` with overlapping lookaheads that each scan the entire string, creating O(n^3) behavior."
+    - "Introduce ambiguous repetition in a validation regex: change `/^https?:\\/\\/[^\\s]+$/` to `/^https?:\\/\\/(.*)+$/` where `(.*)` inside a `+` creates catastrophic backtracking because the engine tries every possible split of characters between the inner and outer repetition."
+  tips:
+    - "The bug must be a realistic ReDoS flaw (CWE-1333) — a regular expression has super-linear worst-case complexity (exponential or polynomial) that can be triggered by attacker-crafted input to consume excessive CPU."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors or invalid regex syntax (the regex must compile)."
+    - "Do not add comments that hint at the flaw, ReDoS, backtracking, complexity, or CWE."
+    - "The bug should be subtle: typical/short inputs match quickly; only adversarial inputs (carefully crafted non-matching strings near the worst case) trigger the catastrophic backtracking."
+    - "Prefer modifying exactly ONE regex to introduce nested quantifiers, overlapping alternations, or ambiguous repetition — rather than making all regexes vulnerable."
+    - "CRITICAL DISTINCTION from CWE-400 (Uncontrolled Resource Consumption): CWE-1333 is specifically about regex complexity causing CPU exhaustion. CWE-400 is the broad parent covering any form of resource exhaustion (memory, network, disk). If the DoS vector is not a regex, it's CWE-400."
+    - "CRITICAL DISTINCTION from CWE-835 (Infinite Loop): ReDoS is technically FINITE but takes astronomical time (exponential). True infinite loops with no termination condition are CWE-835. If the regex has no nested quantifiers but loops around it are infinite, that's CWE-835."
+    - "CRITICAL DISTINCTION from CWE-770 (Allocation Without Limits): CWE-1333 exhausts CPU time, not memory. If the issue is unbounded memory allocation, that's CWE-770, not CWE-1333."
+    - "The classic vulnerable patterns are: `(a+)+`, `(a|a)+`, `(a+b?)+`, `(.*a){n}` — any pattern where the NFA has ambiguous state transitions causing exponential path explosion."
+    - "In Node.js, ReDoS blocks the event loop. A single 30-character malicious input can hang the server for minutes. This makes CWE-1333 particularly critical in server-side JavaScript."
+    - "If the function has no regular expressions or all patterns are inherently linear-time (no quantifier nesting, no alternation with overlap), respond with `NO_GOOD_BUG_SITE` instead of forcing a contrived change."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-1333 flaw (Inefficient Regular Expression Complexity / ReDoS). This vulnerability exploits the backtracking behavior of NFA-based regex engines: certain patterns have worst-case exponential or polynomial time complexity, and an attacker who controls input can craft strings that trigger catastrophic backtracking, consuming all available CPU and causing denial of service.
+
+  CWE-1333 is particularly devastating in Node.js/JavaScript because the single-threaded event loop means a single ReDoS-triggering request blocks ALL other requests. The vulnerability requires two conditions: (1) a regex with super-linear worst-case complexity (nested quantifiers, overlapping alternations), and (2) user-controlled input reaching that regex without length limits or timeout protection.
+
+  The classic patterns are: nested quantifiers `(a+)+`, overlapping alternation `(a|a)+`, ambiguous optional groups `(a+b?)+`, and quantified groups with optional overlapping characters. Safe alternatives include: RE2 (linear-time engine), input length limits before regex, atomic groups (not in JS), and possessive quantifiers (not in JS).
+
+  The resulting function must still compile, keep its signature, and work on normal inputs — the flaw should cause catastrophic backtracking when processing attacker-crafted input strings.
+
+  Concretely, some kinds of CWE-1333 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-1333 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-1333 site (e.g., no regular expressions), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

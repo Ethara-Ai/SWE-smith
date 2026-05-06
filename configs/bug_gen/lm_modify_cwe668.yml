@@ -1,0 +1,61 @@
+name: lm_modify_cwe668
+parameters:
+  cwe_id: "CWE-668"
+  cwe_name: "Exposure of Resource to Wrong Sphere"
+  bug_examples:
+    - "Remove network binding restriction: change `server.listen(port, '127.0.0.1')` to `server.listen(port)` or `server.listen(port, '0.0.0.0')` for an internal-only service (metrics, admin, debug), exposing it to all network interfaces."
+    - "Remove the internal-network-only restriction: delete `if (!isInternalNetwork(req.ip)) return res.status(403).end();` from an admin/debug endpoint, making it accessible from the public internet."
+    - "Place sensitive files in a web-accessible directory: change the storage path from `/data/secrets/` (not served) to `/public/uploads/` or `/static/` (served directly by the web server), allowing direct URL access to sensitive data."
+    - "Expose a debug/profiling endpoint without access control: remove `if (process.env.NODE_ENV === 'production') return next('route');` from a debug route, exposing heap dumps, environment variables, or stack traces in production."
+    - "Remove cross-tenant data isolation: delete `.where('tenantId', currentTenant.id)` from a shared database query, exposing one tenant's data to other tenants' requests."
+    - "Expose internal error details to external clients: remove `if (isProduction) { error = { message: 'Internal error' }; }` and return full stack traces, query details, and internal paths to external API consumers."
+    - "Remove the CORS origin restriction: change `origin: ['https://app.example.com']` to `origin: true` or `origin: '*'`, exposing API responses (including auth tokens in headers) to any website."
+    - "Expose internal service communication details: remove the proxy header stripping (`delete req.headers['x-internal-token']`) before forwarding to a public-facing layer, leaking internal auth tokens to clients."
+  tips:
+    - "The bug must be a realistic exposure-to-wrong-sphere flaw (CWE-668) — a resource (endpoint, file, data, service) is made accessible to actors OUTSIDE its intended sphere (trust boundary, network zone, tenant, environment)."
+    - "CWE-668 is about SPHERE BOUNDARIES — resources crossing from an INTERNAL sphere to an EXTERNAL one. The 'spheres' can be: internal network vs. internet, tenant A vs. tenant B, development vs. production, server-side vs. client-side."
+    - "CRITICAL DISTINCTION from CWE-284 (Improper Access Control): CWE-284 is about authorization logic being wrong. CWE-668 is about the resource being STRUCTURALLY EXPOSED to the wrong sphere — no authorization logic failure needed, the exposure is architectural (wrong network binding, wrong directory, wrong CORS config)."
+    - "CRITICAL DISTINCTION from CWE-200 (Exposure of Sensitive Information): CWE-200 is about WHAT information is exposed. CWE-668 is about the MECHANISM — the resource being placed in or accessible from the wrong sphere. CWE-668 is the root cause, CWE-200 is the consequence."
+    - "CRITICAL DISTINCTION from CWE-732 (Incorrect Permission Assignment): CWE-732 is about file permission BITS being wrong. CWE-668 is broader — exposure via network binding, directory placement, CORS headers, or any mechanism that crosses sphere boundaries."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors."
+    - "Do not add comments that hint at the flaw, exposure, access control, or CWE."
+    - "The bug should be subtle: actors WITHIN the intended sphere still experience correct behavior."
+    - "Prefer modifying exactly ONE sphere boundary (one network binding, one directory path, one CORS setting, one environment check)."
+    - "High-value targets: server.listen() calls, CORS configuration, directory/path constants for file storage, environment-gated routes, tenant isolation filters, internal header handling."
+    - "If the function has no sphere boundaries (no network binding, no file placement, no CORS, no environment gating), respond with `NO_GOOD_BUG_SITE`."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-668 flaw (Exposure of Resource to Wrong Sphere). The resulting function must still compile, keep its signature, and work for intended users within the correct sphere — the flaw should expose a resource to actors outside its intended trust boundary (wrong network, wrong tenant, wrong environment, wrong client).
+
+  CWE-668 targets SPHERE BOUNDARY CROSSINGS — resources that should be confined to one trust zone (internal network, specific tenant, development environment, server-side only) become accessible from another zone. This is distinct from CWE-284 (authorization logic errors), CWE-200 (information content exposure), and CWE-732 (file permission bits). CWE-668 is about ARCHITECTURAL EXPOSURE — the resource is structurally placed in or reachable from the wrong sphere.
+
+  Concretely, some kinds of CWE-668 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-668 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-668 site (e.g., no sphere boundaries, no network binding, no CORS, no directory placement — a pure computation helper or trivial getter), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

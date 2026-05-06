@@ -1,0 +1,61 @@
+name: lm_modify_cwe601
+parameters:
+  cwe_id: "CWE-601"
+  cwe_name: "URL Redirection to Untrusted Site ('Open Redirect')"
+  bug_examples:
+    - "Remove redirect URL validation entirely: delete `if (!isInternalUrl(redirectUrl)) return res.status(400).end();` before `res.redirect(req.query.next)`, so `?next=https://evil.com` redirects the user to the attacker's site."
+    - "Weaken a domain whitelist from exact match to substring/includes: change `if (url.hostname === 'app.trusted.com')` to `if (url.hostname.includes('trusted.com'))`, allowing `evil-trusted.com` or `trusted.com.evil.com`."
+    - "Remove the protocol restriction: delete `if (!redirectUrl.startsWith('https://') && !redirectUrl.startsWith('/'))` before redirecting, allowing `javascript:alert(1)` or `data:text/html,...` URLs."
+    - "Fail to detect protocol-relative URLs: only check for `http://` and `https://` prefixes, missing `//evil.com/path` which browsers interpret as an absolute URL to evil.com."
+    - "Remove post-login redirect validation: delete the check `if (new URL(returnTo, origin).origin !== origin) return res.redirect('/');` from the OAuth/login callback, enabling phishing via `?returnTo=https://evil.com/fake-login`."
+    - "Implement naive path-only validation that's bypassable: check `if (url.startsWith('/'))` without catching `//evil.com`, `/\\evil.com`, or `/\tevil.com` which browsers resolve as absolute."
+    - "Remove URL decoding before validation: validate the raw `%2f%2fevil.com` (which looks like a path) but then redirect the decoded `//evil.com` (which is absolute), bypassing the validation via double-encoding."
+    - "Remove the validation from one redirect path while keeping it on another: keep validation on the main `?redirect=` param but skip it on a secondary param like `?continue=` or `?fallback=` that also drives redirects."
+  tips:
+    - "The bug must be a realistic open redirect flaw (CWE-601) — user-controlled input determines a redirect destination without proper validation, enabling phishing by redirecting from a trusted domain to an attacker-controlled site."
+    - "CWE-601 is about REDIRECT DESTINATION CONTROL — the attacker influences WHERE the browser navigates via a URL parameter, and the server/client performs the redirect without validating the destination is trusted."
+    - "CRITICAL DISTINCTION from CWE-79 (XSS): If the user input ends up in a `javascript:` URL that EXECUTES CODE in the page context, that overlaps with XSS. Pure CWE-601 redirects to an external site (phishing) without code execution in the original page."
+    - "CRITICAL DISTINCTION from CWE-918 (SSRF): CWE-918 is about the SERVER fetching from a user-controlled URL. CWE-601 is about the BROWSER/CLIENT being redirected to a user-controlled URL."
+    - "CRITICAL DISTINCTION from CWE-346 (Origin Validation Error): CWE-346 is about validating the ORIGIN of incoming requests. CWE-601 is about validating the DESTINATION of outgoing redirects."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors."
+    - "Do not add comments that hint at the flaw, redirect, or CWE."
+    - "The bug should be subtle: redirects to legitimate internal paths still work correctly."
+    - "Prefer removing or weakening exactly ONE URL validation (one domain check, one protocol restriction, one origin comparison)."
+    - "High-value targets: OAuth callback handlers with `redirect_uri`/`state`, login pages with `returnTo`/`next`/`continue` params, link-shortener redirects, logout-then-redirect flows, any `res.redirect(req.query.*)` or `window.location = params.*`."
+    - "If the function has no redirect logic, no URL parameters used for navigation decisions, respond with `NO_GOOD_BUG_SITE`."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-601 flaw (Open Redirect). The resulting function must still compile, keep its signature, and redirect legitimate internal URLs correctly — the flaw should allow an attacker to craft a URL that redirects victims to an arbitrary external site, enabling phishing or token theft.
+
+  CWE-601 targets REDIRECT DESTINATION VALIDATION — user-controlled input (query parameters, POST body, headers) determines where the application sends the user's browser, and the validation is missing or bypassable. This is distinct from CWE-79 (code execution in page context), CWE-918 (server-side URL fetching), and CWE-346 (incoming request origin validation). CWE-601 is specifically about OUTGOING redirect destination control.
+
+  Concretely, some kinds of CWE-601 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-601 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-601 site (e.g., no redirect handling, no URL parameters used for navigation — a pure computation helper or trivial getter), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

@@ -1,0 +1,65 @@
+name: lm_modify_cwe1286
+parameters:
+  cwe_id: "CWE-1286"
+  cwe_name: "Improper Validation of Syntactic Correctness of Input"
+  bug_examples:
+    - "Remove JSON schema/format validation: delete `if (!isValidJSON(input)) return error;` or `try { JSON.parse(input) } catch { return error; }` before processing, so malformed JSON with trailing data, unterminated strings, or duplicate keys is accepted and misinterpreted."
+    - "Remove regex-based format validation: delete `if (!/^[a-zA-Z0-9_]+$/.test(identifier)) return error;` so syntactically invalid identifiers containing special characters (quotes, semicolons, brackets) are accepted and processed."
+    - "Skip email format validation: remove `if (!emailRegex.test(email)) return invalid;` so strings without '@', with multiple '@', or with invalid domain parts are accepted as email addresses and stored/used without sanitization."
+    - "Remove URL syntax validation: delete `try { new URL(input) } catch { return error; }` so malformed URLs with invalid characters, missing protocols, embedded credentials, or unicode homoglyphs pass through to downstream consumers."
+    - "Remove date/time format validation: delete the check that ensures a date string matches ISO 8601 or the expected format, so strings like `2024-13-45`, `NaN-NaN-NaN`, or `'; DROP TABLE--` are processed as date parameters."
+    - "Skip protocol/message format validation: remove the check that a binary protocol message has correct magic bytes, valid length fields, and matching checksums, accepting garbage data that corrupts internal state."
+    - "Remove CSV/delimiter validation: skip checking that input has the expected number of fields per row (e.g., delete `if (fields.length !== expectedColumns) continue;`), so malformed rows with missing or extra delimiters cause misaligned data columns."
+    - "Remove content-type validation on structured input: delete the check that verifies `Content-Type` header matches the actual payload format, so XML can be submitted as JSON or vice versa, bypassing format-specific sanitizers."
+  tips:
+    - "The bug must be a realistic syntactic validation flaw (CWE-1286) — input is not checked for syntactic correctness (proper format, structure, delimiters, encoding) before being processed by downstream logic."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors or break module imports."
+    - "Do not add comments that hint at the flaw, input validation, parsing, or CWE."
+    - "The bug should be subtle: syntactically correct input still processes normally — only malformed input reveals the missing validation."
+    - "Prefer removing exactly ONE syntactic format check rather than all validation in a pipeline."
+    - "CRITICAL DISTINCTION from CWE-20 (Improper Input Validation): CWE-20 is the abstract parent. CWE-1286 is specifically about SYNTACTIC correctness — the structure/format/grammar of input, not its semantic meaning or value range."
+    - "CRITICAL DISTINCTION from CWE-129 (Improper Validation of Array Index): CWE-1286 validates that the input IS syntactically well-formed before use. CWE-129 validates that a numeric value falls within array bounds. If removing a bounds check, that's CWE-129."
+    - "CRITICAL DISTINCTION from CWE-89/94/78 (Injection): CWE-1286 is about accepting malformed input, not about the downstream injection consequence. If the fix would be output encoding/parameterization rather than input format rejection, it's an injection CWE."
+    - "Focus on JavaScript/Node.js parsing patterns: JSON.parse try/catch, URL constructor validation, schema validators (ajv, joi, zod), regex format checks, and content-type verification."
+    - "The downstream impact varies: misaligned data, parser confusion, type coercion errors, or creating conditions that enable OTHER vulnerabilities (injection, overflow)."
+    - "If the function has no input parsing, no format validation, no structured data processing, respond with `NO_GOOD_BUG_SITE` instead of forcing a contrived change."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-1286 flaw (Improper Validation of Syntactic Correctness of Input). This vulnerability occurs when an application accepts and processes input without verifying that it conforms to the expected syntactic format — proper structure, delimiters, encoding, and grammar rules — potentially leading to misinterpretation, parser confusion, or enabling downstream vulnerabilities.
+
+  CWE-1286 is about the FORM of input, not its MEANING. A syntactically valid email (foo@bar.com) might still be semantically wrong (non-existent domain), but CWE-1286 only concerns whether the input matches the expected grammar. This is more specific than CWE-20 (the abstract parent) and distinct from injection CWEs (which concern what happens AFTER malformed input reaches a sink). The fix for CWE-1286 is always "validate format before processing," never "sanitize at output."
+
+  In JavaScript/Node.js, syntactic validation commonly uses: JSON.parse/JSON.stringify round-trip, `new URL()` constructor, regex format patterns, schema validation libraries (ajv, joi, zod, yup), and custom parser error handling.
+
+  The resulting function must still compile, keep its signature, and work on well-formed input — the flaw should accept syntactically malformed input that violates the expected format, potentially leading to misinterpretation, injection, or crashes downstream.
+
+  Concretely, some kinds of CWE-1286 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-1286 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-1286 site (e.g., no input parsing or format validation), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

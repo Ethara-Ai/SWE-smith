@@ -1,0 +1,68 @@
+name: lm_modify_cwe23
+parameters:
+  cwe_id: "CWE-23"
+  cwe_name: "Relative Path Traversal"
+  bug_examples:
+    - "Remove the `../` sequence stripping: delete `filename = filename.replace(/\\.\\.\\/|\\.\\.\\\\/g, '')` or `while (p.includes('..')) p = p.replace('..', '')` before using the path, so `../../etc/passwd` traverses upward."
+    - "Remove the path normalization step that collapses `../`: delete `path.normalize()` or `path.resolve()` that would collapse traversal sequences before the prefix check, so the raw path string bypasses validation."
+    - "Change a multi-pass `../` strip to a single-pass: change `while (input.includes('..')) input = input.replace('..', '')` to `input = input.replace(/\\.\\.\\//g, '')` (single pass), so `....//` becomes `../` after one pass."
+    - "Remove the check that the normalized path stays within the base directory: delete `if (!normalized.startsWith(baseDir)) throw;` after `path.resolve()`, allowing `../` sequences to traverse out."
+    - "Allow backslash traversal by only checking forward-slash dots: change the filter from `/[\\/\\\\]?\\.\\./` to `/\\.\\.\\/` only, so `..\\` on Windows or `..%5c` encoded bypasses the check."
+    - "Remove double-decode protection: only decode URL encoding once before checking for `..`, so `%252e%252e%252f` survives the first decode as `%2e%2e%2f` (passes the check), then gets decoded again by the filesystem/server layer to `../`."
+    - "Split the validation and use across two steps without re-validating: validate `filename` for `..` sequences, but then use `decodeURIComponent(filename)` for the actual file access — the decoded version may contain `../` that wasn't in the original."
+    - "Remove the path separator check after stripping dots: delete the check for absolute components (starting with `/` or `C:`) that survive after `..` removal, so inputs like `/../etc/passwd` bypass the relative-only filter."
+  tips:
+    - "The bug must be a realistic relative path traversal flaw (CWE-23) — user input containing `../` sequences (dot-dot-slash) is used in a file path without adequate neutralization, allowing directory escape."
+    - "CWE-23 is a CHILD of CWE-22 (Path Traversal). CWE-23 is specifically about RELATIVE traversal using `../` sequences. Use CWE-23 when the flaw is specifically about dot-dot-slash not being stripped/blocked/normalized. Use CWE-22 for broader path traversal (absolute paths, symlinks, encoding tricks)."
+    - "CRITICAL DISTINCTION from CWE-22 (parent): CWE-23 specifically targets `../` relative path sequences. If the traversal uses absolute paths, null bytes, or other non-`../` mechanisms, it's CWE-22 not CWE-23."
+    - "Common bypass patterns: single-pass stripping (nested `....//`), encoding bypass (`%2e%2e%2f`), OS-specific separators (`..\\`), double encoding, unicode normalization (`%c0%ae%c0%ae/`), validation/use mismatch."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors."
+    - "Do not add comments that hint at the flaw, traversal, `../`, directory escape, or CWE."
+    - "The bug should be subtle: normal filenames without dots or slashes still resolve correctly."
+    - "Prefer removing exactly ONE traversal prevention mechanism — one regex filter, one normalize step, one prefix check."
+    - "High-value targets in JS/Node.js: file-serving routes with `path.join(base, userInput)` without prefix check, download handlers, static-file middleware with custom path resolution, zip extraction with entry-name paths."
+    - "If the function does not handle relative file paths from user input (no file operations, no path construction), respond with `NO_GOOD_BUG_SITE`."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-23 flaw (Relative Path Traversal). The resulting function must still compile, keep its signature, and work for normal filenames — the flaw should allow `../` sequences in user-controlled input to traverse out of the intended directory.
+
+  CWE-23 is specifically about `../` (dot-dot-slash) relative traversal. This is a child of CWE-22 (Path Traversal — broader). The specific issue: the function does not adequately neutralize `../` sequences before using the path for filesystem access.
+
+  Common traversal bypass patterns:
+  - Direct `../../../etc/passwd`
+  - Single-pass stripping: `....//` → `../` after removal
+  - URL encoding: `%2e%2e%2f` or `%2e%2e/`
+  - Double encoding: `%252e%252e%252f`
+  - OS-specific: `..\\` (Windows backslash)
+  - Unicode: `%c0%ae%c0%ae/` (overlong UTF-8)
+
+  Concretely, some kinds of CWE-23 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-23 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-23 site (e.g., no relative file path handling from user input), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

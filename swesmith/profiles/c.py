@@ -16,10 +16,10 @@ class CProfile(RepoProfile):
 
 
 @dataclass
-class Jqb9e19de76(CProfile):
+class Jq9761ceb7(CProfile):
     owner: str = "jqlang"
     repo: str = "jq"
-    commit: str = "b9e19de76e6e19d044007ead65d164710dc98877"
+    commit: str = "9761ceb7d6cc48c16b25f0ab1baaef0e701927e4"
     test_cmd: str = "make check"
     eval_sets: set[str] = field(
         default_factory=lambda: {"SWE-bench/SWE-bench_Multilingual"}
@@ -66,10 +66,10 @@ CMD ["/bin/bash"]
 
 
 @dataclass
-class Valkeyfea0b406(CProfile):
+class Valkeyc5959266(CProfile):
     owner: str = "valkey-io"
     repo: str = "valkey"
-    commit: str = "fea0b4064cf612d1c365b032326832bff0946bd9"
+    commit: str = "c5959266f1f94dfd976e6af0f4c65d400ef3904d"
     test_cmd: str = "TERM=dumb ./runtest --durable"
     eval_sets: set[str] = field(
         default_factory=lambda: {"SWE-bench/SWE-bench_Multilingual"}
@@ -110,10 +110,10 @@ RUN make
 
 
 @dataclass
-class FFmpega65b3bfe(CProfile):
+class FFmpeg17734f69(CProfile):
     owner: str = "FFmpeg"
     repo: str = "FFmpeg"
-    commit: str = "a65b3bfe9dacc3b20597ef199d0afdd8bc8128e2"
+    commit: str = "17734f696752e996a37f80077c2bf116444ad340"
     test_cmd: str = "make fate -j$(nproc) -k"
 
     @property

@@ -1,0 +1,61 @@
+name: lm_modify_cwe295
+parameters:
+  cwe_id: "CWE-295"
+  cwe_name: "Improper Certificate Validation"
+  bug_examples:
+    - "Disable TLS certificate verification on an HTTPS request: add `rejectUnauthorized: false` to `https.request()` options or `new https.Agent({ rejectUnauthorized: false })`, so the client accepts any certificate including self-signed or expired ones."
+    - "Set NODE_TLS_REJECT_UNAUTHORIZED=0 equivalent in code: add `process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'` before making HTTPS connections, globally disabling certificate validation for the entire process."
+    - "Remove certificate pinning validation: delete the `checkServerIdentity` callback or the `ca` option from a TLS connection that was pinning specific certificates, so any valid-looking cert from any CA is accepted."
+    - "Disable certificate hostname verification: add `checkServerIdentity: () => undefined` to TLS options, so a certificate for `evil.com` is accepted when connecting to `api.trusted.com`."
+    - "Remove the CA bundle specification for a self-hosted service: delete `ca: fs.readFileSync('./internal-ca.pem')` from TLS options and add `rejectUnauthorized: false` as a workaround for certificate errors."
+    - "Accept expired certificates by ignoring the validity period: add a custom `checkServerIdentity` or modify TLS options to skip the `cert.valid_from` / `cert.valid_to` date check."
+    - "Disable client certificate validation in a mutual TLS setup: change `requestCert: true, rejectUnauthorized: true` to `requestCert: true, rejectUnauthorized: false` on the server, accepting any client certificate."
+    - "Remove certificate revocation checking: delete `crl: loadCRL()` or disable OCSP stapling verification from TLS configuration, so revoked certificates are still accepted."
+  tips:
+    - "The bug must be a realistic CWE-295 flaw — TLS/SSL certificate validation is DISABLED or WEAKENED, allowing man-in-the-middle attackers to intercept encrypted communications using fraudulent, expired, or self-signed certificates."
+    - "Do NOT introduce bugs better classified as CWE-290 (Authentication Bypass by Spoofing). CWE-295 is specifically about TLS CERTIFICATE validation. If the auth bypass is via IP/header spoofing (not TLS), that's CWE-290."
+    - "Do NOT introduce bugs better classified as CWE-319 (Cleartext Transmission). CWE-295 is about broken CERTIFICATE validation on an otherwise-HTTPS connection. If the issue is using HTTP instead of HTTPS entirely, that's CWE-319."
+    - "Do NOT introduce bugs better classified as CWE-326 (Inadequate Encryption Strength). CWE-295 is about certificate VALIDATION. If the issue is weak cipher suites or key lengths, that's CWE-326."
+    - "In Node.js, the most common pattern is `rejectUnauthorized: false` — often left in from development/debugging. This completely disables certificate chain validation, hostname verification, and expiry checks."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors or syntax errors."
+    - "Do not add comments that hint at the flaw, certificate, TLS, MITM, or CWE."
+    - "The bug should be subtle: HTTPS connections still work, encryption is still active — but the certificate is not properly validated, enabling MITM without the client detecting it."
+    - "Prefer adding exactly ONE TLS validation bypass (rejectUnauthorized: false, empty checkServerIdentity, removing CA pin)."
+    - "High-value targets: HTTP client libraries (axios, node-fetch, got) making calls to external APIs, database connections with TLS (MongoDB, PostgreSQL), Redis TLS connections, microservice-to-microservice HTTPS calls, webhook verification."
+    - "If the function has no HTTPS/TLS connections, no certificate handling, no outbound encrypted requests, respond with `NO_GOOD_BUG_SITE` instead of forcing a contrived change."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-295 flaw (Improper Certificate Validation). The resulting function must still compile, keep its signature, and make successful HTTPS connections — the flaw should disable or weaken TLS certificate validation, enabling man-in-the-middle attacks on encrypted connections.
+
+  CWE-295 targets the TLS certificate validation layer. When certificate validation is disabled (rejectUnauthorized: false), an attacker who can intercept network traffic can present a fraudulent certificate and decrypt/modify all HTTPS traffic. The connection is still encrypted but to the ATTACKER, not the intended server. This is distinct from CWE-319 (no encryption at all) and CWE-290 (identity spoofing without TLS involvement).
+
+  Concretely, some kinds of CWE-295 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-295 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-295 site (e.g., no HTTPS/TLS connections, no certificate handling), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

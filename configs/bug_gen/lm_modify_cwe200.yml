@@ -1,0 +1,69 @@
+name: lm_modify_cwe200
+parameters:
+  cwe_id: "CWE-200"
+  cwe_name: "Exposure of Sensitive Information to an Unauthorized Actor"
+  bug_examples:
+    - "Remove the field filter from an API response: delete the `.select('-password -ssn -creditCard')` or `{ exclude: ['secret'] }` that strips sensitive fields before sending, so full database records (including hashed passwords, tokens, PII) are returned to any caller."
+    - "Change error handling to expose internal details: replace `res.status(500).json({ error: 'Internal error' })` with `res.status(500).json({ error: err.message, stack: err.stack, query: sql })`, leaking stack traces, SQL queries, file paths, and dependency versions."
+    - "Remove access-control on a debug/diagnostic endpoint: delete the admin-only check from a `/debug/env` or `/healthcheck/detailed` endpoint that returns environment variables, config files, or internal state, making it public."
+    - "Log sensitive data to a user-accessible location: change `logger.info('Login attempt', { user: username })` to `logger.info('Login attempt', { user: username, password: password, token: sessionToken })` where logs are exposed via a log-viewing UI or log aggregation accessible to lower-privilege users."
+    - "Return different error messages that reveal database schema: change uniform errors to field-specific messages like `'email already exists'` vs `'username already exists'`, allowing user enumeration and schema inference."
+    - "Expose server metadata in HTTP headers: add `res.setHeader('X-Server-Version', process.version + '/' + packageJson.version)` or leave `X-Powered-By: Express` enabled, leaking technology stack details useful for targeted exploits."
+    - "Remove PII redaction from a data export: delete the masking logic (`email = email.replace(/(.{2}).*(@.*)/, '$1***$2')`) from an export/report endpoint, so full PII (emails, phones, addresses) is included in downloadable files accessible by support staff."
+    - "Expose internal IPs or paths in client-facing output: include `os.hostname()`, `__filename`, `process.cwd()`, or internal service URLs in error messages or API responses that reach the client."
+  tips:
+    - "The bug must be a realistic information exposure flaw (CWE-200) — sensitive information (credentials, PII, internal architecture details, tokens, crypto keys) is made accessible to an unauthorized actor through API responses, logs, error messages, or metadata."
+    - "CRITICAL DISTINCTION from CWE-209 (Error Message Information Exposure): CWE-209 is specifically about ERRORS/EXCEPTIONS leaking info. CWE-200 is broader — it covers ALL vectors of sensitive info exposure (API responses, headers, logs, exports, debug endpoints, metadata)."
+    - "CRITICAL DISTINCTION from CWE-532 (Information Exposure Through Log Files): CWE-532 is specifically about sensitive data written to LOG files. CWE-200 covers logging but also many other exposure vectors."
+    - "CRITICAL DISTINCTION from CWE-497 (Exposure of Sensitive System Information): CWE-497 is specifically about SYSTEM-level info (versions, paths, env vars, hostnames). CWE-200 is broader and includes business data (PII, credentials, financial info)."
+    - "Sensitive information includes: passwords/hashes, API keys/tokens, PII (SSN, email, phone, address), internal network architecture, file paths, database schemas, session identifiers, cryptographic keys, financial data."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors."
+    - "Do not add comments that hint at the flaw, data exposure, leaking, or CWE."
+    - "The bug should be subtle: the function still works correctly — it just returns/exposes MORE data than it should to the given audience."
+    - "Prefer removing exactly ONE data-filtering, redaction, or access-control step."
+    - "High-value targets in JS/Node.js: API serialization (removing `.toJSON()` field exclusions), error handlers (exposing `err.stack`), response transformers, data export functions, health/debug endpoints, logging middleware."
+    - "If the function does not handle sensitive data or produce output visible to potentially-unauthorized actors, respond with `NO_GOOD_BUG_SITE`."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-200 flaw (Exposure of Sensitive Information to an Unauthorized Actor). The resulting function must still compile, keep its signature, and work correctly — the flaw should expose sensitive information (credentials, PII, internal details) to actors who should not have access to it.
+
+  CWE-200 is the BROAD parent for information exposure. It covers ANY vector:
+  - API responses returning too many fields (passwords, tokens, PII)
+  - Error messages leaking internals (also CWE-209 more specifically)
+  - Debug endpoints accessible without auth
+  - Logs containing secrets (also CWE-532 more specifically)
+  - HTTP headers revealing server info (also CWE-497 more specifically)
+  - Data exports without proper redaction
+
+  Use CWE-200 when the exposure doesn't fit neatly into a more specific child (209, 497, 532). If it's specifically about error messages → CWE-209. If specifically about logs → CWE-532. If specifically about system info → CWE-497.
+
+  Concretely, some kinds of CWE-200 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-200 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-200 site (e.g., no sensitive data handling, no output to potentially-unauthorized parties — a pure computation or internal-only utility), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

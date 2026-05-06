@@ -1,0 +1,61 @@
+name: lm_modify_cwe776
+parameters:
+  cwe_id: "CWE-776"
+  cwe_name: "Improper Restriction of Recursive Entity References in DTDs ('XML Entity Expansion')"
+  bug_examples:
+    - "Remove the entity expansion limit from XML parser configuration: delete `parser.setProperty('http://www.oracle.com/xml/jaxp/properties/entityExpansionLimit', 10000)` or `{ maxExpansionCount: 1000 }`, allowing billions of entity expansions from a 'billion laughs' payload."
+    - "Remove the DOCTYPE/ENTITY rejection check: delete `if (xmlInput.match(/<!ENTITY/i)) throw new Error('entity definitions not allowed');` before parsing, so recursive entity definitions like `<!ENTITY lol '&lol2;&lol2;'>` are processed."
+    - "Disable secure processing mode: change `{ xmlMode: true, maxExpansions: 10000 }` to `{ xmlMode: true }` or remove the secure processing feature flag, removing built-in entity expansion caps."
+    - "Remove the total expansion size check in a SAX handler: delete `if (this.totalExpandedSize > MAX_EXPANSION_BYTES) { this.abort(); return; }` from the entity reference callback."
+    - "Enable DTD processing without expansion limits: change `{ dtd: false }` to `{ dtd: true }` without setting an entity expansion limit, so recursive entity definitions are both parsed AND expanded without bounds."
+    - "Remove the entity depth tracking: delete `if (entityDepth > MAX_ENTITY_DEPTH) throw new Error('entity recursion too deep');` from a custom entity resolver, allowing unlimited recursion depth."
+    - "Remove the document size cap after entity expansion: delete `if (doc.length > MAX_EXPANDED_SIZE) throw;` after parsing, so the multi-gigabyte expanded document remains in memory."
+    - "Use a parser without built-in expansion protection: replace a modern XML parser that has default expansion limits (libxmljs2 with `{ maxExpansionDepth: 256 }`) with an older parser or raw SAX without such limits."
+  tips:
+    - "The bug must be a realistic XML entity expansion flaw (CWE-776 / 'Billion Laughs') — the XML parser allows recursive or nested internal entity definitions that expand EXPONENTIALLY, causing memory/CPU exhaustion from a tiny input."
+    - "CWE-776 is specifically about INTERNAL recursive/nested entity expansion — entities defined WITHIN the document's DOCTYPE that reference each other, creating exponential growth (e.g., `&lol9;` → 10×`&lol8;` → 100×`&lol7;` → ...)."
+    - "CRITICAL DISTINCTION from CWE-611 (XXE): CWE-611 is about EXTERNAL entities fetching resources (file://, http://). CWE-776 is about INTERNAL entity definitions that multiply recursively WITHOUT fetching any external resource."
+    - "CRITICAL DISTINCTION from CWE-400 (Uncontrolled Resource Consumption): CWE-400 covers general DoS. CWE-776 is the SPECIFIC vector of XML entity expansion bombs. Use CWE-776 when the amplification mechanism is specifically recursive XML entity definitions."
+    - "CRITICAL DISTINCTION from CWE-674 (Uncontrolled Recursion): CWE-674 is about recursive function calls. CWE-776 is about recursive entity REFERENCES in XML that the PARSER expands, not code-level recursion."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors."
+    - "Do not add comments that hint at the flaw, entity expansion, billion laughs, or CWE."
+    - "The bug should be subtle: XML without entity declarations still parses correctly and efficiently."
+    - "Prefer removing exactly ONE entity expansion limit or safety feature (one expansion cap, one secure-processing flag, one depth limit)."
+    - "High-value targets: any XML parser configuration, SOAP endpoints, SVG processing, SAML parsers, RSS/Atom feed parsers, XLSX/DOCX processors, XML-RPC handlers."
+    - "If the function has no XML parsing, respond with `NO_GOOD_BUG_SITE`."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-776 flaw (XML Entity Expansion / Billion Laughs). The resulting function must still compile, keep its signature, and parse normal XML correctly — the flaw should allow attacker-crafted XML with recursive entity definitions to cause exponential memory/CPU consumption (a ~1 KB input expanding to gigabytes in memory).
+
+  CWE-776 targets INTERNAL recursive entity expansion in XML — the 'billion laughs' attack where nested `<!ENTITY>` definitions within a DOCTYPE reference each other exponentially. This is distinct from CWE-611 (external entity fetching file:// or http://), CWE-400 (general resource exhaustion), and CWE-674 (code-level recursion). CWE-776 is specifically about the XML PARSER expanding internal entity references without bounds.
+
+  Concretely, some kinds of CWE-776 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-776 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-776 site (e.g., no XML parsing — a JSON-only endpoint or pure computation helper), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

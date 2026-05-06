@@ -1,0 +1,61 @@
+name: lm_modify_cwe459
+parameters:
+  cwe_id: "CWE-459"
+  cwe_name: "Incomplete Cleanup"
+  bug_examples:
+    - "Remove the zeroing of sensitive data from memory after use: delete `buffer.fill(0)` or `password = null; key = null;` after cryptographic material is consumed, leaving secrets in heap memory for potential leakage via crash dumps, memory inspection, or GC timing."
+    - "Remove temporary file deletion on an error path: delete `fs.unlinkSync(tmpFile)` from a `catch` block or error branch, so failed operations leave sensitive temporary files (keys, tokens, uploaded data) on disk indefinitely."
+    - "Remove event listener cleanup: delete `emitter.removeListener('data', handler)` or `controller.abort()` from an error/cleanup path, causing memory leaks as handlers accumulate on repeated failures."
+    - "Remove session data cleanup on logout: delete `req.session.destroy()` or `await redis.del(sessionKey)` from the logout handler, so server-side session state persists and can be reused if the session ID is captured."
+    - "Remove database connection return-to-pool on error: delete `client.release()` or `connection.close()` from a `catch`/`finally` block, leaking connections on repeated errors until the pool is exhausted (DoS)."
+    - "Remove cleanup of a timer/interval on component disposal: delete `clearInterval(timerId)` or `clearTimeout(pollTimer)` from a destructor/cleanup function, causing the callback to fire on stale/destroyed state."
+    - "Remove revocation of temporary credentials after use: delete `await revokeToken(tempAccessToken)` or `delete authCache[tempKey]` after the temporary credential has served its purpose, leaving it valid for attacker reuse."
+    - "Remove stream/socket cleanup after error: delete `socket.destroy()` or `stream.end()` from an error handler, leaving orphaned connections that consume file descriptors and memory."
+  tips:
+    - "The bug must be a realistic incomplete cleanup flaw (CWE-459) — resources (memory, files, connections, timers, credentials, listeners) are not properly cleaned up on specific code paths (errors, early returns, exceptions)."
+    - "CWE-459 is about PARTIAL cleanup — cleanup logic exists for the happy path but is MISSING on one or more error/exception/early-return paths, or specific resources are forgotten while others are cleaned up."
+    - "CRITICAL DISTINCTION from CWE-401 (Missing Release of Memory After Effective Lifetime): CWE-401 is specifically about memory leaks (C/C++ free, reference counting). CWE-459 covers ALL resource types (files, sockets, locks, credentials, timers, listeners) and focuses on incomplete cleanup across code paths."
+    - "CRITICAL DISTINCTION from CWE-404 (Improper Resource Shutdown or Release): CWE-404 covers resources never released at all. CWE-459 is specifically about INCOMPLETE cleanup — some paths clean up, others don't, or some resources are cleaned while others are forgotten."
+    - "CRITICAL DISTINCTION from CWE-772 (Missing Release of Resource After Effective Lifetime): CWE-772 is the generic parent. CWE-459 specifically emphasizes the INCOMPLETENESS — the cleanup exists but is not thorough across all paths."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors."
+    - "Do not add comments that hint at the flaw, cleanup, leak, or CWE."
+    - "The bug should be subtle: the happy path still cleans up correctly. The flaw only manifests on error paths, early returns, or exception flows where cleanup is skipped."
+    - "Prefer removing exactly ONE cleanup operation from ONE specific error/exception path while leaving it on the happy path."
+    - "High-value targets: try/catch/finally blocks with resource management, error-handling branches that should release resources, event listener registration without corresponding removal, setInterval/setTimeout without cleanup."
+    - "If the function has no resource allocation, no cleanup logic, no try/finally patterns, respond with `NO_GOOD_BUG_SITE`."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-459 flaw (Incomplete Cleanup). The resulting function must still compile, keep its signature, and work correctly on the happy path — the flaw should leave resources improperly cleaned up on specific error/exception paths, causing resource leaks, sensitive data persistence, or denial-of-service via resource exhaustion.
+
+  CWE-459 targets INCOMPLETE cleanup across code paths — cleanup logic exists for the success path but is MISSING on error/exception/early-return paths, or some resources in a set are cleaned while others are forgotten. This is distinct from CWE-401 (memory-specific leaks), CWE-404 (resource never released at all), and CWE-772 (generic missing release). CWE-459 emphasizes the ASYMMETRY — correct cleanup on some paths, missing on others.
+
+  Concretely, some kinds of CWE-459 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-459 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-459 site (e.g., no resource allocation, no cleanup logic, no try/finally patterns — a pure computation helper or trivial getter), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

@@ -1,0 +1,66 @@
+name: lm_modify_cwe78
+parameters:
+  cwe_id: "CWE-78"
+  cwe_name: "Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
+  bug_examples:
+    - "Replace a safe argument-list exec with shell-interpreted string: change `child_process.execFile('convert', [inputFile, outputFile])` to `child_process.exec('convert ' + inputFile + ' ' + outputFile)`, so a filename containing `; rm -rf /` executes as a separate command."
+    - "Remove shell escaping/quoting from a user-supplied argument: delete `const safeArg = shellEscape([userArg]);` or `shlex.quote(userArg)` before interpolation into a command string, so shell metacharacters (`;`, `|`, `&`, `` ` ``, `$(...)`) pass through."
+    - "Replace `child_process.spawn` (no shell) with `child_process.exec` (shell interpretation): change `spawn('git', ['clone', repoUrl])` to `exec('git clone ' + repoUrl)`, so a crafted URL like `https://evil.com; cat /etc/passwd` executes injected commands."
+    - "Add `{ shell: true }` to a previously-safe spawn call: change `spawn('tar', ['-czf', archive, userDir])` to `spawn('tar', ['-czf', archive, userDir], { shell: true })`, re-enabling shell metacharacter interpretation in the arguments."
+    - "Remove a validation regex that rejects shell-dangerous characters: delete `if (!/^[a-zA-Z0-9._-]+$/.test(filename)) throw new Error('invalid');` before the filename is used in `exec('wc -l ' + filename)`, so paths with semicolons or pipes inject commands."
+    - "Weaken a validation from a strict allowlist to a permissive blocklist: change `if (!/^[a-z0-9]+$/.test(input)) reject()` to `if (input.includes(';')) reject()`, which still allows `|`, `&`, backticks, `$(...)`, and newline-based injection."
+    - "Remove the `--` argument separator that prevents option injection: delete `'--'` from `['git', 'checkout', '--', userBranch]`, so a branch name starting with `-` is treated as a flag (e.g., `--orphan`) and combined with shell tricks enables escalation."
+    - "Replace a subprocess library call with `os.system()` or Node's `exec()`: change from `subprocess.run(['ffmpeg', '-i', inputPath, outputPath])` to `os.system(f'ffmpeg -i {inputPath} {outputPath}')`, introducing shell parsing on user-controlled paths."
+  tips:
+    - "The bug must be a realistic OS command injection flaw (CWE-78) — user-controlled input flows into an OS command execution function through a SHELL interpreter without proper neutralization of shell metacharacters."
+    - "CRITICAL DISTINCTION from CWE-77 (Command Injection — general): CWE-78 is specifically about OS commands run through a SHELL (`sh`, `bash`, `cmd.exe`). CWE-77 is the broader parent covering any command-language injection (including non-OS interpreters). Always use CWE-78 when the injection target is an OS shell."
+    - "CRITICAL DISTINCTION from CWE-94 (Code Injection): CWE-94 is about injecting into a PROGRAMMING LANGUAGE interpreter (eval/exec/Function). CWE-78 is about injecting into an OS SHELL. `eval('code')` is CWE-94. `exec('shell command')` is CWE-78."
+    - "CRITICAL DISTINCTION from CWE-88 (Improper Neutralization of Argument Delimiters): CWE-88 specifically targets argument injection (injecting extra flags/arguments) without shell metacharacters. CWE-78 specifically involves shell metacharacters (`;`, `|`, `&`, `` ` ``, `$(...)`)."
+    - "The key mechanism: shell metacharacters allow command CHAINING or SUBSTITUTION. The dangerous characters are: `;` (command separator), `|` (pipe), `&` (background/and), `$(...)` and `` `...` `` (command substitution), `>` (redirect), `\\n` (newline as separator)."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors."
+    - "Do not add comments that hint at the flaw, command injection, shell, exec, or CWE."
+    - "The bug should be subtle: inputs without shell metacharacters (normal filenames, URLs, identifiers) still produce correct behavior. Only adversarial input exploits the flaw."
+    - "Prefer modifying exactly ONE command-construction or execution mechanism: switch from list-based to string-based exec, remove one escaping call, add `shell: true`, etc."
+    - "High-value targets in Node.js: `child_process.exec()` with string concatenation, `child_process.spawn()` with `{ shell: true }`, any function that calls `exec`/`execSync` with user-derived filenames/URLs/hostnames."
+    - "If the function does not execute or construct OS commands (no `exec`, `spawn`, `system`, `popen`, subprocess calls), respond with `NO_GOOD_BUG_SITE`."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-78 flaw (OS Command Injection). The resulting function must still compile, keep its signature, and behave correctly on benign inputs — the flaw should only manifest when user-controlled data containing OS shell metacharacters (`;`, `|`, `&`, `$(...)`, backticks, `\n`) flows into a shell execution context without proper neutralization.
+
+  CWE-78 is specifically about OS command injection through a SHELL INTERPRETER. This is distinct from:
+  - CWE-77 (Command Injection — general parent for any command language)
+  - CWE-94 (Code Injection — programming language interpreters like eval/exec)
+  - CWE-88 (Argument Injection — extra flags/arguments without shell metacharacters)
+
+  The fundamental issue: `execFile('cmd', [args])` is safe (no shell parsing). `exec('cmd ' + args)` or `spawn('cmd', [args], {shell: true})` is vulnerable because the shell interprets metacharacters in the concatenated arguments.
+
+  Concretely, some kinds of CWE-78 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-78 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-78 site (e.g., no OS command execution — no exec/spawn/system/popen calls), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

@@ -10,9 +10,9 @@ from swesmith.profiles.javascript import (
     default_npm_install_dockerfile,
     parse_log_karma,
     parse_log_jasmine,
-    GithubReadmeStats3e974011,
-    Commanderjs395cf714,
-    Colorfef7b619,
+    Githubreadmestats5df91f9b,
+    Commanderjs8247364d,
+    Color4fda9a3e,
 )
 from swebench.harness.constants import TestStatus
 
@@ -147,21 +147,21 @@ def test_default_npm_install_dockerfile_ssh_url():
 
 
 def test_github_readme_stats_dockerfile_uses_mirror_url():
-    profile = GithubReadmeStats3e974011()
+    profile = Githubreadmestats5df91f9b()
     with patch.object(type(profile), "_is_repo_private", return_value=False):
         dockerfile = profile.dockerfile
         assert f"https://github.com/{profile.mirror_name}" in dockerfile
 
 
 def test_github_readme_stats_dockerfile_ssh_when_private():
-    profile = GithubReadmeStats3e974011()
+    profile = Githubreadmestats5df91f9b()
     with patch.object(type(profile), "_is_repo_private", return_value=True):
         dockerfile = profile.dockerfile
         assert f"git@github.com:{profile.mirror_name}.git" in dockerfile
 
 
 def test_commanderjs_uses_node_20():
-    profile = Commanderjs395cf714()
+    profile = Commanderjs8247364d()
     with patch.object(type(profile), "_is_repo_private", return_value=False):
         dockerfile = profile.dockerfile
         assert "FROM node:20-bullseye" in dockerfile
@@ -169,7 +169,7 @@ def test_commanderjs_uses_node_20():
 
 
 def test_color_uses_node_22():
-    profile = Colorfef7b619()
+    profile = Color4fda9a3e()
     with patch.object(type(profile), "_is_repo_private", return_value=False):
         dockerfile = profile.dockerfile
         assert "FROM node:22-bullseye" in dockerfile

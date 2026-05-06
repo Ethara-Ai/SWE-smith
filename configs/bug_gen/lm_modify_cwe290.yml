@@ -1,0 +1,61 @@
+name: lm_modify_cwe290
+parameters:
+  cwe_id: "CWE-290"
+  cwe_name: "Authentication Bypass by Spoofing"
+  bug_examples:
+    - "Trust the X-Forwarded-For header for authentication decisions: use `const clientIp = req.headers['x-forwarded-for']?.split(',')[0] || req.socket.remoteAddress` and grant admin access if it matches an internal IP range, allowing an attacker to spoof the header."
+    - "Trust a client-supplied user ID header without verification: use `const userId = req.headers['x-user-id']` to identify the authenticated user instead of verifying against a signed token/session, so any client can set this header to impersonate users."
+    - "Trust the Referer/Origin header for authentication: check `if (req.headers.origin === 'https://admin.internal.com') { grantAccess() }` which an attacker can trivially spoof in non-browser HTTP clients."
+    - "Trust a client-supplied role/permission claim without server verification: use `const role = req.body.role || req.headers['x-user-role']` instead of looking up the role from the authenticated session, so an attacker can claim admin role."
+    - "Trust DNS hostname for authentication: resolve `req.socket.remoteAddress` to a hostname via reverse DNS and grant access if it ends in `.trusted.internal`, which an attacker can spoof by controlling their PTR record."
+    - "Trust a client certificate's CN without verifying the certificate chain: extract `const cn = req.socket.getPeerCertificate().subject.CN` but skip `req.socket.authorized` check, so a self-signed cert with a trusted CN bypasses auth."
+    - "Trust the Host header for internal-only route gating: check `if (req.headers.host === 'internal-api.company.com') { allowInternalEndpoints() }` which an attacker can spoof in the HTTP request."
+    - "Trust a webhook signature header without actually verifying the signature: check `if (req.headers['x-webhook-signature'])` (presence only) instead of `if (verifySignature(body, secret, req.headers['x-webhook-signature']))`, so any request with the header present is accepted."
+  tips:
+    - "The bug must be a realistic CWE-290 flaw — authentication is BYPASSED because the system trusts a SPOOFABLE identity indicator (IP address, HTTP header, DNS name, unverified certificate field, client-supplied claim) instead of using a cryptographically-verified credential."
+    - "Do NOT introduce bugs better classified as CWE-287 (Improper Authentication). CWE-290 is specifically about authentication bypass via SPOOFING an identity indicator. CWE-287 covers broader auth failures (weak passwords, broken crypto, missing auth). If an attacker can IMPERSONATE by forging a trivially-spoofable value, it's CWE-290."
+    - "Do NOT introduce bugs better classified as CWE-346 (Origin Validation Error). CWE-290 is about AUTHENTICATION bypass. CWE-346 is about AUTHORIZATION decisions based on origin (CORS). If the issue is which origins can make requests (not who the user is), use CWE-346."
+    - "Do NOT introduce bugs better classified as CWE-350 (Reliance on Reverse DNS). CWE-350 is SPECIFICALLY about reverse DNS. CWE-290 covers broader spoofing (IP headers, client claims, unverified certs). If the spoofed value is specifically a reverse-DNS result, use CWE-350."
+    - "Spoofable indicators include: X-Forwarded-For, X-Real-IP, Referer, Origin, Host headers; reverse DNS lookups; unverified JWT claims; client-supplied role/permission; IP-based allowlists behind proxies without proper proxy trust."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors or syntax errors."
+    - "Do not add comments that hint at the flaw, spoofing, trust, or CWE."
+    - "The bug should be subtle: the authentication logic looks reasonable (checking an identity value) but trusts a value that is trivially forgeable by an attacker."
+    - "Prefer changing exactly ONE authentication check to rely on a spoofable value instead of a verified credential."
+    - "High-value targets: internal API gating (IP-based), webhook handlers, admin access checks, service-to-service auth, proxy trust headers, any middleware that extracts identity from headers."
+    - "If the function has no authentication decisions, no identity verification, no access gating, respond with `NO_GOOD_BUG_SITE` instead of forcing a contrived change."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-290 flaw (Authentication Bypass by Spoofing). The resulting function must still compile, keep its signature, and appear to perform authentication — the flaw should rely on a trivially-spoofable identity indicator (HTTP header, IP address, DNS name, client-supplied claim) instead of a cryptographically-verified credential.
+
+  CWE-290 covers cases where authentication relies on attacker-controlled values. In web applications, this typically means trusting X-Forwarded-For for IP-based auth, trusting client-supplied headers for identity, or checking header presence without cryptographic verification. This is a child of CWE-287 (Improper Authentication) specialized to the SPOOFING vector.
+
+  Concretely, some kinds of CWE-290 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-290 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-290 site (e.g., no authentication decisions, no identity verification, no access gating), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

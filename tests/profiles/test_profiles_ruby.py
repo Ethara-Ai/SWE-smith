@@ -141,21 +141,21 @@ Done.
 def test_ruby_profile_eval_sets():
     """All Ruby repo profiles in SWE-bench_Multilingual should declare it."""
     from swesmith.profiles.ruby import (
-        Faker9ef1ecae,
-        Jekylld0cf1791,
-        Rubocop519206df,
-        Fluentd7906fda4,
-        Fastlane0e18ea7c,
-        Fpm5b1fe9af,
+        Faker73fe1745,
+        Jekyll202df571,
+        Rubocop7af083d7,
+        Fluentd7a7e9fe8,
+        Fastlane618633c6,
+        Fpmf51ba16f,
     )
 
     for profile_cls in [
-        Faker9ef1ecae,
-        Rubocop519206df,
-        Jekylld0cf1791,
-        Fluentd7906fda4,
-        Fastlane0e18ea7c,
-        Fpm5b1fe9af,
+        Faker73fe1745,
+        Rubocop7af083d7,
+        Jekyll202df571,
+        Fluentd7a7e9fe8,
+        Fastlane618633c6,
+        Fpmf51ba16f,
     ]:
         profile = profile_cls()
         assert "SWE-bench/SWE-bench_Multilingual" in profile.eval_sets, (

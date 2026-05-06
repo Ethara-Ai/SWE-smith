@@ -1,0 +1,62 @@
+name: lm_modify_cwe400
+parameters:
+  cwe_id: "CWE-400"
+  cwe_name: "Uncontrolled Resource Consumption"
+  bug_examples:
+    - "Remove a limit on input size before processing: delete `if (input.length > MAX_SIZE) return error;` or `if (Buffer.byteLength(body) > limit) { res.status(413).end(); return; }` so an attacker can send arbitrarily large inputs that exhaust memory or CPU."
+    - "Remove a timeout on a blocking or async operation: delete `socket.setTimeout(5000)` or remove `AbortSignal.timeout(ms)` from a `fetch()` call, so an attacker-controlled slow peer can hold resources (sockets, event-loop slots, database connections) indefinitely."
+    - "Remove rate limiting on a resource-intensive operation: delete the token-bucket or sliding-window check (e.g., `if (!rateLimiter.tryConsume(1)) return 429;`) so an attacker can trigger expensive computations (regex, crypto, DB queries, file I/O) at unlimited frequency."
+    - "Remove a loop iteration cap in a parser or codec: delete `if (iterations > MAX_ITER) break;` or `if (++count > safeLimit) throw new Error('too many iterations');` from a processing loop, so attacker-crafted input (e.g., deeply nested JSON, pathological CSV) can cause the loop to run for minutes."
+    - "Remove a connection or request concurrency limit: delete `if (activeConnections >= MAX_CONN) return reject;` or remove the `pLimit(N)` wrapper, allowing unlimited concurrent work that exhausts file descriptors, memory, or thread pool slots."
+    - "Remove backpressure handling in a streaming pipeline: delete the `if (stream.writableLength > highWaterMark) { source.pause(); }` check or remove the `drain` event listener, so a slow consumer causes unbounded memory growth in the write buffer."
+    - "Remove a payload decompression bomb guard: delete `if (decompressedSize > MAX_DECOMPRESSED) throw;` after inflating gzip/brotli, so a 1 KB compressed payload that expands to 1 GB exhausts memory (zip bomb / gzip bomb)."
+    - "Remove the `maxKeys` or depth option from a query-string / body parser: delete `{ maxKeys: 1000 }` from `qs.parse()` or `querystring.parse()`, so an attacker can send `?a=1&b=2&...` with millions of keys, causing O(n) memory and O(n²) hash collisions."
+  tips:
+    - "The bug must be a realistic resource consumption flaw (CWE-400) — an attacker can exhaust system resources (CPU, memory, disk, connections, file descriptors, event-loop time) by supplying crafted input that bypasses or removes a resource-governance mechanism."
+    - "CWE-400 is the PARENT weakness. It covers any resource exhaustion vector. Prefer this CWE when the removed guard is a TIMEOUT, a RATE LIMIT, or a CONCURRENCY CAP — things that throttle consumption rate rather than bound allocation size."
+    - "Do NOT introduce bugs that are better classified as CWE-770 (Allocation Without Limits) if the core issue is unbounded SIZE of a single allocation. CWE-400 is about unbounded RATE or DURATION of consumption."
+    - "Do NOT introduce bugs that are better classified as CWE-835 (Infinite Loop) if the core issue is a loop that NEVER terminates. CWE-400 covers loops that terminate eventually but take unacceptably long. CWE-835 covers loops that literally never exit."
+    - "Do NOT introduce CWE-674 (Uncontrolled Recursion) bugs here. If the resource exhaustion is specifically via unbounded recursive calls, use CWE-674 instead."
+    - "Do NOT introduce CWE-1333 (ReDoS) bugs here. If the resource exhaustion is specifically via exponential regex backtracking, use CWE-1333 instead."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors."
+    - "Do not add comments that hint at the flaw, DoS, resource limit, timeout, or CWE."
+    - "The bug should be subtle: normal-sized inputs still process correctly and quickly. The flaw only manifests under adversarial load or with crafted oversized/slow inputs."
+    - "Prefer removing exactly ONE resource governance mechanism (one timeout, one rate check, one concurrency cap, one size precheck) rather than restructuring the function."
+    - "High-value targets: HTTP request handlers with body-size limits, streaming parsers with iteration caps, connection pools with concurrency bounds, retry loops with max-attempts, any function that calls `setTimeout`/`AbortSignal`/`pLimit`/`Bottleneck`."
+    - "If the function has no resource-intensive operations, no loops over external data, no allocations proportional to input, no network I/O, no timeouts to remove, respond with `NO_GOOD_BUG_SITE` instead of forcing a contrived change."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-400 flaw (Uncontrolled Resource Consumption). The resulting function must still compile, keep its signature, and work correctly on normal inputs — the flaw should allow an attacker to exhaust system resources (CPU time, memory, connections, file descriptors, event-loop availability) by supplying crafted input that bypasses resource-governance mechanisms.
+
+  CWE-400 is the parent weakness for denial-of-service via resource exhaustion. It specifically covers scenarios where a RATE LIMIT, TIMEOUT, CONCURRENCY CAP, or ITERATION BOUND is removed or weakened — as opposed to CWE-770 (unbounded allocation size), CWE-835 (literally infinite loop), CWE-674 (unbounded recursion depth), or CWE-1333 (exponential regex backtracking), which are more specific child/sibling weaknesses.
+
+  Concretely, some kinds of CWE-400 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-400 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-400 site (e.g., no resource-intensive operations, no loops over external data, no timeouts, no rate limits — a pure computation helper or trivial getter), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

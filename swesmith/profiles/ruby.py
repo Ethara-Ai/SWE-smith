@@ -161,10 +161,10 @@ RUN {self.test_cmd} || true
 
 
 @dataclass
-class Faker9ef1ecae(RubyProfile):
+class Faker73fe1745(RubyProfile):
     owner: str = "faker-ruby"
     repo: str = "faker"
-    commit: str = "9ef1ecae1fcf90f2f244c50593a6da366399c337"
+    commit: str = "73fe17456a75b0f30a78436b6bea44a1a90ec3df"
     test_cmd: str = "bundle exec rake test TESTOPTS='--verbose'"
     eval_sets: set[str] = field(
         default_factory=lambda: {"SWE-bench/SWE-bench_Multilingual"}
@@ -172,10 +172,10 @@ class Faker9ef1ecae(RubyProfile):
 
 
 @dataclass
-class Rubocop519206df(RubyProfile):
+class Rubocop7af083d7(RubyProfile):
     owner: str = "rubocop"
     repo: str = "rubocop"
-    commit: str = "519206df11583194be0f9eea55c641c8da905fa4"
+    commit: str = "7af083d724ad0249af2cc753a47b0cfa8f2b43cf"
     test_cmd: str = "bundle exec rspec --format json"
     timeout: int = 180
     eval_sets: set[str] = field(
@@ -184,10 +184,10 @@ class Rubocop519206df(RubyProfile):
 
 
 @dataclass
-class Jekylld0cf1791(RubyProfile):
+class Jekyll202df571(RubyProfile):
     owner: str = "jekyll"
     repo: str = "jekyll"
-    commit: str = "d0cf1791f6a349519998750f4511822e43e516e4"
+    commit: str = "202df571314ba1d18e9fccd81d12aaad4a703c38"
     test_cmd: str = "bundle exec rake test"
     eval_sets: set[str] = field(
         default_factory=lambda: {"SWE-bench/SWE-bench_Multilingual"}
@@ -195,10 +195,10 @@ class Jekylld0cf1791(RubyProfile):
 
 
 @dataclass
-class Fluentd7906fda4(RubyProfile):
+class Fluentd7a7e9fe8(RubyProfile):
     owner: str = "fluent"
     repo: str = "fluentd"
-    commit: str = "7906fda46092a6d997bef0a1608d21e4c38634df"
+    commit: str = "7a7e9fe8ca9e2672d471b157e446067d6dd63381"
     test_cmd: str = "bundle exec rake test TESTOPTS='--verbose'"
     eval_sets: set[str] = field(
         default_factory=lambda: {"SWE-bench/SWE-bench_Multilingual"}
@@ -221,10 +221,10 @@ RUN {self.test_cmd} || true
 
 
 @dataclass
-class Fastlane0e18ea7c(RubyProfile):
+class Fastlane618633c6(RubyProfile):
     owner: str = "fastlane"
     repo: str = "fastlane"
-    commit: str = "0e18ea7cbdabef25e2b6ec2748a674aabf9dcf03"
+    commit: str = "618633c640bce40ececc86beee1dfbc828d803e4"
     test_cmd: str = "bundle exec rspec --format json"
     timeout: int = 300
     eval_sets: set[str] = field(
@@ -233,10 +233,10 @@ class Fastlane0e18ea7c(RubyProfile):
 
 
 @dataclass
-class Fpm5b1fe9af(RubyProfile):
+class Fpmf51ba16f(RubyProfile):
     owner: str = "jordansissel"
     repo: str = "fpm"
-    commit: str = "5b1fe9afe446cf0384606ed061cdfea44c966420"
+    commit: str = "f51ba16fe8659cf2a4996a8e2b2e6a142bbc5b99"
     test_cmd: str = "bundle exec rspec --format json"
     eval_sets: set[str] = field(
         default_factory=lambda: {"SWE-bench/SWE-bench_Multilingual"}
@@ -262,35 +262,35 @@ RUN {self.test_cmd} || true
 
 
 @dataclass
-class Brakeman2e55d45a(RubyProfile):
+class Brakeman565e7a7b(RubyProfile):
     owner: str = "presidentbeef"
     repo: str = "brakeman"
-    commit: str = "2e55d45a9770ee570005400df074d18e8fdb8c3a"
+    commit: str = "565e7a7b1dfc654d086519c0735bcaf884d9f13c"
     test_cmd: str = "bundle exec rake test TESTOPTS='--verbose'"
     timeout: int = 180
 
 
 @dataclass
-class ConcurrentRuby30dc89e4(RubyProfile):
+class Concurrentruby9b2dbf71(RubyProfile):
     owner: str = "ruby-concurrency"
     repo: str = "concurrent-ruby"
-    commit: str = "30dc89e4c7b61833126d762a9d6cec8de937d35f"
+    commit: str = "9b2dbf712896a638a73d2fa221206961c8d6484d"
     test_cmd: str = "bundle exec rspec --format json"
 
 
 @dataclass
-class Csvbc698274(RubyProfile):
+class Csv79eb55ab(RubyProfile):
     owner: str = "ruby"
     repo: str = "csv"
-    commit: str = "bc69827460390a0224616b5ad1949dec01a3404d"
+    commit: str = "79eb55aba206c2e3f2ebccdb83d86f7487604800"
     test_cmd: str = "bundle exec rake test"
 
 
 @dataclass
-class Devise5b008ed5(RubyProfile):
+class Devise7ca7ed9c(RubyProfile):
     owner: str = "heartcombo"
     repo: str = "devise"
-    commit: str = "5b008ed51c0df3223cf727e7ad07378d6329b12f"
+    commit: str = "7ca7ed9c174525a4d36167441b35af4a0991b6af"
     test_cmd: str = "bundle exec rake test TESTOPTS='--verbose'"
 
     @property
@@ -310,18 +310,18 @@ RUN {self.test_cmd} || true
 
 
 @dataclass
-class DryValidation4a165232(RubyProfile):
+class Dryvalidation817f125b(RubyProfile):
     owner: str = "dry-rb"
     repo: str = "dry-validation"
-    commit: str = "4a165232df192a4f71b2a6eac5013cc3bbfbe9fc"
+    commit: str = "817f125b1f31039c9240c13cfecb7097ea5cc625"
     test_cmd: str = "bundle exec rspec --format json"
 
 
 @dataclass
-class FactoryBot8a64d293(RubyProfile):
+class Factorybot5d399535(RubyProfile):
     owner: str = "thoughtbot"
     repo: str = "factory_bot"
-    commit: str = "8a64d2938fd2269fb55c7e4794ca07cf045ad2f7"
+    commit: str = "5d399535578de5d1c32a76d6d91a8f816ec01965"
     test_cmd: str = "bundle exec rspec --format json"
 
     @property
@@ -349,10 +349,10 @@ class Foremanf65ddba8(RubyProfile):
 
 
 @dataclass
-class Grapef2fc392d(RubyProfile):
+class Grapec464ffad(RubyProfile):
     owner: str = "ruby-grape"
     repo: str = "grape"
-    commit: str = "f2fc392dcae0c1e1fbf4196fa3f51a024e7f22db"
+    commit: str = "c464ffad4fb703c11d89f1004ec6901be681be19"
     test_cmd: str = "bundle exec rspec --format json"
     timeout: int = 180
 
@@ -366,10 +366,10 @@ class Hashie3988742e(RubyProfile):
 
 
 @dataclass
-class Liquidd897899f(RubyProfile):
+class Liquid1954a265(RubyProfile):
     owner: str = "Shopify"
     repo: str = "liquid"
-    commit: str = "d897899f6654c476e58e884bc8e24924600e5801"
+    commit: str = "1954a2655cf4d427b6c9169354832638740f2db5"
     test_cmd: str = "bundle exec rake test TESTOPTS='--verbose'"
     timeout: int = 180
 
@@ -383,34 +383,34 @@ class Pry13564026(RubyProfile):
 
 
 @dataclass
-class Punditd53c8414(RubyProfile):
+class Pundit06318683(RubyProfile):
     owner: str = "varvet"
     repo: str = "pundit"
-    commit: str = "d53c8414e4c1a096585a036ea7c1ac1b22dac417"
+    commit: str = "06318683c960066a2e499341cb372e0ff4540334"
     test_cmd: str = "bundle exec rspec --format json"
 
 
 @dataclass
-class Rack75c5745c(RubyProfile):
+class Rack1551230b(RubyProfile):
     owner: str = "rack"
     repo: str = "rack"
-    commit: str = "75c5745c286637a8f049a33790c71237762069e7"
+    commit: str = "1551230b9868c5981d8614e487646dd634a0eb41"
     test_cmd: str = "bundle exec rake test TESTOPTS='--verbose'"
 
 
 @dataclass
-class Simplecov522dc7d3(RubyProfile):
+class Simplecovea9e9213(RubyProfile):
     owner: str = "simplecov-ruby"
     repo: str = "simplecov"
-    commit: str = "522dc7d3aee12084a80680dcb014580ed156e988"
+    commit: str = "ea9e92134ad2844a721c93ce8eaa63104a65e4fc"
     test_cmd: str = "bundle exec rspec --format json"
 
 
 @dataclass
-class Sinatra9e5c4ec8(RubyProfile):
+class Sinatra5236d345(RubyProfile):
     owner: str = "sinatra"
     repo: str = "sinatra"
-    commit: str = "9e5c4ec8ade92c7375f44acf4c6e1103d32d6c12"
+    commit: str = "5236d3459b8b9015e5ce21ddd0c6beb0db4081d4"
     test_cmd: str = "bundle exec rake test TESTOPTS='--verbose'"
     timeout: int = 180
 
@@ -431,10 +431,10 @@ RUN {self.test_cmd} || true
 
 
 @dataclass
-class Vcr9a66a8a0(RubyProfile):
+class Vcr6f376c11(RubyProfile):
     owner: str = "vcr"
     repo: str = "vcr"
-    commit: str = "9a66a8a0e452fa09eec71045004b86cbf5cd131b"
+    commit: str = "6f376c11c23eee7fd029f7735ac40ade2855fcd0"
     test_cmd: str = "bundle exec rspec --format json"
 
     @property

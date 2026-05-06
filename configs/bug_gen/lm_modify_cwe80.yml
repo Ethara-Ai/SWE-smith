@@ -1,0 +1,68 @@
+name: lm_modify_cwe80
+parameters:
+  cwe_id: "CWE-80"
+  cwe_name: "Improper Neutralization of Script-Related HTML Tags in a Web Page (Basic XSS)"
+  bug_examples:
+    - "Remove the `<script>` tag filter from a user-content sanitizer: delete `html.replace(/<script[\\s\\S]*?<\\/script>/gi, '')` or remove the 'script' entry from the sanitizer's tag blocklist, so inline scripts execute."
+    - "Remove the event-handler attribute strip from an HTML sanitizer: delete the filter that removes `on*` attributes (`onerror`, `onload`, `onfocus`, etc.), so `<img src=x onerror=alert(1)>` executes script through an event handler."
+    - "Weaken the tag sanitizer to only strip specific tags while allowing others with script capability: change from a whitelist (only `<b>`, `<i>`, `<a>`) to a blacklist that misses `<svg onload=...>`, `<details ontoggle=...>`, `<iframe srcdoc=...>`, `<embed>`, `<object>`."
+    - "Remove the `<iframe>` filter: delete `input.replace(/<iframe[^>]*>[\\s\\S]*?<\\/iframe>/gi, '')` so `<iframe src='javascript:alert(1)'>` or `<iframe srcdoc='<script>...'></iframe>` executes."
+    - "Bypass the sanitizer by allowing SVG/MathML foreign content: leave `<svg>` allowed in the whitelist, which carries its own `<script>` and event-handler namespace: `<svg><script>alert(1)</script></svg>` or `<svg onload=alert(1)>`."
+    - "Remove the sanitization of `<style>` tags that can trigger script via CSS expressions/imports: delete the style-tag filter so `<style>@import url('javascript:...')</style>` (older browsers) or exfiltration via CSS selectors work."
+    - "Weaken tag stripping to only handle lowercase: change `/<script/gi` (case-insensitive) to `/<script/g` (case-sensitive), so `<ScRiPt>`, `<SCRIPT>`, `<scRIPT>` bypass the filter."
+    - "Remove the recursive sanitization pass: only strip tags once so `<scr<script>ipt>alert(1)</scri</script>pt>` reassembles into `<script>alert(1)</script>` after the first pass removes the inner tags."
+  tips:
+    - "The bug must be a realistic basic XSS flaw (CWE-80) — user-controlled input containing SCRIPT-RELATED HTML TAGS (script, iframe, svg, event handlers) is rendered in a web page because the tag/attribute filter is incomplete or bypassable."
+    - "CRITICAL DISTINCTION from CWE-79 (parent XSS): CWE-80 is specifically about SCRIPT-RELATED HTML TAGS being insufficiently filtered. CWE-79 is broader and includes attribute-context injection, javascript: URLs, and JS-context escaping failures. Use CWE-80 when the flaw is specifically about HTML tag filtering."
+    - "CWE-80 is about TAG-LEVEL filtering failures: missing tags from blocklists, case-sensitivity bypasses, double-encoding bypasses, nested-tag reassembly, SVG/MathML namespace escape. NOT about attribute encoding or URL scheme validation."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors."
+    - "Do not add comments that hint at the flaw, XSS, sanitization, tag filtering, or CWE."
+    - "The bug should be subtle: normal HTML content (paragraphs, links, formatting) still renders correctly. Only script-bearing tags exploit the flaw."
+    - "Prefer modifying exactly ONE filter/sanitization rule — remove one tag from a blocklist, weaken one regex pattern, disable one sanitizer option."
+    - "High-value targets in JS/Node.js: custom HTML sanitizers (regex-based or DOM-based), `sanitize-html` configuration objects, DOMPurify configurations, markdown-to-HTML converters that allow HTML pass-through, rich-text editors' server-side cleanup."
+    - "If the function does not filter, sanitize, or render HTML content (no HTML processing, no tag stripping, no web page generation), respond with `NO_GOOD_BUG_SITE`."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-80 flaw (Basic XSS via Script-Related HTML Tags). The resulting function must still compile, keep its signature, and handle normal HTML correctly — the flaw should allow script-related HTML tags (`<script>`, `<iframe>`, `<svg>`, event-handler attributes like `onerror`) to survive the sanitization/filtering process and execute in the victim's browser.
+
+  CWE-80 is a CHILD of CWE-79 (XSS) focused specifically on TAG-LEVEL filtering failures:
+  - The function has an HTML sanitizer/filter
+  - The sanitizer is INCOMPLETE — it misses certain script-bearing tags, tag variants, or attribute patterns
+  - The bypass is through HTML tag manipulation (case tricks, nesting, foreign elements, missing tag entries)
+
+  This is distinct from:
+  - CWE-79 (parent — broader XSS including attribute encoding, URL injection, JS context)
+  - CWE-87 (Alternate XSS syntax — specifically about alternate character sets/encodings)
+
+  Common bypass patterns: case-insensitivity bypass (`<ScRiPt>`), nested tag reassembly (`<scr<script>ipt>`), SVG/MathML foreign content namespace, missing tags from blocklist (`<details ontoggle=...>`), regex anchor issues, event-handler attributes on allowed tags.
+
+  Concretely, some kinds of CWE-80 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-80 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-80 site (e.g., no HTML sanitization/filtering logic, no tag processing — a non-HTML function), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

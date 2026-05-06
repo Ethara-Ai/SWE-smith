@@ -1,0 +1,65 @@
+name: lm_modify_cwe1021
+parameters:
+  cwe_id: "CWE-1021"
+  cwe_name: "Improper Restriction of Rendered UI Layers or Frames"
+  bug_examples:
+    - "Remove clickjacking protection headers: delete the `X-Frame-Options: DENY` or `X-Frame-Options: SAMEORIGIN` header from the response, allowing the page to be embedded in attacker-controlled iframes for UI redress attacks."
+    - "Remove the CSP frame-ancestors directive: delete `frame-ancestors 'self'` from the Content-Security-Policy header, so the page can be framed by any origin and overlaid with deceptive UI elements."
+    - "Weaken frame-busting to an ineffective check: replace a robust frame-busting script (`if (top !== self) top.location = self.location`) with one that only logs (`console.log('framed')`) without actually breaking out of the frame."
+    - "Remove the frame-busting JavaScript entirely: delete the `if (top !== self) { top.location = self.location; }` script that prevents the page from being embedded in iframes."
+    - "Set X-Frame-Options to ALLOW-FROM with an attacker-controllable value: change `X-Frame-Options: DENY` to `X-Frame-Options: ALLOW-FROM ${req.query.parent}` without validating the parent URL against an allowlist."
+    - "Remove sandbox restrictions on an iframe: change `<iframe sandbox='allow-scripts'>` to `<iframe sandbox='allow-scripts allow-top-navigation allow-forms allow-popups'>` enabling the framed content to navigate the parent and submit forms."
+    - "Downgrade frame-ancestors from specific origins to wildcard: change `frame-ancestors 'self' https://trusted.com` to `frame-ancestors *` in the CSP header, allowing any site to frame the page."
+    - "Remove the X-Frame-Options header conditionally: add a path-based bypass like `if (req.path.startsWith('/embed'))` that skips X-Frame-Options for routes that actually contain sensitive actions (login forms, payment flows)."
+  tips:
+    - "The bug must be a realistic clickjacking/UI redress flaw (CWE-1021) — the application can be rendered in a frame/iframe controlled by an attacker, enabling UI redress attacks where invisible overlays trick users into clicking."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors or break middleware chains."
+    - "Do not add comments that hint at the flaw, clickjacking, framing, or CWE."
+    - "The bug should be subtle: the page still renders and functions correctly when accessed directly."
+    - "Prefer removing exactly ONE anti-framing protection (header, CSP directive, or frame-busting script) rather than all protections at once."
+    - "CRITICAL DISTINCTION from CWE-942 (Permissive Cross-domain Policy): CWE-1021 is about VISUAL embedding (framing a page in an iframe for clickjacking). CWE-942 is about DATA access (allowing cross-origin fetch/read). If the issue is CORS headers, that's CWE-942, not CWE-1021."
+    - "CRITICAL DISTINCTION from CWE-352 (CSRF): Clickjacking tricks users into performing actions via visual deception. CSRF tricks the browser into sending forged requests. Both exploit trust, but CWE-1021 requires visual interaction while CSRF is invisible to the user."
+    - "CRITICAL DISTINCTION from CWE-693 (Protection Mechanism Failure): CWE-1021 is specifically about framing/UI-layer protections. CWE-693 is the abstract parent for any protection mechanism bypass."
+    - "Target Express/Node.js patterns: `helmet()` configuration, `res.setHeader('X-Frame-Options', ...)`, CSP middleware, and server-rendered HTML with frame-busting scripts."
+    - "The most impactful targets are pages with sensitive actions: login forms, payment confirmation, permission grants, account settings — where a click has security consequences."
+    - "If the function has no HTTP response headers, no CSP configuration, no frame-busting logic, and doesn't serve HTML with sensitive actions, respond with `NO_GOOD_BUG_SITE` instead of forcing a contrived change."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-1021 flaw (Improper Restriction of Rendered UI Layers or Frames). This vulnerability, commonly known as "clickjacking," occurs when a web application fails to prevent its pages from being rendered inside frames or iframes controlled by an attacker, enabling UI redress attacks where the attacker overlays invisible or disguised UI elements to trick users into performing unintended actions.
+
+  CWE-1021 is fundamentally about VISUAL deception through framing. The attacker embeds the target page in an iframe, overlays their own UI, and tricks the user into clicking buttons/links on the hidden target page. This requires the target page to be frameable AND to contain sensitive actions (state changes, permissions, payments). This is distinct from CWE-942 (which enables cross-origin data READ) and CWE-352 (which forges requests without visual interaction).
+
+  In Node.js/Express contexts, anti-framing protections include: X-Frame-Options headers (DENY, SAMEORIGIN), CSP frame-ancestors directive, frame-busting JavaScript, and security middleware like helmet.js.
+
+  The resulting function must still compile, keep its signature, and render correctly — the flaw should remove anti-framing protections, allowing the page to be embedded in attacker-controlled iframes for UI redress attacks.
+
+  Concretely, some kinds of CWE-1021 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-1021 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-1021 site (e.g., no response headers or frame protection), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

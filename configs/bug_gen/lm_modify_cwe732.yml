@@ -1,0 +1,61 @@
+name: lm_modify_cwe732
+parameters:
+  cwe_id: "CWE-732"
+  cwe_name: "Incorrect Permission Assignment for Critical Resource"
+  bug_examples:
+    - "Set overly permissive file permissions on a secrets file: change `fs.writeFileSync(keyPath, privateKey, { mode: 0o600 })` to `fs.writeFileSync(keyPath, privateKey)` (inherits default umask, typically 0o644), making private keys readable by all users on the system."
+    - "Create a directory with world-accessible permissions: change `fs.mkdirSync(configDir, { mode: 0o700 })` to `fs.mkdirSync(configDir, { mode: 0o755 })`, allowing other users to read config files containing credentials."
+    - "Set a database file to group/world-writable: change `fs.chmodSync(dbPath, 0o600)` to `fs.chmodSync(dbPath, 0o666)`, allowing any local user to read/modify the database."
+    - "Remove umask restriction before sensitive file creation: change `const oldMask = process.umask(0o077)` to `process.umask(0)` or delete the umask call entirely, so subsequent file creation uses the inherited (permissive) umask."
+    - "Create a Unix socket with world-accessible permissions: omit `fs.chmodSync(socketPath, 0o700)` after creating a Unix domain socket, leaving it with default permissions that allow any local user to connect."
+    - "Set log file permissions too broad: change `{ mode: 0o640 }` to `{ mode: 0o666 }` for a log file that may contain sensitive data (tokens, PII, internal paths), making it world-readable/writable."
+    - "Create a PID/lock file with write permissions for others: use `fs.writeFileSync(pidFile, pid.toString(), { mode: 0o666 })` instead of `0o644` or `0o600`, allowing other processes to overwrite the PID file (PID spoofing)."
+    - "Remove the permission tightening step after extracting an archive: delete `fs.chmodSync(extractedFile, 0o644)` from archive extraction, preserving whatever permissions were embedded in the archive (potentially 0o777 or setuid)."
+  tips:
+    - "The bug must be a realistic incorrect permission assignment (CWE-732) — a CRITICAL RESOURCE (private keys, credentials, config files, database files, sockets) is created or modified with permissions that are too permissive."
+    - "CWE-732 targets CRITICAL RESOURCES specifically — not just any file, but files containing secrets, credentials, private keys, database contents, or serving as IPC/control mechanisms (sockets, pipes, lock files)."
+    - "CRITICAL DISTINCTION from CWE-279 (Incorrect Execution-Assigned Permissions): CWE-279 specifically targets permissions assigned AT RUNTIME by executing code. CWE-732 is the BROADER PARENT — it covers permissions that are incorrect regardless of when/how they were set (installation, deployment, runtime, configuration)."
+    - "CRITICAL DISTINCTION from CWE-668 (Exposure of Resource to Wrong Sphere): CWE-668 is about the resource being accessible from the wrong SPHERE (network zone, tenant, environment). CWE-732 is specifically about file PERMISSION BITS or ACLs being too broad."
+    - "CRITICAL DISTINCTION from CWE-276 (Incorrect Default Permissions): CWE-276 is about DEFAULT permissions being wrong (global umask, framework defaults). CWE-732 is about permissions on SPECIFIC CRITICAL resources being wrong, whether from defaults or explicit assignment."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors."
+    - "Do not add comments that hint at the flaw, file permissions, or CWE."
+    - "The bug should be subtle: the file is still created with correct content and works as expected. Only the permission bits are wrong."
+    - "Prefer modifying exactly ONE permission assignment or removing ONE restrictive mode setting."
+    - "High-value targets: private key files, certificate files, .env files, database files (SQLite), authentication credential stores, session storage files, Unix sockets, named pipes, lock/PID files."
+    - "If the function does not create/modify files with sensitive data or set permissions on critical resources, respond with `NO_GOOD_BUG_SITE`."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-732 flaw (Incorrect Permission Assignment for Critical Resource). The resulting function must still compile, keep its signature, and create/manage the resource correctly — the flaw should assign overly permissive file permissions to a CRITICAL resource (private keys, credentials, configs, databases), exposing it to unauthorized local users.
+
+  CWE-732 targets permission BITS or ACLs on CRITICAL RESOURCES — files/directories/sockets that contain sensitive data or serve as security-relevant control mechanisms. This is the broader parent of CWE-279 (runtime-assigned permissions specifically) and is distinct from CWE-668 (sphere boundary exposure via network/placement) and CWE-276 (incorrect defaults). CWE-732 means a SPECIFIC critical resource has wrong permissions.
+
+  Concretely, some kinds of CWE-732 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-732 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-732 site (e.g., no file/resource creation with sensitive data, no permission setting — a pure computation helper or trivial getter), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

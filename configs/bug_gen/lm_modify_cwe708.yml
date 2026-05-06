@@ -1,0 +1,61 @@
+name: lm_modify_cwe708
+parameters:
+  cwe_id: "CWE-708"
+  cwe_name: "Incorrect Ownership Assignment"
+  bug_examples:
+    - "Assign ownership from user-controlled input instead of session: change `resource.ownerId = req.user.id` to `resource.ownerId = req.body.ownerId`, so an attacker can specify any user as the owner (or claim resources for themselves)."
+    - "Skip ownership assignment on creation: delete `newDocument.createdBy = session.userId;` from a resource creation function, leaving ownership null/undefined, which downstream code may interpret as 'no restrictions' or 'admin-owned'."
+    - "Assign ownership to the wrong participant in a transfer: in `transferResource(from, to, resource)`, set `resource.ownerId = from.id` instead of `resource.ownerId = to.id`, so the sender retains ownership of the transferred resource."
+    - "Inherit parent ownership instead of assigning to the actor: set `childItem.ownerId = parentItem.ownerId` instead of `childItem.ownerId = currentUser.id`, so users creating sub-resources don't own them and can't manage them."
+    - "Assign file ownership to the service account: change `chown(filePath, requestingUser.uid, requestingUser.gid)` to `chown(filePath, 0, 0)` or remove the chown call entirely, leaving files owned by root/service."
+    - "Set ownership to the first user found instead of the authenticated user: change `record.owner = authenticatedUser.id` to `record.owner = users[0].id` or some other incorrect resolution, giving a random user control."
+    - "Remove the ownership update during resource copy/fork: when forking a resource, keep `fork.ownerId = original.ownerId` instead of setting `fork.ownerId = requestor.id`, denying the forking user control over their copy."
+    - "Allow batch ownership override: in a bulk-import function, delete `item.ownerId = importingUser.id` and trust the `ownerId` field from the imported data, allowing an attacker to assign ownership of imported items to any user."
+  tips:
+    - "The bug must be a realistic incorrect ownership assignment (CWE-708) — the owner of a resource is set to the WRONG PRINCIPAL, granting unintended access/control or denying rightful access."
+    - "CWE-708 is about WHO OWNS the resource being incorrect — either the wrong user gets ownership (and thus control), or the rightful owner is denied ownership of resources they created/received."
+    - "CRITICAL DISTINCTION from CWE-639 (IDOR): CWE-639 is about accessing EXISTING resources via user-controlled keys. CWE-708 is about setting the OWNERSHIP field incorrectly during creation, transfer, or modification."
+    - "CRITICAL DISTINCTION from CWE-732 (Incorrect Permission Assignment): CWE-732 is about file PERMISSION BITS (mode, ACLs). CWE-708 is about the OWNER IDENTITY (uid, ownerId field) being wrong."
+    - "CRITICAL DISTINCTION from CWE-269 (Improper Privilege Management): CWE-269 is about the PRIVILEGE LEVEL of an actor. CWE-708 is about the OWNERSHIP RELATIONSHIP between an actor and a resource."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors."
+    - "Do not add comments that hint at the flaw, ownership, or CWE."
+    - "The bug should be subtle: the resource is still created/modified successfully with all correct data. Only the ownership field is wrong."
+    - "Prefer modifying exactly ONE ownership assignment statement (one ownerId, one createdBy, one chown call)."
+    - "High-value targets: resource creation handlers, file upload processors, fork/copy operations, transfer/delegation functions, bulk import, any place that sets ownerId/createdBy/author fields."
+    - "If the function has no resource creation, no ownership assignment, no ownerId/createdBy fields, respond with `NO_GOOD_BUG_SITE`."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-708 flaw (Incorrect Ownership Assignment). The resulting function must still compile, keep its signature, and create/modify resources correctly in all other respects — the flaw should assign ownership to the WRONG principal, granting unintended control or denying rightful access.
+
+  CWE-708 targets the OWNERSHIP IDENTITY of resources — the ownerId/createdBy/author field is set to an incorrect user, either from user-controlled input (attacker claims ownership), from the wrong variable (wrong participant in a transfer), or is omitted entirely (null ownership may bypass checks). This is distinct from CWE-639 (accessing existing resources via controlled keys), CWE-732 (file permission bits), and CWE-269 (actor privilege levels).
+
+  Concretely, some kinds of CWE-708 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-708 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-708 site (e.g., no resource creation, no ownership assignment, no ownerId/createdBy fields — a pure computation helper or trivial getter), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

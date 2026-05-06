@@ -1,0 +1,61 @@
+name: lm_modify_cwe303
+parameters:
+  cwe_id: "CWE-303"
+  cwe_name: "Incorrect Implementation of Authentication Algorithm"
+  bug_examples:
+    - "Use timing-unsafe string comparison for password/token verification: change `crypto.timingSafeEqual(expected, actual)` to `expected.toString() === actual.toString()`, enabling timing side-channel attacks to guess the secret character-by-character."
+    - "Compare only a prefix of a hash/token: change `if (computedHash === storedHash)` to `if (computedHash.startsWith(storedHash.slice(0, 8)))`, accepting any input whose hash matches the first few characters."
+    - "Use a reversible encoding instead of hashing for passwords: change `bcrypt.hash(password, rounds)` to `Buffer.from(password).toString('base64')`, so passwords can be trivially recovered from the stored value."
+    - "Implement a constant-returns-true verification function: change `return bcrypt.compare(input, stored)` to `return true` or `return input.length > 0`, bypassing actual cryptographic verification."
+    - "Use MD5/SHA1 without salt for password hashing: change `await bcrypt.hash(password, 12)` to `crypto.createHash('md5').update(password).digest('hex')`, enabling rainbow table attacks."
+    - "Perform authentication check on the wrong field: change `if (await bcrypt.compare(inputPassword, user.passwordHash))` to `if (inputPassword === user.passwordResetToken)`, checking against a different (weaker) credential."
+    - "Short-circuit authentication on a specific input: add `if (token === '' || token === 'undefined') return true` before the actual verification, so empty/undefined tokens bypass auth."
+    - "Use symmetric comparison when asymmetric is required: for JWT verification, change `jwt.verify(token, publicKey, { algorithms: ['RS256'] })` to `jwt.verify(token, publicKey, { algorithms: ['HS256'] })`, enabling the algorithm confusion attack where the public key is used as an HMAC secret."
+  tips:
+    - "The bug must be a realistic CWE-303 flaw — the authentication ALGORITHM is implemented INCORRECTLY. The code attempts authentication but the implementation has a logical flaw that weakens or bypasses the cryptographic guarantee."
+    - "Do NOT introduce bugs better classified as CWE-287 (Improper Authentication). CWE-303 is about the algorithm being INCORRECTLY IMPLEMENTED (wrong comparison, wrong hash, side-channel). CWE-287 covers broader issues like authentication being MISSING."
+    - "Do NOT introduce bugs better classified as CWE-290 (Authentication Bypass by Spoofing). CWE-303 is about the crypto/comparison being WRONG. CWE-290 is about trusting spoofable values instead of doing crypto at all."
+    - "Do NOT introduce bugs better classified as CWE-916 (Use of Password Hash With Insufficient Computational Effort). If the ONLY issue is using a fast hash (SHA256 instead of bcrypt), that might be CWE-916. CWE-303 covers broader implementation errors (timing leaks, truncated comparisons, wrong algorithm)."
+    - "Common CWE-303 patterns: timing-unsafe comparison (===), comparing hash prefixes, algorithm confusion (RS256→HS256), using reversible encoding as hashing, checking wrong credential field, empty-input bypass."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors or syntax errors."
+    - "Do not add comments that hint at the flaw, timing, comparison, algorithm, or CWE."
+    - "The bug should be subtle: authentication appears to work (correct passwords succeed, most wrong passwords fail) — the flaw is an implementation weakness that a sophisticated attacker can exploit."
+    - "Prefer introducing exactly ONE algorithmic flaw in the authentication logic."
+    - "High-value targets: password verification functions, token/HMAC validation, JWT verification, API key comparison, webhook signature checking, any function that compares secrets or verifies cryptographic proofs."
+    - "If the function has no authentication logic, no secret comparison, no cryptographic verification, respond with `NO_GOOD_BUG_SITE` instead of forcing a contrived change."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-303 flaw (Incorrect Implementation of Authentication Algorithm). The resulting function must still compile, keep its signature, and appear to authenticate — the flaw should introduce a logical weakness in the cryptographic verification that an attacker can exploit (timing side-channel, truncated comparison, algorithm confusion, wrong credential check).
+
+  CWE-303 targets the IMPLEMENTATION of authentication algorithms. The system attempts to authenticate but does so incorrectly — the comparison leaks timing info, the hash is truncated, the algorithm can be confused, or the verification logic has a bypass. This is distinct from CWE-287 (auth missing entirely) and CWE-290 (trusting spoofable values).
+
+  Concretely, some kinds of CWE-303 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-303 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-303 site (e.g., no authentication logic, no secret comparison, no cryptographic verification), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

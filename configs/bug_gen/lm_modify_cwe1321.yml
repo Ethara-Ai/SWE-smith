@@ -1,0 +1,65 @@
+name: lm_modify_cwe1321
+parameters:
+  cwe_id: "CWE-1321"
+  cwe_name: "Improperly Controlled Modification of Object Prototype Attributes ('Prototype Pollution')"
+  bug_examples:
+    - "Remove __proto__ key filtering in a deep merge/clone function: delete `if (key === '__proto__' || key === 'constructor' || key === 'prototype') continue;` so attacker-controlled keys can modify Object.prototype and affect all objects in the application."
+    - "Use a naive recursive merge without prototype guards: implement `target[key] = source[key]` recursively without checking if `key` is `__proto__`, `constructor`, or `prototype`, allowing prototype chain manipulation."
+    - "Remove hasOwnProperty check in property iteration: delete `if (!obj.hasOwnProperty(key)) continue;` in a loop that copies properties from user input, so inherited/prototype properties are traversed and written."
+    - "Accept user input directly as object keys without sanitization: use `obj[userKey] = userValue` where `userKey` comes from query params/body and can be `__proto__` with `userValue` being `{isAdmin: true}`."
+    - "Remove the Object.create(null) pattern: change `const result = Object.create(null)` to `const result = {}` in a function that uses user-controlled keys as property names, so the result inherits from Object.prototype and prototype writes propagate."
+    - "Use path-based property setting without filtering dangerous segments: implement lodash-style `set(obj, path, value)` where `path` can be `constructor.prototype.isAdmin` without checking for `__proto__` or `constructor` in path segments."
+    - "Remove key sanitization in a configuration merge: delete `const safeKey = key.replace(/[^a-zA-Z0-9_]/g, '')` or the equivalent filter, allowing keys like `__proto__` through to the assignment."
+    - "Downgrade from Map to plain object: change `const store = new Map()` to `const store = {}` in a function that sets user-controlled keys, so `store['__proto__']` writes modify the prototype rather than creating a regular property."
+  tips:
+    - "The bug must be a realistic prototype pollution flaw (CWE-1321) — user-controlled input can modify Object.prototype or constructor.prototype through unguarded property assignment, affecting all objects globally."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors or break module exports."
+    - "Do not add comments that hint at the flaw, prototype pollution, __proto__, constructor, or CWE."
+    - "The bug should be subtle: normal object operations (without __proto__/constructor keys) work identically to before."
+    - "Prefer removing exactly ONE prototype-key filter or guard rather than all defensive code."
+    - "CRITICAL DISTINCTION from CWE-915 (Improperly Controlled Modification of Dynamically-Determined Object Attributes): CWE-1321 specifically pollutes the PROTOTYPE CHAIN (Object.prototype). CWE-915 is about mass-assignment to the object itself (like adding isAdmin to a user object). If the pollution stays on the target object only, that's CWE-915."
+    - "CRITICAL DISTINCTION from CWE-470 (Use of Externally-Controlled Input to Select Classes/Code): CWE-1321 modifies prototype properties. CWE-470 uses input to dynamically instantiate classes or invoke methods. If `require(userInput)` is the pattern, that's CWE-470."
+    - "CRITICAL DISTINCTION from CWE-94 (Code Injection): Prototype pollution enables GADGET-based exploitation (polluted properties are read later by innocent code), not direct code execution. If user input directly becomes executable code, that's CWE-94."
+    - "Focus on JavaScript-specific patterns: deep merge utilities, config parsers, query string parsers, JSON body handlers, and any recursive object traversal that accepts external input."
+    - "The three dangerous keys are: `__proto__` (direct prototype access), `constructor` (access to constructor.prototype), and `prototype` (on constructor functions). ALL must be blocked together."
+    - "If the function has no recursive merge, no dynamic property assignment from user input, no path-based object manipulation, respond with `NO_GOOD_BUG_SITE` instead of forcing a contrived change."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-1321 flaw (Prototype Pollution). This vulnerability is unique to JavaScript's prototype-based inheritance: when application code recursively merges, clones, or sets properties on objects using keys from user-controlled input without filtering dangerous keys (__proto__, constructor, prototype), an attacker can inject properties into Object.prototype that are then inherited by ALL objects in the application.
+
+  Prototype pollution is a JavaScript-specific vulnerability class with no direct equivalent in other languages. The attack surface includes: deep merge utilities (lodash.merge, deepmerge), query string parsers (qs), configuration loaders, JSON body handling, template engines reading polluted properties, and any recursive property copy. The impact ranges from denial of service (polluting toString/valueOf) to authentication bypass (polluting isAdmin) to RCE (polluting shell/exec options read by child_process).
+
+  The three vectors are: `obj.__proto__.polluted = true` (direct proto access), `obj.constructor.prototype.polluted = true` (via constructor), and recursively merging `{"__proto__": {"polluted": true}}` into a target. Safe alternatives include Object.create(null), Map, and explicit key filtering.
+
+  The resulting function must still compile, keep its signature, and work for normal operations — the flaw should allow attacker-controlled input to pollute Object.prototype through unguarded property assignment.
+
+  Concretely, some kinds of CWE-1321 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-1321 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-1321 site (e.g., no recursive merge or dynamic property assignment from user input), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

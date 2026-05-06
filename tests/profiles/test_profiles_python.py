@@ -5,7 +5,7 @@ from pathlib import Path
 
 # Mock docker import
 with patch("docker.from_env", return_value=MagicMock()):
-    from swesmith.profiles.python import PythonProfile, Addict75284f95, AutogradAc044f0d
+    from swesmith.profiles.python import PythonProfile, Addict75284f95, Autogradcefd3d92
     from swesmith.profiles import registry
 
 
@@ -91,8 +91,8 @@ def test_python_profile_env_yml_property():
 
 
 def test_autograd_log_parser():
-    """Test AutogradAc044f0d custom log_parser"""
-    profile = AutogradAc044f0d()
+    """Test Autogradcefd3d92 custom log_parser"""
+    profile = Autogradcefd3d92()
 
     log = """
 [gw0] PASSED test_autograd.py
@@ -112,7 +112,7 @@ def test_python_profile_inheritance():
     # Test a few different profiles
     profiles_to_test = [
         Addict75284f95,
-        AutogradAc044f0d,
+        Autogradcefd3d92,
     ]
 
     for profile_class in profiles_to_test:
@@ -127,10 +127,10 @@ def test_python_profile_inheritance():
 
 def test_python_profile_custom_install_cmds():
     """Test Python profiles with custom install commands"""
-    # Test Apispec8b421526 which has custom install_cmds
-    from swesmith.profiles.python import Apispec8b421526
+    # Test Apispec89c262ea which has custom install_cmds
+    from swesmith.profiles.python import Apispec89c262ea
 
-    profile = Apispec8b421526()
+    profile = Apispec89c262ea()
     assert profile.install_cmds == ["pip install -e .[dev]"]
     assert profile.install_cmds != PythonProfile().install_cmds
 
@@ -151,30 +151,30 @@ def test_python_profile_custom_test_cmd():
 
 def test_python_profile_custom_python_version():
     """Test Python profiles with custom Python versions"""
-    # Test Pydicom7d361b3d which has custom python_version
-    from swesmith.profiles.python import Pydicom7d361b3d
+    # Test Pydicom489dbbe6 which has custom python_version
+    from swesmith.profiles.python import Pydicom489dbbe6
 
-    profile = Pydicom7d361b3d()
+    profile = Pydicom489dbbe6()
     assert profile.python_version == "3.11"
     assert profile.python_version != PythonProfile().python_version
 
 
 def test_python_profile_min_testing_flag():
     """Test Python profiles with min_testing flag"""
-    # Test Modin8c7799fd which has min_testing=True
-    from swesmith.profiles.python import Modin8c7799fd
+    # Test Modin7ca200b0 which has min_testing=True
+    from swesmith.profiles.python import Modin7ca200b0
 
-    profile = Modin8c7799fd()
+    profile = Modin7ca200b0()
     assert profile.min_testing is True
     assert profile.min_pregold is True
 
 
 def test_python_profile_complex_install_cmds():
     """Test Python profiles with complex install commands"""
-    # Test FvcoreA491d5b9 which has multiple install commands
-    from swesmith.profiles.python import FvcoreA491d5b9
+    # Test Fvcorec0fa8c4e which has multiple install commands
+    from swesmith.profiles.python import Fvcorec0fa8c4e
 
-    profile = FvcoreA491d5b9()
+    profile = Fvcorec0fa8c4e()
     assert len(profile.install_cmds) > 1
     assert any("pip install" in cmd for cmd in profile.install_cmds)
 
@@ -184,7 +184,7 @@ def test_python_profile_registry_integration():
     # Test that some Python profiles are in the registry
     python_profile_keys = [
         "mewwts__addict.75284f95",  # Addict75284f95
-        "HIPS__autograd.ac044f0d",  # AutogradAc044f0d
+        "HIPS__autograd.cefd3d92",  # Autogradcefd3d92
     ]
 
     for key in python_profile_keys:
@@ -235,8 +235,7 @@ def test_python_profile_build_image_error_handling():
 
 def test_python_profile_custom_log_parser_inheritance():
     """Test that custom log_parser methods properly override the base method"""
-    # Test AutogradAc044f0d which has a custom log_parser
-    autograd_profile = AutogradAc044f0d()
+    autograd_profile = Autogradcefd3d92()
     base_profile = PythonProfile()
 
     # They should have different log_parser methods

@@ -1,0 +1,61 @@
+name: lm_modify_cwe789
+parameters:
+  cwe_id: "CWE-789"
+  cwe_name: "Memory Allocation with Excessive Size Value"
+  bug_examples:
+    - "Remove a maximum size check before Buffer allocation: delete `if (size > MAX_BUFFER_SIZE) throw new RangeError('too large');` before `Buffer.alloc(size)` or `Buffer.allocUnsafe(size)`, so an attacker-controlled size can trigger a multi-gigabyte allocation."
+    - "Use an untrusted length field from a protocol header without validation: read `const length = buffer.readUInt32BE(0)` from a network packet and use it directly in `Buffer.alloc(length)` without `if (length > REASONABLE_MAX)` check."
+    - "Remove the integer overflow check before a multiplication-based allocation: delete `if (width * height > MAX_PIXELS) throw;` before `new Uint8Array(width * height * 4)` for image processing, so large dimensions trigger OOM."
+    - "Trust a user-supplied count for array pre-allocation: use `new Array(parseInt(req.query.limit))` or `Array.from({ length: userCount })` without bounding, so `?limit=2147483647` exhausts memory."
+    - "Remove the cap on string repeat/pad operations: delete `if (count > MAX_REPEAT) throw;` before `str.repeat(count)` or `str.padEnd(totalLength)`, so a large repeat value creates a multi-GB string."
+    - "Trust a deserialized size field for pre-allocation: use `new Float64Array(parsed.numElements)` without `if (parsed.numElements > MAX_ELEMENTS)` check, so crafted JSON with `numElements: 536870912` allocates 4 GB."
+    - "Remove the response size cap before collecting stream data: delete `if (totalRead > MAX_RESPONSE_SIZE) { stream.destroy(); return; }` from a stream consumer that collects chunks into an array, so a huge response exhausts memory."
+    - "Remove the file size check before reading into memory: delete `if (stat.size > MAX_FILE_SIZE) throw;` before `fs.readFileSync(path)` where path is user-controlled, so a symlink to a huge file or `/dev/zero` causes OOM."
+  tips:
+    - "The bug must be a realistic excessive allocation flaw (CWE-789) — an attacker-controlled SIZE value is used to determine the amount of memory allocated, and the value is not bounded, allowing denial-of-service via memory exhaustion."
+    - "CWE-789 is specifically about the ALLOCATION SIZE being attacker-controlled and unbounded. The attacker provides a NUMBER (directly or via protocol fields, headers, JSON fields) that determines how much memory is allocated in one operation."
+    - "CRITICAL DISTINCTION from CWE-770 (Allocation Without Limits): CWE-770 covers unbounded REPEATED allocations (allocating many small things without a count limit). CWE-789 is about a SINGLE allocation whose SIZE is excessive due to an attacker-controlled size parameter."
+    - "CRITICAL DISTINCTION from CWE-400 (Uncontrolled Resource Consumption): CWE-400 covers general resource exhaustion (CPU, connections, time). CWE-789 specifically targets MEMORY ALLOCATION where the SIZE comes from untrusted input."
+    - "CRITICAL DISTINCTION from CWE-190 (Integer Overflow): If the excessive allocation results from an ARITHMETIC OVERFLOW in size calculation (`width * height` wrapping around), the root cause is CWE-190. If the size is simply LARGE without overflow, that's CWE-789."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors."
+    - "Do not add comments that hint at the flaw, allocation size, OOM, or CWE."
+    - "The bug should be subtle: reasonable size values (normal images, normal payloads) still work correctly and quickly."
+    - "Prefer removing exactly ONE size validation check before an allocation (one `if (size > MAX)` guard)."
+    - "High-value targets: Buffer.alloc(n) where n from input, new Array(n) where n from query/body, TypedArray constructors with user-supplied lengths, string operations (repeat, padEnd) with user counts, stream collection without size caps."
+    - "If the function has no dynamic allocation based on external input (no user-controlled sizes, no protocol length fields), respond with `NO_GOOD_BUG_SITE`."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-789 flaw (Memory Allocation with Excessive Size Value). The resulting function must still compile, keep its signature, and work with reasonable sizes — the flaw should allow an attacker-controlled size value to trigger an excessively large single memory allocation, causing denial-of-service through OOM.
+
+  CWE-789 targets ALLOCATION SIZE from untrusted input — the attacker provides a number (via query params, protocol headers, JSON fields, binary formats) that directly determines how many bytes are allocated in ONE operation. This is distinct from CWE-770 (many unbounded repeated allocations), CWE-400 (general resource exhaustion), and CWE-190 (integer overflow in size calculation). CWE-789 means the SIZE PARAMETER ITSELF is attacker-controlled and unbounded.
+
+  Concretely, some kinds of CWE-789 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-789 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-789 site (e.g., no dynamic allocation with user-controlled sizes, no protocol length fields, no user-supplied counts — a pure computation helper or trivial getter), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

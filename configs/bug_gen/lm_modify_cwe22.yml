@@ -1,0 +1,73 @@
+name: lm_modify_cwe22
+parameters:
+  cwe_id: "CWE-22"
+  cwe_name: "Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')"
+  bug_examples:
+    - "Remove path traversal prevention by deleting the `../` stripping or normalization: delete `if (resolvedPath.startsWith(baseDir))` or remove `path.resolve()` + prefix check, so `../../etc/passwd` escapes the intended directory."
+    - "Remove the realpath/resolve check that prevents symlink traversal: delete `const real = fs.realpathSync(filePath); if (!real.startsWith(root)) throw;` so a path like `uploads/../../../etc/shadow` resolves outside the jail."
+    - "Replace a safe path join with naive string concatenation: change `path.join(uploadsDir, filename)` (which normalizes `..`) followed by a prefix check to `uploadsDir + '/' + filename` WITHOUT a prefix check, so `../` sequences traverse out."
+    - "Remove URL decoding before path validation: delete the `decodeURIComponent()` call that runs BEFORE the traversal check, so `%2e%2e%2f` bypasses a naive `includes('..')` check but is decoded by the filesystem or web server."
+    - "Remove null-byte truncation protection: delete `if (filePath.includes('\\0')) throw;` so on older Node.js/C-based backends, a path like `valid.txt%00../../etc/passwd` truncates at the null byte after passing extension validation."
+    - "Weaken the traversal check from full-path validation to partial string check: change `resolvedPath.startsWith(allowedBase)` to `filePath.indexOf('..') === -1` which can be bypassed by absolute paths (`/etc/passwd`) or OS-specific separators (`..\\` on Windows)."
+    - "Remove the restriction to a specific extension after path resolution: delete the extension whitelist check that runs AFTER resolving the full path, so `../../etc/passwd` isn't blocked by an extension check."
+    - "Allow absolute paths by removing the leading-slash/drive-letter check: delete `if (path.isAbsolute(userPath)) throw;` so a user can specify `/etc/passwd` or `C:\\Windows\\system32\\config\\sam` directly."
+  tips:
+    - "The bug must be a realistic path traversal flaw (CWE-22) — user-controlled input specifying a file path is used without proper validation that it stays within an intended restricted directory, allowing access to arbitrary filesystem locations."
+    - "CRITICAL DISTINCTION from CWE-23 (Relative Path Traversal): CWE-22 is the parent class covering ANY path traversal. CWE-23 is specifically about `../` relative sequences. Use CWE-22 when the flaw could involve absolute paths, symlinks, URL encoding bypasses, or null-byte truncation — not just `../`."
+    - "CRITICAL DISTINCTION from CWE-59 (Improper Link Resolution): CWE-59 is about following SYMLINKS/hardlinks to escape a directory. CWE-22 is about the PATH STRING itself containing traversal sequences. If the path string is fine but the resolved file is a symlink to a sensitive location, that's CWE-59."
+    - "The correct defense pattern in Node.js: `const resolved = path.resolve(baseDir, userInput); if (!resolved.startsWith(baseDir + path.sep)) throw;` — removing any part of this is CWE-22."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors."
+    - "Do not add comments that hint at the flaw, path traversal, directory escape, or CWE."
+    - "The bug should be subtle: normal filenames (no dots, slashes, or encoding) still resolve correctly within the intended directory."
+    - "Prefer removing exactly ONE path validation step: the resolve+prefix check, the `../` stripping, the absolute-path rejection, or the URL-decoding before validation."
+    - "High-value targets in JS/Node.js: `express.static()` custom handlers, file-download endpoints with user-specified filenames, file-upload path construction, template includes from user input, `fs.readFile(baseDir + req.params.filename)` patterns."
+    - "If the function does not handle filesystem paths from user input (no file operations, no path construction from external data), respond with `NO_GOOD_BUG_SITE`."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-22 flaw (Path Traversal). The resulting function must still compile, keep its signature, and work for normal filenames — the flaw should allow an attacker to specify a path that escapes the intended restricted directory and accesses arbitrary filesystem locations.
+
+  CWE-22 is the parent class for path traversal flaws. It covers:
+  - Relative traversal via `../` sequences (also CWE-23 more specifically)
+  - Absolute path injection (`/etc/passwd`, `C:\Windows\...`)
+  - URL-encoded traversal (`%2e%2e%2f`)
+  - Null-byte truncation bypasses
+  - Double-encoding bypasses
+  - OS-specific separator tricks (backslash on Windows)
+
+  This is distinct from:
+  - CWE-59 (Improper Link Resolution) — following symlinks/hardlinks, not path-string manipulation
+  - CWE-73 (External Control of File Name) — broader external file-path control
+  - CWE-434 (Unrestricted Upload) — about uploaded file TYPE, not path escape
+
+  The correct defense: resolve the full path, then verify it starts with the intended base directory. Removing or weakening any step of this creates CWE-22.
+
+  Concretely, some kinds of CWE-22 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-22 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-22 site (e.g., no filesystem path handling from user input — a pure computation, network handler, or in-memory processor), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

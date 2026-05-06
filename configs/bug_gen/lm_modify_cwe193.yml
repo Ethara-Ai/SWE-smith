@@ -1,0 +1,61 @@
+name: lm_modify_cwe193
+parameters:
+  cwe_id: "CWE-193"
+  cwe_name: "Off-by-one Error"
+  bug_examples:
+    - "Change a loop boundary from `<` to `<=`: change `for (let i = 0; i < array.length; i++)` to `for (let i = 0; i <= array.length; i++)`, causing one extra iteration that reads `array[array.length]` (undefined in JS, overflow in native)."
+    - "Forget the null terminator in a length calculation: use `str.length` instead of `str.length + 1` when allocating a buffer for a null-terminated C string in a native addon, causing the terminator to overflow by one byte."
+    - "Use `>=` instead of `>` in a bounds check: change `if (index >= array.length) throw` to `if (index > array.length) throw`, allowing `index === array.length` to pass and access one element beyond the array end."
+    - "Start a loop at 1 instead of 0 (or vice versa): change `for (let i = 0; i < n; i++)` to `for (let i = 1; i < n; i++)`, skipping the first element in a security-relevant iteration (e.g., permission check, sanitization pass)."
+    - "Use `length` instead of `length - 1` for the last valid index: change `const last = arr[arr.length - 1]` to `const last = arr[arr.length]`, reading one past the end (undefined in JS, crash in TypedArray)."
+    - "Miscalculate a substring/slice boundary: change `str.slice(0, str.indexOf(delimiter))` to `str.slice(0, str.indexOf(delimiter) + 1)` or vice versa, including or excluding one extra character that changes the semantic meaning (e.g., including a path separator in a filename)."
+    - "Use wrong comparison in a fence-post calculation: allocate `numSegments` slots instead of `numSegments + 1` for a fence-post pattern (n segments need n+1 posts), causing the last write to overflow."
+    - "Off-by-one in a bit manipulation mask: use `(1 << n) - 1` when the correct mask is `(1 << (n + 1)) - 1`, causing one bit to be unchecked in a permission or capability bitmask."
+  tips:
+    - "The bug must be a realistic CWE-193 flaw — a boundary calculation is off by exactly ONE unit (one iteration, one byte, one index, one character), causing either an out-of-bounds access, a skipped security check, or a fence-post error."
+    - "Do NOT introduce bugs better classified as CWE-131 (Incorrect Calculation of Buffer Size). CWE-193 is specifically off-by-ONE. If the size is wrong by a larger factor (wrong multiplier, wrong encoding assumption), that's CWE-131."
+    - "Do NOT introduce bugs better classified as CWE-129 (Improper Validation of Array Index). CWE-129 is about validation being MISSING. CWE-193 is about validation being off by one (the check EXISTS but the boundary is wrong by one)."
+    - "Do NOT introduce bugs better classified as CWE-682 (Incorrect Calculation). CWE-193 is the SPECIFIC case where the error is exactly one unit. Larger calculation errors are CWE-682."
+    - "Off-by-one errors are historically the most common class of boundary bugs. They appear in: loop bounds (< vs <=), string length calculations (with/without null terminator), array indexing (0-based vs 1-based confusion), slice/substring parameters, fence-post problems."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors or syntax errors."
+    - "Do not add comments that hint at the flaw, off-by-one, boundary, fence-post, or CWE."
+    - "The bug should be subtle: most inputs work correctly because the off-by-one only matters at BOUNDARIES (first element, last element, empty input, maximum-length input)."
+    - "Prefer changing exactly ONE comparison operator (< to <=, > to >=) or ONE arithmetic expression (+1 to +0, -1 to -0, length to length-1, etc.)."
+    - "High-value targets: loop bounds iterating over security-critical data, buffer size calculations with +1/-1, slice/substring on path or delimiter parsing, permission bitmask calculations, any boundary between checked/unchecked regions."
+    - "If the function has no loops, no array access, no boundary calculations, no length-dependent operations, respond with `NO_GOOD_BUG_SITE` instead of forcing a contrived change."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-193 flaw (Off-by-one Error). The resulting function must still compile, keep its signature, and work for most inputs — the flaw should introduce an off-by-one boundary error that manifests at edge cases (first/last element, empty input, maximum size).
+
+  CWE-193 is the classic fence-post error — a boundary is calculated one unit wrong. This is a child of CWE-682 (Incorrect Calculation) specialized to exactly-one-unit errors. It's distinct from CWE-131 (buffer size wrong by larger amounts) and CWE-129 (index validation missing entirely). The error is always in the BOUNDARY itself (< vs <=, length vs length-1, n vs n+1).
+
+  Concretely, some kinds of CWE-193 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-193 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-193 site (e.g., no loops, no array access, no boundary calculations, no length-dependent operations), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

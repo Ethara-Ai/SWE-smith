@@ -1,0 +1,73 @@
+name: lm_modify_cwe94
+parameters:
+  cwe_id: "CWE-94"
+  cwe_name: "Improper Control of Generation of Code ('Code Injection')"
+  bug_examples:
+    - "Remove input validation before `eval()`: delete the allowlist/regex check (e.g., `if (!/^[0-9+\-*/().]+$/.test(expr)) throw;`) so arbitrary JavaScript code — not just math expressions — is evaluated: `eval(userExpr)` where `userExpr` can be `require('child_process').execSync('id')`."
+    - "Replace a safe expression parser with raw `eval`/`new Function`: change from a sandboxed math library (`mathjs.evaluate(expr)`) or `JSON.parse()` to `eval(userInput)` or `new Function('return ' + userInput)()`, so attacker-crafted input executes arbitrary code."
+    - "Remove the sandbox from a template engine: change `new nunjucks.Environment(loader, { autoescape: true })` to one that exposes globals, or switch from `vm.runInNewContext(code, {})` (sandboxed) to `vm.runInThisContext(code)` (full access), so template injection accesses `process`, `require`, etc."
+    - "Remove an allowlist on dynamically-dispatched function names: delete `if (!SAFE_FUNCTIONS.includes(funcName)) throw;` before `global[funcName](args)` or `obj[method](args)`, so attacker-controlled names can invoke any function including `constructor.constructor('return process')()`."
+    - "Replace `JSON.parse()` (data-only) with `eval('(' + input + ')')` for 'compatibility': change the safe JSON parser to eval-based parsing so valid JSON still works but attacker payloads like `({get x(){ return require('fs').readFileSync('/etc/passwd') }}).x` execute."
+    - "Remove the compile-time AST check that rejects dangerous node types: delete the visitor that blocks `CallExpression`/`MemberExpression` in a user-expression compiler, so compiled user expressions can call arbitrary methods."
+    - "Expose Node.js builtins in a vm2/isolated-vm context: add `require` or `process` to the sandbox's global object (e.g., `sandbox.require = require;`), defeating the isolation and allowing the sandboxed code to escape."
+    - "Remove the `--disallow-code-generation-from-strings` V8 flag or CSP that blocks eval: disable the restriction that prevents runtime code generation, re-enabling `eval()` and `new Function()` in a context that previously blocked them."
+  tips:
+    - "The bug must be a realistic code injection flaw (CWE-94) — user-controlled input is interpreted and executed as CODE in the application's programming language (JavaScript, Python, Ruby, etc.)."
+    - "CRITICAL DISTINCTION from CWE-78 (OS Command Injection): CWE-78 is about OS SHELL commands (`exec('shell cmd')`). CWE-94 is about PROGRAMMING LANGUAGE code execution (`eval('js code')`, `new Function()`, `vm.runInContext()`). If the injected content runs in a shell, it's CWE-78. If it runs in a language interpreter, it's CWE-94."
+    - "CRITICAL DISTINCTION from CWE-79 (XSS): CWE-79 is CLIENT-SIDE script execution in a victim's browser. CWE-94 is SERVER-SIDE code execution on the application server. Same language (JavaScript), different execution context."
+    - "CRITICAL DISTINCTION from CWE-95 (Eval Injection): CWE-95 is a more specific child of CWE-94 that targets `eval()` specifically. Use CWE-94 for the broader category (which includes `new Function()`, `vm.run*()`, template injection, dynamic dispatch, etc.)."
+    - "CRITICAL DISTINCTION from CWE-502 (Deserialization of Untrusted Data): CWE-502 achieves code execution through deserialization gadgets. CWE-94 is about DIRECTLY executing user-provided code strings. If the vector is `unserialize()`/`pickle.loads()`, use CWE-502."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors."
+    - "Do not add comments that hint at the flaw, code injection, eval, sandbox, or CWE."
+    - "The bug should be subtle: benign inputs (simple expressions, valid JSON, safe function names) still produce correct results. The flaw only manifests with adversarial input containing executable code."
+    - "Prefer modifying exactly ONE safeguard — remove one validation check, one sandbox restriction, one allowlist, one AST filter."
+    - "High-value targets in Node.js: `eval()`, `new Function()`, `vm.runInContext()`, `vm2` sandbox configs, template engine environment options, dynamic `require()` with user input, `import()` with user-controlled paths."
+    - "If the function does not dynamically generate or execute code from external input (no eval, no Function constructor, no vm, no template compilation, no dynamic dispatch from user strings), respond with `NO_GOOD_BUG_SITE`."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-94 flaw (Code Injection). The resulting function must still compile, keep its signature, and behave correctly on benign inputs — the flaw should allow attacker-crafted input to be interpreted and executed as CODE in the application's programming language runtime.
+
+  CWE-94 is about injecting executable code into a PROGRAMMING LANGUAGE interpreter. This is distinct from:
+  - CWE-78 (OS Command Injection) — injection into an OS SHELL, not a language runtime
+  - CWE-79 (XSS) — code injection in the CLIENT's browser, not the server
+  - CWE-502 (Insecure Deserialization) — code execution via deserialization gadgets, not direct code strings
+  - CWE-95 (Eval Injection) — a more specific child of CWE-94 focused on `eval()` only
+
+  Code injection vectors in JavaScript/Node.js:
+  1. `eval(userInput)` — direct code execution
+  2. `new Function('arg', userInput)` — dynamic function creation
+  3. `vm.runInContext(userCode, context)` — VM module execution
+  4. Template engines with code execution (Pug's inline JS, EJS `<%= %>`)
+  5. Dynamic property/method dispatch from user strings: `obj[userMethod]()`
+  6. `require(userPath)` or `import(userPath)` — module loading from user input
+
+  Concretely, some kinds of CWE-94 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-94 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-94 site (e.g., no dynamic code execution, no eval/Function/vm, no template compilation, no dynamic dispatch from user strings — a pure data processor or I/O handler), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

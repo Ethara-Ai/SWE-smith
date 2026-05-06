@@ -1,0 +1,61 @@
+name: lm_modify_cwe367
+parameters:
+  cwe_id: "CWE-367"
+  cwe_name: "Time-of-check Time-of-use (TOCTOU) Race Condition"
+  bug_examples:
+    - "Split an atomic file check-and-open into two steps: change `fs.open(path, 'wx')` (exclusive create) to `if (!fs.existsSync(path)) { fs.writeFileSync(path, data) }`, so another process can create/replace the file between the existence check and the write."
+    - "Check file permissions then read in separate operations: use `await fs.access(path, fs.constants.R_OK); const data = await fs.readFile(path)` instead of just `try { data = await fs.readFile(path) } catch { ... }`, so permissions can change between check and use."
+    - "Check a user's role/permission then perform action across an await boundary: split `if (await hasPermission(user, 'admin')) { await deleteResource(id); }` so the permission can be revoked between the check and the deletion."
+    - "Check file ownership then modify: use `const stat = await fs.stat(path); if (stat.uid === expectedUid) { await fs.writeFile(path, data); }` so a symlink swap between stat and writeFile targets a different file."
+    - "Validate a symlink target then read: use `const target = await fs.readlink(path); if (isAllowed(target)) { const data = await fs.readFile(path); }` so the symlink can be retargeted between readlink and readFile."
+    - "Check available disk space then write: use `const stats = await fs.statfs(dir); if (stats.bavail > needed) { await fs.writeFile(filepath, largeData); }` so another process fills the disk between the check and the write."
+    - "Verify a temporary file is safe then execute it: use `const hash = await computeHash(tmpFile); if (hash === expected) { await exec(tmpFile); }` so the file can be swapped between hash verification and execution."
+    - "Check that a directory is empty then delete it: use `const files = await fs.readdir(dir); if (files.length === 0) { await fs.rmdir(dir); }` so a file can be created in the directory between the readdir check and the rmdir."
+  tips:
+    - "The bug must be a realistic CWE-367 flaw — a CHECK on a resource's state (existence, permissions, ownership, contents) is followed by a USE of that resource with a TIME GAP between them, during which the resource's state can be changed by a concurrent actor."
+    - "Do NOT introduce bugs better classified as CWE-362 (general Race Condition). CWE-367 is the SPECIFIC pattern of CHECK-then-USE-with-gap. If the race is between two writes (not a check-then-use), or is a general synchronization failure, that's CWE-362."
+    - "Do NOT introduce bugs better classified as CWE-59 (Improper Link Resolution). If the core issue is a SYMLINK being followed without resolution, that's CWE-59. CWE-367 applies when the check-then-use gap enables the symlink attack (the gap is the vulnerability, the symlink is the exploit technique)."
+    - "Do NOT introduce bugs better classified as CWE-384 (Session Fixation). TOCTOU on session state (check auth then act) is CWE-367 if the gap allows auth revocation. CWE-384 is specifically about session IDs not regenerated."
+    - "TOCTOU is especially dangerous in filesystem operations because the filesystem namespace is shared between all processes. Any stat/access/exists check followed by a separate open/read/write/exec is a potential TOCTOU window."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors or syntax errors."
+    - "Do not add comments that hint at the flaw, TOCTOU, race, time-of-check, or CWE."
+    - "The bug should be subtle: in normal single-user operation the check-then-use works correctly. The flaw requires a malicious concurrent actor to exploit the time window."
+    - "Prefer splitting ONE atomic operation into a non-atomic check-then-use, or removing ONE atomic flag (like O_EXCL, 'wx') that combines check and use."
+    - "High-value targets: file existence checks before create/write, permission checks before operations, symlink validation before read/exec, resource availability checks before allocation, any `stat() then open()` or `access() then read()` pattern."
+    - "If the function has no filesystem operations, no resource state checks followed by resource use, no two-step check-then-act patterns, respond with `NO_GOOD_BUG_SITE` instead of forcing a contrived change."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-367 flaw (TOCTOU Race Condition). The resulting function must still compile, keep its signature, and work in non-adversarial conditions — the flaw should split an atomic check-and-use into separate operations with a time gap exploitable by a concurrent attacker.
+
+  CWE-367 (Time-of-Check Time-of-Use) is a specific race condition pattern where a resource's state is CHECKED, then USED in a separate operation with a window between them. An attacker who can modify the resource during this window can bypass the check. This is especially critical for filesystem operations (shared namespace) and permission checks (revocable). It's a child of CWE-362 (general race conditions) but specifically targets the check-then-use temporal pattern.
+
+  Concretely, some kinds of CWE-367 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-367 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-367 site (e.g., no check-then-use patterns, no filesystem operations, no resource state validation before use), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

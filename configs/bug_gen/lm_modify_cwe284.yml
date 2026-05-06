@@ -1,0 +1,61 @@
+name: lm_modify_cwe284
+parameters:
+  cwe_id: "CWE-284"
+  cwe_name: "Improper Access Control"
+  bug_examples:
+    - "Remove a middleware-level access control check: delete `app.use('/admin', requireAuth, requireRole('admin'))` or the equivalent guard, so all routes under the protected path become accessible without any access control."
+    - "Remove an object-level access control check: delete `if (resource.ownerId !== req.user.id) return res.status(403).end();` so any authenticated user can access any other user's resources."
+    - "Remove a feature flag or entitlement gate: delete `if (!user.subscription.includes('premium')) throw new PaymentRequired();` allowing free-tier users to access premium functionality."
+    - "Remove a network-level access restriction: delete `if (!ALLOWED_IPS.includes(req.ip)) return deny;` from an internal-only endpoint, exposing it to the public internet."
+    - "Remove a time-based access restriction: delete `if (Date.now() > accessWindow.end) throw new Expired();` allowing access to resources after their authorized time window has closed."
+    - "Remove a resource visibility filter: delete `.where('visibility', 'public').orWhere('ownerId', userId)` from a database query, returning all records regardless of access scope."
+    - "Remove a cross-tenant isolation check: delete `if (resource.tenantId !== req.tenant.id) return notFound;` allowing users from one tenant to access another tenant's data."
+    - "Remove an API key scope validation: delete `if (!apiKey.scopes.includes(requiredScope)) return unauthorized;` allowing any valid API key to perform any operation regardless of its assigned scopes."
+  tips:
+    - "The bug must be a realistic access control flaw (CWE-284) — the software does not restrict or incorrectly restricts access to a resource from an unauthorized actor."
+    - "CWE-284 is the ABSTRACT PARENT of all access control weaknesses. Use this CWE when the removed control does not fit neatly into a more specific child (CWE-862, CWE-863, CWE-269, CWE-639, etc.) — for example, removing an entire middleware stack, a tenant isolation boundary, or a complex multi-factor access decision."
+    - "CRITICAL DISTINCTION from CWE-862 (Missing Authorization): If you're removing a SINGLE authorization check for a specific action, that's CWE-862. CWE-284 is broader — removing an access control LAYER or MECHANISM that enforces multiple policies at once."
+    - "CRITICAL DISTINCTION from CWE-863 (Incorrect Authorization): If the access control EXISTS but its LOGIC is wrong (wrong comparison, wrong field), that's CWE-863. CWE-284 covers the complete absence or bypass of the entire control."
+    - "CRITICAL DISTINCTION from CWE-639 (IDOR): If the issue is specifically that a user-supplied identifier directly indexes another user's resource without ownership check, that's CWE-639. CWE-284 is for broader access boundary failures."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors."
+    - "Do not add comments that hint at the flaw, access control, or CWE."
+    - "The bug should be subtle: authorized users still experience correct behavior. The flaw only manifests when an unauthorized actor attempts access."
+    - "Prefer removing exactly ONE access control mechanism (one middleware, one guard function, one policy check) rather than restructuring."
+    - "High-value targets: route middleware chains, tenant isolation logic, resource visibility filters, API gateway policies, feature entitlement checks, multi-factor access decisions."
+    - "If the function has no access control logic (no auth checks, no permission gates, no visibility filters — a pure computation helper), respond with `NO_GOOD_BUG_SITE`."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-284 flaw (Improper Access Control). The resulting function must still compile, keep its signature, and work correctly on normal inputs — the flaw should allow an unauthorized actor to access a resource or perform an action that should be restricted.
+
+  CWE-284 is the abstract PARENT of access control weaknesses. Use it when the removed mechanism is broad — an entire middleware layer, a tenant boundary, a multi-policy enforcement point — rather than a single atomic authorization check (CWE-862), a logic error in an existing check (CWE-863), or a user-controlled direct object reference (CWE-639). CWE-284 represents the COMPLETE FAILURE of an access boundary.
+
+  Concretely, some kinds of CWE-284 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-284 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-284 site (e.g., no access control logic, no authorization middleware, no permission gates — a pure computation helper or trivial getter), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

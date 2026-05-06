@@ -1,0 +1,61 @@
+name: lm_modify_cwe248
+parameters:
+  cwe_id: "CWE-248"
+  cwe_name: "Uncaught Exception"
+  bug_examples:
+    - "Remove a try-catch wrapper around an async operation: delete the `try { ... } catch (e) { ... }` block around a `JSON.parse()`, database query, or file read so that malformed input causes an unhandled exception that crashes the process or connection."
+    - "Delete an error event listener on a stream or EventEmitter: remove `stream.on('error', handler)` or `emitter.on('error', ...)` so that an error event propagates as an uncaught exception, crashing the Node.js process."
+    - "Remove a Promise rejection handler: delete `.catch(handler)` from a promise chain or remove the `catch` block from an async/await, so a rejected promise becomes an unhandled rejection that terminates the process (Node.js `--unhandled-rejections=throw`)."
+    - "Delete input validation before a type-sensitive operation: remove the `if (typeof x !== 'string') return` guard before `x.trim()` so that passing `null` or `undefined` throws an uncaught TypeError that crashes the request handler."
+    - "Remove a null/undefined check before property access in a middleware: delete `if (!ctx.session) return next()` so that when session middleware fails to initialize, accessing `ctx.session.userId` throws uncaught, crashing all subsequent requests."
+    - "Delete the default case or fallback in a deserialization path: remove the `catch` around `JSON.parse(body)` in a request parser so that a malformed JSON body (e.g., truncated WebSocket frame) throws an uncaught SyntaxError, killing the connection handler."
+    - "Remove a domain/zone error boundary: delete `domain.on('error', ...)` or the `Zone.current.fork({ onHandleError })` error interceptor, so errors in async callbacks propagate uncaught and crash the server process."
+    - "Delete the `.on('unhandledRejection', ...)` or `process.on('uncaughtException', ...)` safety net in a worker/child process, so any unexpected throw causes an immediate process exit with no graceful shutdown."
+  tips:
+    - "The bug must be a realistic CWE-248 flaw — an exception or rejection is NOT CAUGHT, causing the program to crash, terminate a connection, or abort a critical operation. The impact is AVAILABILITY (denial of service via crash)."
+    - "Do NOT introduce bugs better classified as CWE-209 (Error Message Containing Sensitive Information). CWE-248 is about the exception being UNCAUGHT (causing crash/DoS). CWE-209 is about what INFORMATION the error reveals. If the exception is caught but reveals too much info, that's CWE-209, not CWE-248."
+    - "Do NOT introduce bugs better classified as CWE-617 (Reachable Assertion). CWE-248 is about an exception NOT being caught. CWE-617 is about an ASSERTION (assert(), invariant()) that is deliberately placed but reachable by attacker input."
+    - "Do NOT introduce bugs better classified as CWE-476 (NULL Pointer Dereference). If the root cause is accessing a null/undefined value, consider whether the issue is the MISSING null check (CWE-476) or the MISSING try-catch around code that might encounter null (CWE-248). CWE-248 applies when the fix would be adding error handling, not adding a null guard."
+    - "In Node.js, uncaught exceptions and unhandled Promise rejections crash the entire process. This is especially severe in single-process servers (Express without cluster) where one bad request kills all connections."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors or syntax errors."
+    - "Do not add comments that hint at the flaw, missing error handling, crash, or CWE."
+    - "The bug should be subtle: the function works perfectly for VALID inputs. The crash only occurs with unexpected/malformed/edge-case inputs that trigger the unhandled code path."
+    - "Prefer removing exactly ONE error-handling mechanism (one try-catch, one .catch(), one error event listener, one null guard before a throwing operation)."
+    - "High-value targets: JSON.parse without try-catch, database query callbacks without error handling, stream/EventEmitter without error listeners, Promise chains without .catch(), async functions without try-catch around external calls."
+    - "If the function has no external calls, no parsing, no I/O, no operations that can throw (pure arithmetic, simple assignments), respond with `NO_GOOD_BUG_SITE` instead of forcing a contrived change."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-248 flaw (Uncaught Exception). The resulting function must still compile and keep its signature — the flaw should cause an exception or promise rejection to go uncaught under specific input conditions, leading to process crash, connection termination, or denial of service.
+
+  CWE-248 is about AVAILABILITY impact through missing error handling. When exceptions propagate uncaught in Node.js, the entire process terminates. In browser JS, uncaught exceptions can break the entire application state. This is distinct from CWE-209 (what info the error reveals) and CWE-617 (deliberate assertions triggered by input). The fix for CWE-248 is always "add error handling" — try-catch, .catch(), error event listeners.
+
+  Concretely, some kinds of CWE-248 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-248 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-248 site (e.g., no external calls, no parsing, no I/O, no throwing operations — a pure computation with no error paths), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

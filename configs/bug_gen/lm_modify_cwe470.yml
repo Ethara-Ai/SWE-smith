@@ -1,0 +1,61 @@
+name: lm_modify_cwe470
+parameters:
+  cwe_id: "CWE-470"
+  cwe_name: "Use of Externally-Controlled Input to Select Classes or Code ('Unsafe Reflection')"
+  bug_examples:
+    - "Remove a whitelist check before dynamic module loading: delete `if (!ALLOWED_MODULES.includes(moduleName)) throw new Error('forbidden');` before `require(moduleName)` or `import(moduleName)`, so an attacker can load arbitrary modules including `child_process`."
+    - "Replace a safe registry lookup with unrestricted require: change `const handler = HANDLERS[userInput]` (map lookup limited to registered handlers) to `const handler = require(userInput)` (loads any module on disk)."
+    - "Remove namespace restriction on dynamic class instantiation: delete `if (!className.startsWith('handlers/'))` before `new (require('./' + className))()`, allowing path traversal to load any module."
+    - "Remove the validation that a dynamically loaded plugin is from the plugins directory: delete `if (!resolvedPath.startsWith(PLUGINS_DIR))` before `require(resolvedPath)`, enabling loading from `node_modules` or arbitrary paths."
+    - "Replace a factory pattern with eval-based instantiation: change `const instance = factories.get(type)?.create()` to `const instance = eval('new ' + type + '()')` when type comes from user input."
+    - "Remove constructor/method name validation: delete `if (!ALLOWED_METHODS.includes(methodName)) throw;` before `obj[methodName]()` where methodName is user-controlled, allowing invocation of dangerous methods like `constructor`, `__proto__`, or internal methods."
+    - "Remove the file extension restriction on dynamic import: delete `if (path.extname(modulePath) !== '.js') throw;` before dynamically importing, allowing `.node` native addons or `.json` files that could trigger prototype pollution."
+    - "Widen a plugin loader from a curated registry to user-supplied paths: change `loadPlugin(REGISTRY[pluginId])` to `loadPlugin(req.body.pluginPath)` without validating the path is within the expected directory."
+  tips:
+    - "The bug must be a realistic unsafe reflection flaw (CWE-470) — externally-controlled input determines which class, module, function, or method is dynamically loaded/invoked."
+    - "CWE-470 is about SELECTION of code to execute via user input — the attacker doesn't inject NEW code (CWE-94) but rather SELECTS EXISTING code (modules, classes, methods) to be loaded/invoked through a dynamic resolution mechanism."
+    - "CRITICAL DISTINCTION from CWE-94 (Code Injection): CWE-94 is about injecting NEW code (eval, Function constructor). CWE-470 is about selecting EXISTING code (require, import, Class.forName, property access) via user-controlled names."
+    - "CRITICAL DISTINCTION from CWE-502 (Deserialization of Untrusted Data): CWE-502 is about deserializing a data structure that triggers object construction. CWE-470 is about the user DIRECTLY specifying which module/class/method to invoke through a name/path."
+    - "CRITICAL DISTINCTION from CWE-426 (Untrusted Search Path): CWE-426 is about the SEARCH PATH being poisoned. CWE-470 is about the MODULE/CLASS NAME itself being controlled by the attacker."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors."
+    - "Do not add comments that hint at the flaw, reflection, dynamic loading, or CWE."
+    - "The bug should be subtle: legitimate module/class names still resolve and work correctly."
+    - "Prefer removing exactly ONE restriction (one whitelist check, one path validation, one namespace constraint) on the dynamic selection mechanism."
+    - "High-value targets: plugin loaders, strategy pattern implementations, factory functions, route-to-handler dispatchers, any `require(userInput)` or `import(userInput)` pattern, dynamic method invocation via bracket notation."
+    - "If the function has no dynamic class/module loading, no reflection, no user-controlled method dispatch, respond with `NO_GOOD_BUG_SITE`."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-470 flaw (Unsafe Reflection). The resulting function must still compile, keep its signature, and work for legitimate inputs — the flaw should allow attacker-controlled input to select arbitrary modules, classes, or methods for dynamic loading/invocation.
+
+  CWE-470 targets the SELECTION of existing code via user-controlled input — the attacker specifies a module name, class name, method name, or path that drives dynamic resolution (require, import, Class.forName, bracket-notation dispatch). This is distinct from CWE-94 (injecting new code via eval), CWE-502 (deserialization triggering object construction), and CWE-426 (search path poisoning). CWE-470 means the attacker controls WHICH existing code gets loaded/invoked.
+
+  Concretely, some kinds of CWE-470 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-470 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-470 site (e.g., no dynamic class/module loading, no reflection, no user-controlled method dispatch — a pure computation helper or trivial getter), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

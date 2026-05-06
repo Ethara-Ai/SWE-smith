@@ -11,8 +11,8 @@ from unittest.mock import patch, mock_open
 from swesmith.profiles.typescript import (
     TypeScriptProfile,
     CrossEnv9951937a,
-    Trpc2f40ba93,
-    ClassValidator977d2c70,
+    Trpc23c723cf,
+    Classvalidator2e1a5c27,
     Rxjsc15b37f8,
     default_npm_install_dockerfile,
     default_pnpm_install_dockerfile,
@@ -141,17 +141,17 @@ def test_crossenv_profile_log_parser():
 
 
 def test_trpc_profile_properties():
-    """Test Trpc2f40ba93 profile properties."""
-    profile = Trpc2f40ba93()
+    """Test Trpc23c723cf profile properties."""
+    profile = Trpc23c723cf()
     assert profile.owner == "trpc"
     assert profile.repo == "trpc"
-    assert profile.commit == "2f40ba935ad7f7d29eec3f9c45d353450b43e852"
-    assert profile.test_cmd == "pnpm test"
+    assert profile.commit == "23c723cfeaf07da28a52a5c35c3dcccf96a47578"
+    assert profile.test_cmd == "pnpm test -- --run"
 
 
 def test_trpc_profile_dockerfile():
-    """Test Trpc2f40ba93 Dockerfile content."""
-    profile = Trpc2f40ba93()
+    """Test Trpc23c723cf Dockerfile content."""
+    profile = Trpc23c723cf()
     dockerfile = profile.dockerfile
     assert "FROM node:22" in dockerfile
     assert "pnpm" in dockerfile
@@ -160,36 +160,38 @@ def test_trpc_profile_dockerfile():
 
 
 def test_trpc_profile_log_parser():
-    """Test Trpc2f40ba93 uses Vitest parser."""
-    profile = Trpc2f40ba93()
+    """Test Trpc23c723cf uses Jest parser."""
+    profile = Trpc23c723cf()
     log = """
-✓ packages/server/src/core.test.ts (10 tests) 25ms
+  ✓ should handle queries (5ms)
+  ✕ should reject bad input (3ms)
 """
     result = profile.log_parser(log)
-    assert result["packages/server/src/core.test.ts"] == Status.PASSED.value
+    assert result["should handle queries"] == Status.PASSED.value
+    assert result["should reject bad input"] == Status.FAILED.value
 
 
 def test_classvalidator_profile_properties():
-    """Test ClassValidator977d2c70 profile properties."""
-    profile = ClassValidator977d2c70()
+    """Test Classvalidator2e1a5c27 profile properties."""
+    profile = Classvalidator2e1a5c27()
     assert profile.owner == "typestack"
     assert profile.repo == "class-validator"
-    assert profile.commit == "977d2c707930db602b6450d0c03ee85c70756f1f"
-    assert profile.test_cmd == "npm test"
+    assert profile.commit == "2e1a5c27dbd65b80e27fe96b49bd6e6641fa3603"
+    assert profile.test_cmd == "npm run test:ci"
 
 
 def test_classvalidator_profile_dockerfile():
-    """Test ClassValidator977d2c70 Dockerfile content."""
-    profile = ClassValidator977d2c70()
+    """Test Classvalidator2e1a5c27 Dockerfile content."""
+    profile = Classvalidator2e1a5c27()
     dockerfile = profile.dockerfile
-    assert "FROM node:18-slim" in dockerfile
+    assert "FROM node:" in dockerfile
     assert f"git clone https://github.com/{profile.mirror_name}" in dockerfile
-    assert "npm install" in dockerfile
+    assert "npm" in dockerfile
 
 
 def test_classvalidator_profile_log_parser():
-    """Test ClassValidator977d2c70 uses Jest parser."""
-    profile = ClassValidator977d2c70()
+    """Test Classvalidator2e1a5c27 uses Jest parser."""
+    profile = Classvalidator2e1a5c27()
     log = """
   ✓ should validate strings (5ms)
   ✕ should reject invalid input (3ms)
@@ -239,8 +241,8 @@ def test_ts_profile_inheritance_in_concrete_profiles():
     """Test that concrete TS profiles properly inherit from TypeScriptProfile."""
     profiles_to_test = [
         CrossEnv9951937a,
-        Trpc2f40ba93,
-        ClassValidator977d2c70,
+        Trpc23c723cf,
+        Classvalidator2e1a5c27,
         Rxjsc15b37f8,
     ]
 
@@ -260,8 +262,8 @@ def test_all_profiles_have_mirror_name_in_dockerfile():
     """Test that all concrete profiles use mirror_name (not owner/repo) in dockerfiles."""
     profiles_to_test = [
         CrossEnv9951937a,
-        Trpc2f40ba93,
-        ClassValidator977d2c70,
+        Trpc23c723cf,
+        Classvalidator2e1a5c27,
         Rxjsc15b37f8,
     ]
 

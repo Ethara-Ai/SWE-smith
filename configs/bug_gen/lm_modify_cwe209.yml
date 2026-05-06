@@ -1,0 +1,61 @@
+name: lm_modify_cwe209
+parameters:
+  cwe_id: "CWE-209"
+  cwe_name: "Generation of Error Message Containing Sensitive Information"
+  bug_examples:
+    - "Replace a generic error response with the full exception stack trace: change `res.status(500).json({ error: 'Internal error' })` to `res.status(500).json({ error: err.stack })`, leaking file paths, line numbers, dependency versions, and internal function names to the client."
+    - "Include the database connection string in an error message: change `throw new DBError('Connection failed')` to `throw new DBError('Connection failed: ' + connectionUrl)`, exposing host, port, username, and potentially the password embedded in the URI."
+    - "Expose the full SQL query in an error response: change `return { error: 'Query failed' }` to `return { error: 'Query failed: ' + query + ' with params: ' + JSON.stringify(params) }`, revealing table structure, column names, and query logic."
+    - "Include the full filesystem path in a file operation error: change `throw new Error('File not found')` to `throw new Error('File not found: ' + path.resolve(filePath))`, leaking the server's absolute directory structure (e.g., `/opt/app/data/users/`)."
+    - "Expose the expected vs computed authentication value in a verification error: change `return { success: false, message: 'Invalid token' }` to `return { success: false, message: 'Token mismatch: expected ' + storedHash + ' got ' + providedHash }`, leaking the stored secret."
+    - "Include the full HTTP request headers (including Authorization) in a proxy error: change `logger.error('Upstream failed'); res.status(502).send('Bad Gateway')` to `res.status(502).json({ error: 'Upstream failed', request: { headers: req.headers } })`, dumping cookies, bearer tokens, and API keys to the client."
+    - "Return internal configuration details in a validation error: change `res.status(400).json({ error: 'Invalid config' })` to `res.status(400).json({ error: 'Invalid config', expected: internalSchema, received: userInput })`, revealing internal schema structure and validation rules."
+    - "Expose the LDAP/SMTP/Redis connection error verbatim to the user: remove the error-sanitization wrapper so that `catch (e) { res.status(500).json({ error: e.message }) }` passes through the raw driver error containing hostnames, ports, authentication states, and protocol details."
+  tips:
+    - "The bug must be a realistic CWE-209 flaw — an error message or exception response exposes sensitive internal details (file paths, stack traces, credentials, connection strings, query logic, internal IPs) to the end user or external actor via an ERROR PATH."
+    - "Do NOT introduce bugs better classified as CWE-497 (Exposure of Sensitive System Information to Unauthorized Control Sphere). CWE-209 is specifically about info leaking through ERROR MESSAGES. If the info leaks through a NORMAL response or intentional output (status endpoint, headers, debug page), that is CWE-497."
+    - "Do NOT introduce bugs better classified as CWE-532 (Insertion of Sensitive Information into Log File). CWE-209 is about info reaching the CLIENT/USER. If sensitive info is written to server-side LOG FILES (not returned to the user), that is CWE-532."
+    - "Do NOT introduce bugs better classified as CWE-248 (Uncaught Exception). CWE-209 is about WHAT the error reveals. CWE-248 is about the exception being UNCAUGHT and crashing the process. An uncaught exception that also leaks info involves both, but focus on the information exposure aspect."
+    - "CWE-209 is a child of CWE-200 (Exposure of Sensitive Information). CWE-200 is the broad parent covering ANY info exposure vector. CWE-209 specifically targets the error-message channel."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors or syntax errors."
+    - "Do not add comments that hint at information leakage, sensitive data, error verbosity, or CWE."
+    - "The bug should be subtle: the error handling still works (catches errors, returns error responses), it just includes too much detail. Normal successful operations are unaffected."
+    - "Prefer modifying exactly ONE error message, catch block, or error response to include sensitive details that were previously sanitized or omitted."
+    - "High-value targets: catch blocks that construct error responses, Express/Koa error middleware, API error formatters, database query error handlers, authentication failure responses, file operation error messages."
+    - "If the function has no error handling, no catch blocks, no error response construction, no exception paths, respond with `NO_GOOD_BUG_SITE` instead of forcing a contrived change."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-209 flaw (Generation of Error Message Containing Sensitive Information). The resulting function must still compile, keep its signature, and handle errors — the flaw should cause error messages to expose sensitive internal details (file paths, stack traces, credentials, SQL queries, configuration, internal IPs) to end users or external actors.
+
+  CWE-209 is a child of CWE-200 (Exposure of Sensitive Information to an Unauthorized Actor). It specifically targets the ERROR MESSAGE vector — the sensitive data leaks because an error/exception response is too verbose. This is distinct from CWE-497 (system info in normal output/headers), CWE-532 (sensitive info written to log files), and CWE-248 (uncaught exception causing crash, regardless of content).
+
+  Concretely, some kinds of CWE-209 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-209 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-209 site (e.g., no error handling, no catch blocks, no error response construction — a pure computation helper with no error paths), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

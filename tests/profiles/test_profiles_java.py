@@ -14,8 +14,8 @@ from swesmith.profiles.java import (
     JavaProfile,
     parse_log_maven_surefire,
     parse_log_gradle_junit_xml,
-    Gsondd2fe59c,
-    Eureka459fcf59,
+    Gson8260eddf,
+    Eureka8227a727,
 )
 from swebench.harness.constants import TestStatus as Status
 
@@ -266,11 +266,11 @@ Building project...
 
 
 def test_gson_profile_properties():
-    """Test Gsondd2fe59c profile properties"""
-    profile = Gsondd2fe59c()
+    """Test Gson8260eddf profile properties"""
+    profile = Gson8260eddf()
     assert profile.owner == "google"
     assert profile.repo == "gson"
-    assert profile.commit == "dd2fe59c0d3390b2ad3dd365ed6938a5c15844cb"
+    assert profile.commit == "8260eddffe413c132b3a38e68446da6bd083220d"
     assert "mvn test" in profile.test_cmd
     assert "-Dsurefire.useFile=false" in profile.test_cmd
     assert "-Dsurefire.printSummary=true" in profile.test_cmd
@@ -278,8 +278,8 @@ def test_gson_profile_properties():
 
 
 def test_gson_profile_dockerfile():
-    """Test Gsondd2fe59c Dockerfile content"""
-    profile = Gsondd2fe59c()
+    """Test Gson8260eddf Dockerfile content"""
+    profile = Gson8260eddf()
     dockerfile = profile.dockerfile
     assert "FROM ubuntu:22.04" in dockerfile
     assert f"git clone https://github.com/{profile.mirror_name}" in dockerfile
@@ -288,8 +288,8 @@ def test_gson_profile_dockerfile():
 
 
 def test_gson_profile_log_parser():
-    """Test Gsondd2fe59c uses Maven Surefire parser"""
-    profile = Gsondd2fe59c()
+    """Test Gson8260eddf uses Maven Surefire parser"""
+    profile = Gson8260eddf()
     log = """
 [INFO] testExample -- Time elapsed: 0.001 s
 [ERROR] testFailure -- Time elapsed: 0.002 s <<< FAILURE!
@@ -300,11 +300,11 @@ def test_gson_profile_log_parser():
 
 
 def test_eureka_profile_properties():
-    """Test Eureka459fcf59 profile uses Gradle"""
-    profile = Eureka459fcf59()
+    """Test Eureka8227a727 profile uses Gradle"""
+    profile = Eureka8227a727()
     assert profile.owner == "Netflix"
     assert profile.repo == "eureka"
-    assert profile.commit == "459fcf59866b1a950f6e88530a0b1b870fa5212f"
+    assert profile.commit == "8227a727534338909ef8c3b5ee3dca7641921f62"
     assert "./gradlew test" in profile.test_cmd
     assert "--rerun-tasks" in profile.test_cmd
     assert "--continue" in profile.test_cmd
@@ -312,8 +312,8 @@ def test_eureka_profile_properties():
 
 
 def test_eureka_profile_dockerfile():
-    """Test Eureka459fcf59 Dockerfile content"""
-    profile = Eureka459fcf59()
+    """Test Eureka8227a727 Dockerfile content"""
+    profile = Eureka8227a727()
     dockerfile = profile.dockerfile
     assert "FROM eclipse-temurin:8-jdk" in dockerfile
     assert f"git clone https://github.com/{profile.mirror_name}" in dockerfile
@@ -322,8 +322,8 @@ def test_eureka_profile_dockerfile():
 
 
 def test_eureka_profile_log_parser():
-    """Test Eureka459fcf59 uses Gradle JUnit XML parser"""
-    profile = Eureka459fcf59()
+    """Test Eureka8227a727 uses Gradle JUnit XML parser"""
+    profile = Eureka8227a727()
     log = """<?xml version="1.0" encoding="UTF-8"?>
 <testsuite name="com.netflix.eureka.TestClass" tests="2">
   <testcase name="testMethod" classname="com.netflix.eureka.TestClass" time="0.001"/>
@@ -338,7 +338,7 @@ def test_eureka_profile_log_parser():
 
 def test_java_profile_inheritance_in_concrete_profiles():
     """Test that concrete Java profiles properly inherit from JavaProfile"""
-    profiles_to_test = [Gsondd2fe59c, Eureka459fcf59]
+    profiles_to_test = [Gson8260eddf, Eureka8227a727]
 
     for profile_class in profiles_to_test:
         profile = profile_class()
@@ -360,7 +360,7 @@ def test_java_profile_inheritance_in_concrete_profiles():
 
 def test_java_profile_build_image():
     """Test JavaProfile.build_image writes Dockerfile and runs docker"""
-    profile = Gsondd2fe59c()
+    profile = Gson8260eddf()
 
     with (
         patch("pathlib.Path.mkdir") as mock_mkdir,
@@ -384,7 +384,7 @@ def test_java_profile_build_image():
 
 def test_java_profile_build_image_error_handling():
     """Test build_image error handling"""
-    profile = Gsondd2fe59c()
+    profile = Gson8260eddf()
 
     with (
         patch("pathlib.Path.mkdir"),
@@ -400,7 +400,7 @@ def test_java_profile_build_image_error_handling():
 
 def test_java_profile_build_image_checks_exit_code():
     """Test build_image checks subprocess exit code"""
-    profile = Gsondd2fe59c()
+    profile = Gson8260eddf()
 
     with (
         patch("pathlib.Path.mkdir"),
@@ -413,7 +413,7 @@ def test_java_profile_build_image_checks_exit_code():
 
 def test_java_profile_build_image_file_operations():
     """Test build_image creates Dockerfile and build log"""
-    profile = Gsondd2fe59c()
+    profile = Gson8260eddf()
 
     with (
         patch("pathlib.Path.mkdir"),
@@ -436,7 +436,7 @@ def test_java_profile_build_image_file_operations():
 
 def test_java_profile_build_image_subprocess_parameters():
     """Test build_image subprocess parameters"""
-    profile = Gsondd2fe59c()
+    profile = Gson8260eddf()
 
     with (
         patch("pathlib.Path.mkdir"),

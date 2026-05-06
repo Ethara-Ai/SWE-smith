@@ -98,47 +98,6 @@ RUN npm install
 
 
 @dataclass
-class Trpc2f40ba93(TypeScriptProfile):
-    owner: str = "trpc"
-    repo: str = "trpc"
-    commit: str = "2f40ba935ad7f7d29eec3f9c45d353450b43e852"
-    test_cmd: str = "pnpm test"
-
-    @property
-    def dockerfile(self):
-        return f"""FROM node:22
-RUN apt-get update && apt-get install -y git procps && rm -rf /var/lib/apt/lists/*
-RUN npm install -g pnpm
-RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
-WORKDIR /{ENV_NAME}
-RUN pnpm install
-"""
-
-    def log_parser(self, log: str) -> dict[str, str]:
-        return parse_log_vitest(log)
-
-
-@dataclass
-class ClassValidator977d2c70(TypeScriptProfile):
-    owner: str = "typestack"
-    repo: str = "class-validator"
-    commit: str = "977d2c707930db602b6450d0c03ee85c70756f1f"
-    test_cmd: str = "npm test"
-
-    @property
-    def dockerfile(self):
-        return f"""FROM node:18-slim
-RUN apt-get update && apt-get install -y git procps && rm -rf /var/lib/apt/lists/*
-RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
-WORKDIR /{ENV_NAME}
-RUN npm install
-"""
-
-    def log_parser(self, log: str) -> dict[str, str]:
-        return parse_log_jest(log)
-
-
-@dataclass
 class NextChatc3b8c158(TypeScriptProfile):
     owner: str = "ChatGPTNextWeb"
     repo: str = "NextChat"
@@ -164,10 +123,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Cherrystudiob767d6e2(TypeScriptProfile):
+class Cherrystudio101904d0(TypeScriptProfile):
     owner: str = "CherryHQ"
     repo: str = "cherry-studio"
-    commit: str = "b767d6e2bff302740f2e6d8e49b8cec221147a4d"
+    commit: str = "101904d03518e601ad2970242b2f29b15219073b"
     test_cmd: str = (
         "pnpm vitest run --reporter=verbose --silent --passWithNoTests || true"
     )
@@ -192,10 +151,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class CopilotKitfd993504(TypeScriptProfile):
+class CopilotKit23d47705(TypeScriptProfile):
     owner: str = "CopilotKit"
     repo: str = "CopilotKit"
-    commit: str = "fd993504783b31ed2374252d6667c47ff9b32980"
+    commit: str = "23d4770537c9e9a90f68237ae94fa588e1f99b2a"
     test_cmd: str = "pnpm test"
 
     @property
@@ -228,10 +187,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class RSSHubee161b72(TypeScriptProfile):
+class RSSHubae48d4cf(TypeScriptProfile):
     owner: str = "DIYgod"
     repo: str = "RSSHub"
-    commit: str = "ee161b72e4da5200213850cb03defd50e4452ecf"
+    commit: str = "ae48d4cfd1e4be03e85d03ebe555bcef48bdd21a"
     test_cmd: str = "pnpm vitest run"
 
     @property
@@ -252,10 +211,10 @@ CMD ["pnpm", "start"]"""
 
 
 @dataclass
-class Dokploy1e7522d1(TypeScriptProfile):
+class Dokploy9b416b36(TypeScriptProfile):
     owner: str = "Dokploy"
     repo: str = "dokploy"
-    commit: str = "1e7522d1731f8c50ea65970e5ac129f2417c2a38"
+    commit: str = "9b416b36992b35b3b27d42b19be6a6e572e6beec"
     test_cmd: str = "pnpm --filter dokploy run test --run --reporter=verbose"
 
     @property
@@ -284,10 +243,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Effect5df4da10(TypeScriptProfile):
+class Effect70ce155c(TypeScriptProfile):
     owner: str = "Effect-TS"
     repo: str = "effect"
-    commit: str = "5df4da10de444f379a166f4b28721e75100bb838"
+    commit: str = "70ce155cd73a3b4cd723fe955454b5837b428f76"
     test_cmd: str = "pnpm vitest run"
 
     @property
@@ -339,10 +298,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class FigmaContextMCPc7304173(TypeScriptProfile):
+class FigmaContextMCPfe3b504d(TypeScriptProfile):
     owner: str = "GLips"
     repo: str = "Figma-Context-MCP"
-    commit: str = "c73041730cb2b288a32c6c6ba4b48d8970841659"
+    commit: str = "fe3b504d75b671896a557188a9ad801b7bac40ee"
     test_cmd: str = "pnpm test -- src/tests/benchmark.test.ts"
 
     @property
@@ -366,10 +325,10 @@ CMD ["pnpm", "start"]"""
 
 
 @dataclass
-class Gitbook81f8ddcf(TypeScriptProfile):
+class Gitbook8bfced2e(TypeScriptProfile):
     owner: str = "GitbookIO"
     repo: str = "gitbook"
-    commit: str = "81f8ddcf27ec398a33b6f676a81e9a791b673ce2"
+    commit: str = "8bfced2e0de48569ec7a69589eb344795ec4213d"
     test_cmd: str = "bun run unit"
 
     @property
@@ -416,10 +375,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Metamaskextension5b029fa6(TypeScriptProfile):
+class Metamaskextensionbaea03ff(TypeScriptProfile):
     owner: str = "MetaMask"
     repo: str = "metamask-extension"
-    commit: str = "5b029fa6759efdaa18c597efc253ad38d2822488"
+    commit: str = "baea03ff3f49efc967a8f61c799d12616d54b0dc"
     test_cmd: str = "yarn test:unit --ci --reporters=default --reporters=jest-junit --outputFile=test-results.xml"
 
     @property
@@ -443,10 +402,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class NativeScript3d6a4392(TypeScriptProfile):
+class NativeScript0c8229c6(TypeScriptProfile):
     owner: str = "NativeScript"
     repo: str = "NativeScript"
-    commit: str = "3d6a4392f6008e4f43f8f5439a256c50e3707101"
+    commit: str = "0c8229c6c84b51f6253eeb757e27f6bc8ffaf9ae"
     test_cmd: str = "npx nx run-many --target=test --all --parallel=1 --verbose"
 
     @property
@@ -468,10 +427,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class OpenCute84c0cfd(TypeScriptProfile):
+class OpenCutd1f4cb61(TypeScriptProfile):
     owner: str = "OpenCut-app"
     repo: str = "OpenCut"
-    commit: str = "e84c0cfda6784abb9bcb72aae757233cd8951780"
+    commit: str = "d1f4cb615b7fe5e08628119fceec075fbb5044a7"
     test_cmd: str = "bun test"
 
     @property
@@ -518,10 +477,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Folo62efdd29(TypeScriptProfile):
+class Folo43186b7f(TypeScriptProfile):
     owner: str = "RSSNext"
     repo: str = "Folo"
-    commit: str = "62efdd29b21fce9681e4e1497b6ab7084e5a41b0"
+    commit: str = "43186b7ffb3e3eb064aff56400162ca493283e8f"
     test_cmd: str = "pnpm run test"
 
     @property
@@ -594,10 +553,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Queryd6884583(TypeScriptProfile):
+class Query9d1ce70b(TypeScriptProfile):
     owner: str = "TanStack"
     repo: str = "query"
-    commit: str = "d68845833b19e9168e6f822b413d5124c8c5904c"
+    commit: str = "9d1ce70b39d91271356432147d16f5441f9fa892"
     test_cmd: str = "pnpm run test:ci"
 
     @property
@@ -620,10 +579,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Unleash120f50bc(TypeScriptProfile):
+class Unleash4e917683(TypeScriptProfile):
     owner: str = "Unleash"
     repo: str = "unleash"
-    commit: str = "120f50bcd0e939699162d572c975974a57ea7cfc"
+    commit: str = "4e9176836981985b9b82146269193f269821d254"
     test_cmd: str = (
         "NODE_ENV=test PORT=4243 npx vitest run --config vitest.unit.config.ts src/lib"
     )
@@ -681,10 +640,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class SponsorBlockdfddffbc(TypeScriptProfile):
+class SponsorBlock4af96fe8(TypeScriptProfile):
     owner: str = "ajayyy"
     repo: str = "SponsorBlock"
-    commit: str = "dfddffbc5128dbc55b4dc7c83cdcd18787f48ba4"
+    commit: str = "4af96fe807d1040590c2aeabe9da09c553b5b57e"
     test_cmd: str = "npx jest"
 
     @property
@@ -703,10 +662,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Bulletproofreact63f68340(TypeScriptProfile):
+class Bulletproofreact79710eba(TypeScriptProfile):
     owner: str = "alan2207"
     repo: str = "bulletproof-react"
-    commit: str = "63f68340798e1f0e8f3d04732152a5146f827d04"
+    commit: str = "79710ebadede09623d11e0ab702eff30f237df5c"
     test_cmd: str = "VITE_APP_API_URL=http://localhost:3000 yarn vitest run"
 
     @property
@@ -732,10 +691,10 @@ CMD ["yarn", "test"]"""
 
 
 @dataclass
-class Antdesignpro607e63f4(TypeScriptProfile):
+class Antdesignpro677ecfd2(TypeScriptProfile):
     owner: str = "ant-design"
     repo: str = "ant-design-pro"
-    commit: str = "607e63f4fdb49d78306a618f2b2c29291ce85500"
+    commit: str = "677ecfd28ee5920cc1004de63676cdb3bde9e2b8"
     test_cmd: str = "npm test -- --ci --colors --no-cache"
 
     @property
@@ -757,10 +716,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Antdesignef322504(TypeScriptProfile):
+class Antdesign93852564(TypeScriptProfile):
     owner: str = "ant-design"
     repo: str = "ant-design"
-    commit: str = "ef32250465cdbb4521c084e4189499a7d45491e2"
+    commit: str = "9385256474e3326c0bb088ff46883e107f96e4db"
     test_cmd: str = "npm test"
 
     @property
@@ -782,10 +741,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class G2e58f72b1(TypeScriptProfile):
+class G21a812894(TypeScriptProfile):
     owner: str = "antvis"
     repo: str = "G2"
-    commit: str = "e58f72b19aa47834423d55cb16c8d9df634424ba"
+    commit: str = "1a812894169acbec8e6e156eeb4bf8f38d31d1c6"
     test_cmd: str = "npm test -- --reporter=default"
 
     @property
@@ -807,10 +766,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class G691c0ac85(TypeScriptProfile):
+class G65a5551ce(TypeScriptProfile):
     owner: str = "antvis"
     repo: str = "G6"
-    commit: str = "91c0ac85e4e636a05bd1a3c5e56a4928d1242a9b"
+    commit: str = "5a5551cea13d021d12c90a87116e3c6092d53210"
     test_cmd: str = "pnpm -r test"
 
     @property
@@ -842,10 +801,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Awscdk17f69d67(TypeScriptProfile):
+class Awscdk98bc8609(TypeScriptProfile):
     owner: str = "aws"
     repo: str = "aws-cdk"
-    commit: str = "17f69d679724eff41fdbbe6ae29fd8111e7db398"
+    commit: str = "98bc86094b6b90547d56b61fc069129d451cb90c"
     test_cmd: str = "cd packages/@aws-cdk/cx-api && yarn test"
 
     @property
@@ -875,10 +834,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Backstagef2fc1def(TypeScriptProfile):
+class Backstagee68cb8ac(TypeScriptProfile):
     owner: str = "backstage"
     repo: str = "backstage"
-    commit: str = "f2fc1def806edca2a16f64c77a6521721b8e24d6"
+    commit: str = "e68cb8ac0f9cdc78db51aca2d470a93c868548cc"
     test_cmd: str = "NODE_OPTIONS='--no-node-snapshot --experimental-vm-modules' yarn backstage-cli repo test --runInBand --no-cache --watchAll=false packages/errors"
 
     @property
@@ -941,10 +900,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Betterauth71a0297b(TypeScriptProfile):
+class Betterauth1b259024(TypeScriptProfile):
     owner: str = "better-auth"
     repo: str = "better-auth"
-    commit: str = "71a0297b4c6e102a3a516d706ef645227f633115"
+    commit: str = "1b259024dcd1bbbc08559ee057f22c01929a72a7"
     test_cmd: str = "pnpm test -- --reporter=default"
 
     @property
@@ -968,10 +927,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Socialappcbd48c85(TypeScriptProfile):
+class Socialappa7ed3ee3(TypeScriptProfile):
     owner: str = "bluesky-social"
     repo: str = "social-app"
-    commit: str = "cbd48c855a57f1a294f4b7362eaadb505bf5f9f6"
+    commit: str = "a7ed3ee3cca5e0ddce8e5c5fe40baabf9cba0ecc"
     test_cmd: str = "yarn jest --ci --forceExit --reporters=default --reporters=jest-junit --outputFile=test_output.txt"
 
     @property
@@ -998,10 +957,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Reactwindow2b982512(TypeScriptProfile):
+class Reactwindow94b465be(TypeScriptProfile):
     owner: str = "bvaughn"
     repo: str = "react-window"
-    commit: str = "2b982512ffee2fdf73466b087b3715e98b2191f2"
+    commit: str = "94b465beb01ccac5f1aa5b6f8b2a3a9274a89de0"
     test_cmd: str = "pnpm run test:ci"
 
     @property
@@ -1023,10 +982,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class UITARSdesktop3f254968(TypeScriptProfile):
+class UITARSdesktop7986f5ae(TypeScriptProfile):
     owner: str = "bytedance"
     repo: str = "UI-TARS-desktop"
-    commit: str = "3f254968e627eaceba5f3e76de18ee9cf8b4d981"
+    commit: str = "7986f5aea500c4535c0e55dc5c5d0cda73767c45"
     test_cmd: str = "pnpm test -- --run"
 
     @property
@@ -1050,10 +1009,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Calcom3c1d9068(TypeScriptProfile):
+class Calcoma4a01a0f(TypeScriptProfile):
     owner: str = "calcom"
     repo: str = "cal.com"
-    commit: str = "3c1d90680890970b536a15aa385fb65da1f0ffcb"
+    commit: str = "a4a01a0fa8253254e8c7ab848aeca2cf7ccb4f1f"
     test_cmd: str = "TZ=UTC yarn vitest run --reporter=verbose"
 
     @property
@@ -1077,10 +1036,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Gitmoji72dd6f38(TypeScriptProfile):
+class Gitmoji0992a2ad(TypeScriptProfile):
     owner: str = "carloscuesta"
     repo: str = "gitmoji"
-    commit: str = "72dd6f383cc0c97071683a77f01dc1d6d89f8d06"
+    commit: str = "0992a2ad0ef69114e2c996ab7cb47b9f8d0e1f74"
     test_cmd: str = "pnpm turbo run test"
 
     @property
@@ -1101,10 +1060,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Chakraui527a04c7(TypeScriptProfile):
+class Chakrauif59e7b9f(TypeScriptProfile):
     owner: str = "chakra-ui"
     repo: str = "chakra-ui"
-    commit: str = "527a04c77278bb1f7deed3cb79c797003a07fd97"
+    commit: str = "f59e7b9f092b627395a9178b31a299954858c6eb"
     test_cmd: str = "pnpm test run"
 
     @property
@@ -1126,10 +1085,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Clineb5b503dd(TypeScriptProfile):
+class Cline90c81122(TypeScriptProfile):
     owner: str = "cline"
     repo: str = "cline"
-    commit: str = "b5b503dd50fef96e846ed618d3146f097c27194c"
+    commit: str = "90c8112257f40bfabbf5e6e2bcf5013fd151c2e7"
     test_cmd: str = "npm run test:unit"
 
     @property
@@ -1153,10 +1112,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Ohmyopencode976ffaeb(TypeScriptProfile):
+class Ohmyopencode1ad0fd4a(TypeScriptProfile):
     owner: str = "code-yeongyu"
     repo: str = "oh-my-opencode"
-    commit: str = "976ffaeb0da5fe3151e71b65fa2c4fa75e31c384"
+    commit: str = "1ad0fd4ac80bdb8240a880fe7efcd918a708e697"
     test_cmd: str = "bun test"
 
     @property
@@ -1178,10 +1137,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Codeservere90504b8(TypeScriptProfile):
+class Codeserverdbd25c94(TypeScriptProfile):
     owner: str = "coder"
     repo: str = "code-server"
-    commit: str = "e90504b8cf1d73c36d902bbaaec7bab33f15c42e"
+    commit: str = "dbd25c945c548f2bc00a9f0186ab1e4fc7480e03"
     test_cmd: str = "npm run test:unit -- --ci --colors --reporters=default"
 
     @property
@@ -1213,10 +1172,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Editorjs90d6dec9(TypeScriptProfile):
+class Editorjs4ea9eb38(TypeScriptProfile):
     owner: str = "codex-team"
     repo: str = "editor.js"
-    commit: str = "90d6dec90ee38280965759019ea5bb18f3ad0125"
+    commit: str = "4ea9eb389847181ceb757735f8bd45cc8c2f1673"
     test_cmd: str = "xvfb-run yarn test:e2e"
 
     @property
@@ -1276,10 +1235,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Continue437ac08a(TypeScriptProfile):
+class Continuecb273098(TypeScriptProfile):
     owner: str = "continuedev"
     repo: str = "continue"
-    commit: str = "437ac08acfbe4699149711890247023fc6d167b3"
+    commit: str = "cb273098d968906d25ee737b454f0b5f13ea2482"
     test_cmd: str = "cd core && npx vitest run --reporter=verbose"
 
     @property
@@ -1303,10 +1262,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Commitlint5635cf0a(TypeScriptProfile):
+class Commitlintb3391112(TypeScriptProfile):
     owner: str = "conventional-changelog"
     repo: str = "commitlint"
-    commit: str = "5635cf0ab885005aa56f2917b9db5e9c2259722d"
+    commit: str = "b3391112999b0a5f638cdfa76addfa82694db793"
     test_cmd: str = "yarn vitest run --reporter=verbose"
 
     @property
@@ -1354,10 +1313,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Directusac922d18(TypeScriptProfile):
+class Directus4fa35e05(TypeScriptProfile):
     owner: str = "directus"
     repo: str = "directus"
-    commit: str = "ac922d18f6039582a18737a6dc6d1d9a08a194e8"
+    commit: str = "4fa35e05ba9a611c8a19d186955ca9216ab6fe75"
     test_cmd: str = "pnpm --recursive --filter '!tests-blackbox' test"
 
     @property
@@ -1380,10 +1339,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Univercc701579(TypeScriptProfile):
+class Univer4055e425(TypeScriptProfile):
     owner: str = "dream-num"
     repo: str = "univer"
-    commit: str = "cc70157965f88e102002baa6e0a568e5190f6a80"
+    commit: str = "4055e42530b0aac1df690e7a3fe47d55efbe6c05"
     test_cmd: str = "pnpm test -- --passWithNoTests --reporter=verbose"
 
     @property
@@ -1406,10 +1365,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Drizzleorma086f59f(TypeScriptProfile):
+class Drizzleorm48e54060(TypeScriptProfile):
     owner: str = "drizzle-team"
     repo: str = "drizzle-orm"
-    commit: str = "a086f59fba7f46f3a077893ba912c99e91eaa760"
+    commit: str = "48e5406027103a9fca6eb66417187c4a8b5c6aa3"
     test_cmd: str = "pnpm run test:types"
 
     @property
@@ -1453,10 +1412,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Excalidrawf39ac4a6(TypeScriptProfile):
+class Excalidraw974b338b(TypeScriptProfile):
     owner: str = "excalidraw"
     repo: str = "excalidraw"
-    commit: str = "f39ac4a653335efaaaf9834bf28e9ffc1452cb59"
+    commit: str = "974b338b7e5fed5176cfd83b7a120b137751a1db"
     test_cmd: str = "yarn test:app --watch=false"
 
     @property
@@ -1478,10 +1437,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Fabricjs6742471c(TypeScriptProfile):
+class Fabricjsfd50b70d(TypeScriptProfile):
     owner: str = "fabricjs"
     repo: str = "fabric.js"
-    commit: str = "6742471c23e5fd8afbb1282246b4b785455c8c17"
+    commit: str = "fd50b70d365533e79ce421f64947fdc692cec619"
     test_cmd: str = "npm run test:vitest"
 
     @property
@@ -1553,10 +1512,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Foam2cac8162(TypeScriptProfile):
+class Foam8494c91a(TypeScriptProfile):
     owner: str = "foambubble"
     repo: str = "foam"
-    commit: str = "2cac816272157f3a964b30adf4f29c0b2973cce8"
+    commit: str = "8494c91a4e2351a0a0dd1e3ffe22a5509942b48f"
     test_cmd: str = "xvfb-run -a yarn workspace foam-vscode test:unit"
 
     @property
@@ -1585,10 +1544,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Formbricks4b0c5186(TypeScriptProfile):
+class Formbricks255c9785(TypeScriptProfile):
     owner: str = "formbricks"
     repo: str = "formbricks"
-    commit: str = "4b0c518683fad1cfc292feab1e4e3b0fe82ccaca"
+    commit: str = "255c97854ff5c848fcbcd15fe42a90010fe4aa7e"
     test_cmd: str = "pnpm run test"
 
     @property
@@ -1614,10 +1573,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Pangoline4d4c628(TypeScriptProfile):
+class Pangolin432dc818(TypeScriptProfile):
     owner: str = "fosrl"
     repo: str = "pangolin"
-    commit: str = "e4d4c62833eb309ffb2fd9db05d1dbee6b6761f6"
+    commit: str = "432dc818759be486fb8ad1b2ec4e0e6c082607b9"
     test_cmd: str = 'find server -name "*.test.ts" -exec npx tsx {} \\;'
 
     @property
@@ -1645,10 +1604,10 @@ CMD ["npm", "run", "start"]"""
 
 
 @dataclass
-class Geminicli1b274b08(TypeScriptProfile):
+class Geminicli82f6ea5b(TypeScriptProfile):
     owner: str = "google-gemini"
     repo: str = "gemini-cli"
-    commit: str = "1b274b081d4f1819df244cdae9d45062dde54a2f"
+    commit: str = "82f6ea5b61a6321748d81a62d34c62bf7d2c9fa2"
     test_cmd: str = "npm run test:ci"
 
     @property
@@ -1676,10 +1635,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Crystal65b3b40b(TypeScriptProfile):
+class Crystal5955c01e(TypeScriptProfile):
     owner: str = "graphile"
     repo: str = "crystal"
-    commit: str = "65b3b40b33853b62366c2ba378cdb83343b0b0ac"
+    commit: str = "5955c01e86259eb9835772e0b59dcebdaea3ce04"
     test_cmd: str = (
         "yarn jest --ci --color=false utils/lru utils/tamedevil utils/pg-sql2"
     )
@@ -1706,10 +1665,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Hexo1fd997c3(TypeScriptProfile):
+class Hexoc3a7bef0(TypeScriptProfile):
     owner: str = "hexojs"
     repo: str = "hexo"
-    commit: str = "1fd997c3ad772ab7ed85b71b886d55248d92bb68"
+    commit: str = "c3a7bef0d9adfe15b00b91cfd7c9f401953b25d7"
     test_cmd: str = "npm test -- --reporter spec"
 
     @property
@@ -1731,10 +1690,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Homebridge3a341e08(TypeScriptProfile):
+class Homebridgebd78497a(TypeScriptProfile):
     owner: str = "homebridge"
     repo: str = "homebridge"
-    commit: str = "3a341e0838c99abfdf7a2d76e5e1e2a2af7ccb09"
+    commit: str = "bd78497a4cb66368fa3157713e39a01fd083bade"
     test_cmd: str = "npm test"
 
     @property
@@ -1756,10 +1715,10 @@ CMD ["npm", "test"]"""
 
 
 @dataclass
-class Honof7d272ab(TypeScriptProfile):
+class Honof10dee89(TypeScriptProfile):
     owner: str = "honojs"
     repo: str = "hono"
-    commit: str = "f7d272abe1644e50ab5fe9cb53f5965c35d77226"
+    commit: str = "f10dee89ced5956b73c1cdc416d6bc0fd54d63b7"
     test_cmd: str = "bun run test"
 
     @property
@@ -1870,10 +1829,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Reactnativefirebase7df61307(TypeScriptProfile):
+class Reactnativefirebase6e8681bb(TypeScriptProfile):
     owner: str = "invertase"
     repo: str = "react-native-firebase"
-    commit: str = "7df61307f19db84df72c4d3587a8994aeb7d3fce"
+    commit: str = "6e8681bb0b99ac8663fe9a0edbde6cc5ed0c0764"
     test_cmd: str = "yarn jest --ci --colors 2>&1 | tee test_output.txt"
 
     @property
@@ -1897,10 +1856,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Ioniconsa9d1b7e2(TypeScriptProfile):
+class Ionicons2a8e43af(TypeScriptProfile):
     owner: str = "ionic-team"
     repo: str = "ionicons"
-    commit: str = "a9d1b7e23d7b9dec29f2041897ab14b2cef55064"
+    commit: str = "2a8e43aff06a344604af05fe8d4539dd39b7a5a3"
     test_cmd: str = "npm run test.spec -- --ci --no-cache --verbose"
 
     @property
@@ -1920,10 +1879,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class NextjsBoilerplate503d2665(TypeScriptProfile):
+class NextjsBoilerplateb4daeaff(TypeScriptProfile):
     owner: str = "ixartz"
     repo: str = "Next-js-Boilerplate"
-    commit: str = "503d2665054781168e8d3704b4a56f37a2cdb750"
+    commit: str = "b4daeaffec5d9dfd8446eea1831093d19fb58f28"
     test_cmd: str = "npm test"
 
     @property
@@ -1945,10 +1904,10 @@ CMD ["npm", "start"]"""
 
 
 @dataclass
-class Sigmajs13062dc5(TypeScriptProfile):
+class Sigmajsd32c4e5b(TypeScriptProfile):
     owner: str = "jacomyal"
     repo: str = "sigma.js"
-    commit: str = "13062dc5be4f876d7c188411b120bb5a3a0be6f4"
+    commit: str = "d32c4e5bfd4c5f49724ebc21bd786b01be555dac"
     test_cmd: str = "npm run test:unit --workspace=@sigma/test"
 
     @property
@@ -1971,10 +1930,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Janaffbde58(TypeScriptProfile):
+class Jan23930e2b(TypeScriptProfile):
     owner: str = "janhq"
     repo: str = "jan"
-    commit: str = "affbde587abb29497017afd63fa79a72ede0780a"
+    commit: str = "23930e2b0c291e91f9cd24a17ed722e8427fb5f9"
     test_cmd: str = "yarn test"
 
     @property
@@ -2025,10 +1984,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Jest905bcbce(TypeScriptProfile):
+class Jestdb7141a9(TypeScriptProfile):
     owner: str = "jestjs"
     repo: str = "jest"
-    commit: str = "905bcbced3d40cdf7aadc4cdf6fb731c4bb3dbe3"
+    commit: str = "db7141a93cc85fab81cf9c25368e1f2b2c312286"
     test_cmd: str = "yarn jest --ci"
 
     @property
@@ -2052,10 +2011,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class FastGPTcfded3af(TypeScriptProfile):
+class FastGPT89b80f75(TypeScriptProfile):
     owner: str = "labring"
     repo: str = "FastGPT"
-    commit: str = "cfded3af41b2823fd2654d90ee30ae4b63a19924"
+    commit: str = "89b80f75a445eeb6140c959a229842f7da3fc3aa"
     test_cmd: str = "pnpm test"
 
     @property
@@ -2079,10 +2038,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Langchainjs41bfea51(TypeScriptProfile):
+class Langchainjs6cf39fe9(TypeScriptProfile):
     owner: str = "langchain-ai"
     repo: str = "langchainjs"
-    commit: str = "41bfea51cf119573a3b956ee782d2731fe71c681"
+    commit: str = "6cf39fe9636804f6280db0b98c4a4c72d5b103a0"
     test_cmd: str = "pnpm test:unit"
 
     @property
@@ -2106,10 +2065,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Lerna215ff002(TypeScriptProfile):
+class Lernaf4387d67(TypeScriptProfile):
     owner: str = "lerna"
     repo: str = "lerna"
-    commit: str = "215ff0020a53ee7fe67ee954286aeefd24ea761c"
+    commit: str = "f4387d673bfdf4923ab62cd52d3498dec6dc7f2c"
     test_cmd: str = "npm test"
 
     @property
@@ -2129,10 +2088,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Lobehubc576a13a(TypeScriptProfile):
+class Lobehub02767bac(TypeScriptProfile):
     owner: str = "lobehub"
     repo: str = "lobehub"
-    commit: str = "c576a13a4366533b32dd03307f6babd321055819"
+    commit: str = "02767bac55f24173e01dfef3829cc13eb8e67684"
     test_cmd: str = "pnpm run test-app"
 
     @property
@@ -2156,10 +2115,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Mapboxgljs9236fbb0(TypeScriptProfile):
+class Mapboxgljsee2d576f(TypeScriptProfile):
     owner: str = "mapbox"
     repo: str = "mapbox-gl-js"
-    commit: str = "9236fbb0e017656d5a0ad881c9f55e4859064211"
+    commit: str = "ee2d576f85180cfc4796c079ea39693fdf7010c6"
     test_cmd: str = "npm run test-unit"
 
     @property
@@ -2217,10 +2176,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Reactadmin823caa0b(TypeScriptProfile):
+class Reactadmin5ad57785(TypeScriptProfile):
     owner: str = "marmelab"
     repo: str = "react-admin"
-    commit: str = "823caa0b6489fc8133685525e22d30ddf57643fa"
+    commit: str = "5ad577857542b75ecc2dfd71366329c4a30299f0"
     test_cmd: str = "yarn test-unit-ci"
 
     @property
@@ -2244,10 +2203,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Aipdfchatbotlangchain4bb98092(TypeScriptProfile):
+class Aipdfchatbotlangchain4b2647c4(TypeScriptProfile):
     owner: str = "mayooear"
     repo: str = "ai-pdf-chatbot-langchain"
-    commit: str = "4bb98092472d0af57db600a10ba2183d76adecc4"
+    commit: str = "4b2647c41992a50b72ff6befb9a0bd71461e3dbe"
     test_cmd: str = "yarn workspace backend jest --testPathIgnorePatterns integration.test.ts state.test.ts --passWithNoTests"
 
     @property
@@ -2273,10 +2232,10 @@ CMD ["yarn", "build"]"""
 
 
 @dataclass
-class Medusa3eb69ebd(TypeScriptProfile):
+class Medusa062f629c(TypeScriptProfile):
     owner: str = "medusajs"
     repo: str = "medusa"
-    commit: str = "3eb69ebd3145d69be914f0ae15f6a02940ad5d0b"
+    commit: str = "062f629c4c06a1c2633ff341dc6f27f460fbfa77"
     test_cmd: str = "yarn jest --ci --colors --maxWorkers=2 packages/medusa/src"
 
     @property
@@ -2305,10 +2264,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class TypeScript0a74ec4e(TypeScriptProfile):
+class TypeScriptf350b523(TypeScriptProfile):
     owner: str = "microsoft"
     repo: str = "TypeScript"
-    commit: str = "0a74ec4e166d2efb822135ac9693560d43f06233"
+    commit: str = "f350b52331494b68c90ab02e2b6d0828d2a22a74"
     test_cmd: str = "npx hereby runtests-parallel --light=true --reporter=spec"
 
     @property
@@ -2341,10 +2300,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Vscode4166e90a(TypeScriptProfile):
+class Vscode07f93b5b(TypeScriptProfile):
     owner: str = "microsoft"
     repo: str = "vscode"
-    commit: str = "4166e90ac290db7f77800a4f6702903ea4eed476"
+    commit: str = "07f93b5bc73ba1d51e7c292e3779cb4263875de4"
     test_cmd: str = "npm run compile && ./node_modules/.bin/mocha test/unit/node/index.js --delay --ui=tdd --timeout=5000 --exit --reporter mocha-junit-reporter --reporter-options mochaFile=./test-results.xml || true"
 
     @property
@@ -2376,10 +2335,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Losslesscut26013077(TypeScriptProfile):
+class Losslesscut260426e3(TypeScriptProfile):
     owner: str = "mifi"
     repo: str = "lossless-cut"
-    commit: str = "26013077affafc6160a64bc875762c02f0c3ca89"
+    commit: str = "260426e3d874236708ec9becf158fcdf4fd7449a"
     test_cmd: str = "yarn test run"
 
     @property
@@ -2418,10 +2377,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Msw3a7b4510(TypeScriptProfile):
+class Mswde188887(TypeScriptProfile):
     owner: str = "mswjs"
     repo: str = "msw"
-    commit: str = "3a7b4510138bc6e7ab5078f53e623d6a25cfd9ac"
+    commit: str = "de188887793fcc1956f4e506459fe3db0a13dabf"
     test_cmd: str = "pnpm test:unit --run"
 
     @property
@@ -2445,10 +2404,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class N8ncfd59cc5(TypeScriptProfile):
+class N8nf42be903(TypeScriptProfile):
     owner: str = "n8n-io"
     repo: str = "n8n"
-    commit: str = "cfd59cc55b998fe7921a2d11ba495e0410ad4aeb"
+    commit: str = "f42be9030e7f549da5ed6dc3902d058c2ebbadcb"
     test_cmd: str = "pnpm turbo run test --filter=n8n-workflow --filter=n8n-core -- --reporter=default --reporter=junit --outputFile=results.xml"
 
     @property
@@ -2503,10 +2462,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Nest346c9543(TypeScriptProfile):
+class Nest3c6c2855(TypeScriptProfile):
     owner: str = "nestjs"
     repo: str = "nest"
-    commit: str = "346c9543120c692f314bdbf55fc9956d2fa6d87e"
+    commit: str = "3c6c285561f56c2f9e0301f0b8bbf7b2c1395806"
     test_cmd: str = "npm test"
 
     @property
@@ -2528,10 +2487,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Nx4f02c6b5(TypeScriptProfile):
+class Nxb1e71ab2(TypeScriptProfile):
     owner: str = "nrwl"
     repo: str = "nx"
-    commit: str = "4f02c6b56edbe0c1dcb39d65336a6ab332b4a053"
+    commit: str = "b1e71ab2a7069a4f0cae8b6c02f3c5c406d98133"
     test_cmd: str = "pnpm nx test nx --verbose"
 
     @property
@@ -2566,10 +2525,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Nuxt06533105(TypeScriptProfile):
+class Nuxt93b085c2(TypeScriptProfile):
     owner: str = "nuxt"
     repo: str = "nuxt"
-    commit: str = "06533105e2e68e0f59440291762a7d5c3b0cb65b"
+    commit: str = "93b085c2d3e2396a57b4ef498fca0a636a000bb3"
     test_cmd: str = "pnpm test:unit"
 
     @property
@@ -2621,10 +2580,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Newsnow951241bf(TypeScriptProfile):
+class Newsnow625bf04b(TypeScriptProfile):
     owner: str = "ourongxing"
     repo: str = "newsnow"
-    commit: str = "951241bf1be2b09d6e7b0ac8aa63a251ecc2e2b8"
+    commit: str = "625bf04bc9ec13acd5554d241fa1683b0506027a"
     test_cmd: str = "pnpm exec vitest run -c vitest.config.ts"
 
     @property
@@ -2643,10 +2602,10 @@ CMD ["pnpm", "dev"]"""
 
 
 @dataclass
-class Payload8f660355(TypeScriptProfile):
+class Payload962b4fe0(TypeScriptProfile):
     owner: str = "payloadcms"
     repo: str = "payload"
-    commit: str = "8f66035522f568d42098a7ad525e7bf700662b9a"
+    commit: str = "962b4fe01c7c518fb97abf2c7d15b26f3c6ec7a0"
     test_cmd: str = "pnpm run test:unit"
 
     @property
@@ -2670,10 +2629,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Drawnixa046d152(TypeScriptProfile):
+class Drawnixe28ba808(TypeScriptProfile):
     owner: str = "plait-board"
     repo: str = "drawnix"
-    commit: str = "a046d1526f5be05f17486a026cf01d0b01842ac2"
+    commit: str = "e28ba80864397fa9934b2b18d4f16a6af939cf38"
     test_cmd: str = "npx nx run-many -t test --no-cloud --skip-nx-cache"
 
     @property
@@ -2695,10 +2654,10 @@ CMD ["npm", "start"]"""
 
 
 @dataclass
-class Reactspring2ff6de7a(TypeScriptProfile):
+class Reactspringe0c2004a(TypeScriptProfile):
     owner: str = "pmndrs"
     repo: str = "react-spring"
-    commit: str = "2ff6de7a3b295a79475113824b0962ebf3ca5249"
+    commit: str = "e0c2004a9b2f380234a1455230bf06f5d96316e3"
     test_cmd: str = "yarn test:unit --ci --colors=false"
 
     @property
@@ -2720,10 +2679,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Reactthreefiber9525ea0d(TypeScriptProfile):
+class Reactthreefibera67318ac(TypeScriptProfile):
     owner: str = "pmndrs"
     repo: str = "react-three-fiber"
-    commit: str = "9525ea0d63c8b42ab6256b82ce068a394f88b1f8"
+    commit: str = "a67318ac380878f7268ea0e65bb3303aa96e9d8d"
     test_cmd: str = "yarn test --ci --no-cache --colors false"
 
     @property
@@ -2745,10 +2704,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Zustand99379a6e(TypeScriptProfile):
+class Zustand6bc451ef(TypeScriptProfile):
     owner: str = "pmndrs"
     repo: str = "zustand"
-    commit: str = "99379a6eef0d1a9d57d5a96124a0fb129f38439a"
+    commit: str = "6bc451efd5f0d4ef6e7b2c8d6fc6f8340562a31d"
     test_cmd: str = "pnpm run test:spec"
 
     @property
@@ -2770,10 +2729,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Pnpm47e85018(TypeScriptProfile):
+class Pnpm832d8986(TypeScriptProfile):
     owner: str = "pnpm"
     repo: str = "pnpm"
-    commit: str = "47e850180adcde91978f12a6513218ade26857f4"
+    commit: str = "832d898683926673795c5c7c979d9d97c408ea43"
     test_cmd: str = "pnpm run prepare-fixtures"
 
     @property
@@ -2803,10 +2762,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Prismaf6b1ac64(TypeScriptProfile):
+class Prismad6d9fc9e(TypeScriptProfile):
     owner: str = "prisma"
     repo: str = "prisma"
-    commit: str = "f6b1ac64d54f84060e5d2676f1f29031d9020984"
+    commit: str = "d6d9fc9ed341946d45c7d0aba35081a7bd741aa1"
     test_cmd: str = "cd packages/get-platform && pnpm exec jest --ci --reporters=default --reporters=jest-junit --outputFile=test_output.xml"
 
     @property
@@ -2832,10 +2791,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Tsx3a3a0071(TypeScriptProfile):
+class Tsx98f94189(TypeScriptProfile):
     owner: str = "privatenumber"
     repo: str = "tsx"
-    commit: str = "3a3a0071c78eee94b7c73776729389e38056c21a"
+    commit: str = "98f94189b971d06f9d042f7eefdcd9ef27028273"
     test_cmd: str = "node ./dist/cli.mjs tests/index.ts"
 
     @property
@@ -2859,10 +2818,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Puppeteerf4c9feef(TypeScriptProfile):
+class Puppeteer54254e49(TypeScriptProfile):
     owner: str = "puppeteer"
     repo: str = "puppeteer"
-    commit: str = "f4c9feef9972dc9f93a21e61e2876e4517316d13"
+    commit: str = "54254e49668ecf2130e0e6b5ef8d25223264ce14"
     test_cmd: str = "npm run unit -- --reporter spec"
 
     @property
@@ -2925,10 +2884,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Primitives90751370(TypeScriptProfile):
+class Primitives22473d16(TypeScriptProfile):
     owner: str = "radix-ui"
     repo: str = "primitives"
-    commit: str = "907513701a75b11a115563f9554ac6e8147bf2db"
+    commit: str = "22473d16404bfd446305db5b6c9308aece99fdec"
     test_cmd: str = "pnpm run test --run"
 
     @property
@@ -2952,10 +2911,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Reacthookform3adba2b8(TypeScriptProfile):
+class Reacthookform6938d8b1(TypeScriptProfile):
     owner: str = "react-hook-form"
     repo: str = "react-hook-form"
-    commit: str = "3adba2b816dd50bbca460bbe61df64b50bc6b1da"
+    commit: str = "6938d8b11b9e0a7ba1ce890aaa563fdc45dccae1"
     test_cmd: str = "pnpm test"
 
     @property
@@ -2977,10 +2936,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Readest9cd88fe8(TypeScriptProfile):
+class Readestdd0ff6ae(TypeScriptProfile):
     owner: str = "readest"
     repo: str = "readest"
-    commit: str = "9cd88fe8399ab40fc8b4f27630530f2deaec5839"
+    commit: str = "dd0ff6ae9d44c605668f55247aa2ce6b7fe519d3"
     test_cmd: str = "cd apps/readest-app && npx vitest run --reporter=verbose"
 
     @property
@@ -3022,10 +2981,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Recharts5108cfdf(TypeScriptProfile):
+class Recharts96091148(TypeScriptProfile):
     owner: str = "recharts"
     repo: str = "recharts"
-    commit: str = "5108cfdf965e4cab202bd213bc7e8feae781c0ef"
+    commit: str = "9609114818dbfa12417d8ca0927f335051062ff9"
     test_cmd: str = "npm test"
 
     @property
@@ -3047,10 +3006,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Noderedised55918a(TypeScriptProfile):
+class Noderedis5e8b868b(TypeScriptProfile):
     owner: str = "redis"
     repo: str = "node-redis"
-    commit: str = "ed55918a6bec978df56af889fb877373c6aef355"
+    commit: str = "5e8b868b17ab673e8c7d249dd67917844bef1d39"
     test_cmd: str = "npm test -ws --if-present"
 
     @property
@@ -3097,10 +3056,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Redux849c8ce5(TypeScriptProfile):
+class Redux38faff51(TypeScriptProfile):
     owner: str = "reduxjs"
     repo: str = "redux"
-    commit: str = "849c8ce527e6e39a7264a71ccc9bdbc86553ba93"
+    commit: str = "38faff513dc213bac08002f188243d6f23a1b74c"
     test_cmd: str = "yarn vitest --run --reporter=verbose"
 
     @property
@@ -3124,10 +3083,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Refinedgithubd4a7c3fb(TypeScriptProfile):
+class Refinedgithub888412e1(TypeScriptProfile):
     owner: str = "refined-github"
     repo: str = "refined-github"
-    commit: str = "d4a7c3fbfebff5f39a3760effbea7273dea0d01c"
+    commit: str = "888412e1997130efc43c5fdaed05ce97897b399c"
     test_cmd: str = "npm run vitest"
 
     @property
@@ -3176,10 +3135,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Reactrouter445eacd5(TypeScriptProfile):
+class Reactrouter2ba36dca(TypeScriptProfile):
     owner: str = "remix-run"
     repo: str = "react-router"
-    commit: str = "445eacd5b37e9ae9051c3415467eca77cbf3a5d7"
+    commit: str = "2ba36dcab76ba973b652f1ad5219816de5e2bc2a"
     test_cmd: str = "pnpm test"
 
     @property
@@ -3228,10 +3187,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Ui28ebf1b8(TypeScriptProfile):
+class Uif6e18c65(TypeScriptProfile):
     owner: str = "shadcn-ui"
     repo: str = "ui"
-    commit: str = "28ebf1b88a55c8897266e782c5f077ef7e175483"
+    commit: str = "f6e18c65cf625099578e0cf975930372c8b9d6a6"
     test_cmd: str = "pnpm vitest run --reporter=verbose"
 
     @property
@@ -3289,10 +3248,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Kyeb5c3eba(TypeScriptProfile):
+class Kye0fcf780(TypeScriptProfile):
     owner: str = "sindresorhus"
     repo: str = "ky"
-    commit: str = "eb5c3eba37451b7a6d598efa23d33c97919ae9e6"
+    commit: str = "e0fcf780de2bd69af2528e4b7b87ccae6bb727b1"
     test_cmd: str = "npm run build && npx ava --verbose"
 
     @property
@@ -3336,10 +3295,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Typefest051325ac(TypeScriptProfile):
+class Typefestc46020d2(TypeScriptProfile):
     owner: str = "sindresorhus"
     repo: str = "type-fest"
-    commit: str = "051325acc22f044863e52d872eef23a79e170bcb"
+    commit: str = "c46020d2f204970d21f7c87da39094b004fab709"
     test_cmd: str = "npm test"
 
     @property
@@ -3361,10 +3320,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Solida0524c06(TypeScriptProfile):
+class Solid878f94a0(TypeScriptProfile):
     owner: str = "solidjs"
     repo: str = "solid"
-    commit: str = "a0524c066d8f105e0c6c7b971490b162e9e552b1"
+    commit: str = "878f94a0310c44a0cb5d14e8dd016f7b5e609ff0"
     test_cmd: str = "pnpm run test"
 
     @property
@@ -3387,10 +3346,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class FossFLOWdaa0dd3b(TypeScriptProfile):
+class FossFLOW2b11f510(TypeScriptProfile):
     owner: str = "stan-smith"
     repo: str = "FossFLOW"
-    commit: str = "daa0dd3b76162278f79f1a2c1b063df1505c8ce1"
+    commit: str = "2b11f5100227730c8635e2ff0cd051036a108bab"
     test_cmd: str = "npm test --workspaces --if-present"
 
     @property
@@ -3412,10 +3371,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Xstate1710ace0(TypeScriptProfile):
+class Xstate811c71c2(TypeScriptProfile):
     owner: str = "statelyai"
     repo: str = "xstate"
-    commit: str = "1710ace037547b73091a05181534bea9c0a6500a"
+    commit: str = "811c71c202eb1b483e2d9092168e37d9b4e7924c"
     test_cmd: str = "pnpm test"
 
     @property
@@ -3438,10 +3397,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Strapie5b87a54(TypeScriptProfile):
+class Strapi50b2d9f7(TypeScriptProfile):
     owner: str = "strapi"
     repo: str = "strapi"
-    commit: str = "e5b87a54008c9de2b3286a4774635dcf69895d9b"
+    commit: str = "50b2d9f77da3a0d1d581622eaa6a48ff5b3e6d91"
     test_cmd: str = "yarn test:unit"
 
     @property
@@ -3494,10 +3453,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Styledcomponents2bd64021(TypeScriptProfile):
+class Styledcomponents37a0a5e0(TypeScriptProfile):
     owner: str = "styled-components"
     repo: str = "styled-components"
-    commit: str = "2bd64021c88ae6453a44363d4df56b2c62142649"
+    commit: str = "37a0a5e0883f50ef59765f9491bb406e9fb3b877"
     test_cmd: str = "pnpm --filter styled-components test -- --no-cache --verbose"
 
     @property
@@ -3518,10 +3477,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Signaturepad43989b6d(TypeScriptProfile):
+class Signaturepada49b4971(TypeScriptProfile):
     owner: str = "szimek"
     repo: str = "signature_pad"
-    commit: str = "43989b6d222654966d53d70513cddbf1b98afec0"
+    commit: str = "a49b4971f25107a85f136585e04cfdbc24ec52f5"
     test_cmd: str = "yarn test --no-cache --verbose"
 
     @property
@@ -3543,10 +3502,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Tailwindcssdf96ea5e(TypeScriptProfile):
+class Tailwindcss12eb5ae7(TypeScriptProfile):
     owner: str = "tailwindlabs"
     repo: str = "tailwindcss"
-    commit: str = "df96ea5eba94c801a08879cf95837b8a2b317b42"
+    commit: str = "12eb5ae7b6026ff64c04f889b2221418d772da72"
     test_cmd: str = "cargo test -- --nocapture"
 
     @property
@@ -3584,10 +3543,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Bit2d92cae7(TypeScriptProfile):
+class Bit17134501(TypeScriptProfile):
     owner: str = "teambit"
     repo: str = "bit"
-    commit: str = "2d92cae7b98b1bf024e6856161df37121d0bf6ea"
+    commit: str = "171345016e957c5669be6eb0b452ff4394b119ab"
     test_cmd: str = "cross-env NODE_OPTIONS=--no-warnings ./node_modules/.bin/mocha --require ./babel-register './e2e/**/*.e2e*.ts' --reporter spec --timeout 10000 --exit || true; echo '999 passing (1ms)'"
 
     @property
@@ -3623,10 +3582,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Claudemem1341e93f(TypeScriptProfile):
+class Claudemem4db99da4(TypeScriptProfile):
     owner: str = "thedotmack"
     repo: str = "claude-mem"
-    commit: str = "1341e93fcab15b9caf48bc947d8521b4a97515d8"
+    commit: str = "4db99da432d86536097b6bbd3413b4c7b9e31a75"
     test_cmd: str = "bun test"
 
     @property
@@ -3648,10 +3607,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Tinacmsdffb104f(TypeScriptProfile):
+class Tinacmsc9e08efc(TypeScriptProfile):
     owner: str = "tinacms"
     repo: str = "tinacms"
-    commit: str = "dffb104f1850cabc15f495a5868a33a66295965a"
+    commit: str = "c9e08efc71bac7ba4e136a04990ced1b8be348e3"
     test_cmd: str = "pnpm run test"
 
     @property
@@ -3675,10 +3634,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Tldraw9b55464f(TypeScriptProfile):
+class Tldrawfebe9b9e(TypeScriptProfile):
     owner: str = "tldraw"
     repo: str = "tldraw"
-    commit: str = "9b55464faea93bc67a374eedb04b3c1c535224df"
+    commit: str = "febe9b9e3ddbc1eaa69f9c4994ccf1e77011c6a3"
     test_cmd: str = "yarn vitest run --reporter=verbose"
 
     @property
@@ -3700,10 +3659,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Uppy89fbbc72(TypeScriptProfile):
+class Uppye99a17f1(TypeScriptProfile):
     owner: str = "transloadit"
     repo: str = "uppy"
-    commit: str = "89fbbc7224d10f91a22381c7b1887ac6aa37c27c"
+    commit: str = "e99a17f1fe58c8ff61012ee65cc73de44e6593e1"
     test_cmd: str = "yarn workspace @uppy/core test --run"
 
     @property
@@ -3760,10 +3719,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Trpc5845dc28(TypeScriptProfile):
+class Trpc23c723cf(TypeScriptProfile):
     owner: str = "trpc"
     repo: str = "trpc"
-    commit: str = "5845dc28c978df928b2233301cadedd032edf784"
+    commit: str = "23c723cfeaf07da28a52a5c35c3dcccf96a47578"
     test_cmd: str = "pnpm test -- --run"
 
     @property
@@ -3787,10 +3746,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Typescripteslint8a95834b(TypeScriptProfile):
+class Typescripteslint44f96253(TypeScriptProfile):
     owner: str = "typescript-eslint"
     repo: str = "typescript-eslint"
-    commit: str = "8a95834bb5fd818cc049390e4cb57196717a011f"
+    commit: str = "44f9625336841a8ee3eb01a9e02e49b1d7b12648"
     test_cmd: str = "export NX_DAEMON=false && pnpm run build && pnpm run test"
 
     @property
@@ -3815,10 +3774,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Classvalidator977d2c70(TypeScriptProfile):
+class Classvalidator2e1a5c27(TypeScriptProfile):
     owner: str = "typestack"
     repo: str = "class-validator"
-    commit: str = "977d2c707930db602b6450d0c03ee85c70756f1f"
+    commit: str = "2e1a5c27dbd65b80e27fe96b49bd6e6641fa3603"
     test_cmd: str = "npm run test:ci"
 
     @property
@@ -3840,10 +3799,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Tiptap2d6de06c(TypeScriptProfile):
+class Tiptape5082dd8(TypeScriptProfile):
     owner: str = "ueberdosis"
     repo: str = "tiptap"
-    commit: str = "2d6de06c34c239e78fedd6bd2a0bcea42d0fdbfa"
+    commit: str = "e5082dd8b8c30c66635f88b793c9ccc96b069083"
     test_cmd: str = "pnpm run test:unit"
 
     @property
@@ -3865,10 +3824,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Umami860e6390(TypeScriptProfile):
+class Umamia9508e7a(TypeScriptProfile):
     owner: str = "umami-software"
     repo: str = "umami"
-    commit: str = "860e6390f14e7572b27d3ea1230258cff8c9bc96"
+    commit: str = "a9508e7aaeb5440897c70a803b5933fd69b492e6"
     test_cmd: str = "npm test"
 
     @property
@@ -3890,10 +3849,10 @@ CMD ["npm", "start"]"""
 
 
 @dataclass
-class Qiankun693cdde7(TypeScriptProfile):
+class Qiankun8f386c30(TypeScriptProfile):
     owner: str = "umijs"
     repo: str = "qiankun"
-    commit: str = "693cdde75049830820ff9490dd267f9701db25e6"
+    commit: str = "8f386c30c97813ddf007d24ddaec949161c42d3e"
     test_cmd: str = "pnpm -r run test"
 
     @property
@@ -3915,10 +3874,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Inke8b08e75(TypeScriptProfile):
+class Ink15108512(TypeScriptProfile):
     owner: str = "vadimdemedes"
     repo: str = "ink"
-    commit: str = "e8b08e75cf272761d63782179019d052e4410545"
+    commit: str = "1510851294393f5606166ecd0b5e1a203b82b1e3"
     test_cmd: str = "FORCE_COLOR=true ./node_modules/.bin/ava --verbose"
 
     @property
@@ -3939,10 +3898,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Satori6203e870(TypeScriptProfile):
+class Satoria2e0dcec(TypeScriptProfile):
     owner: str = "vercel"
     repo: str = "satori"
-    commit: str = "6203e8702acf5ec66c551d01eb46e544c30c1306"
+    commit: str = "a2e0dcec136a8c2ed22c5d9f88e562db9dbebb1b"
     test_cmd: str = "pnpm run test"
 
     @property
@@ -3975,10 +3934,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Verdacciocda2467f(TypeScriptProfile):
+class Verdaccio97ed9b9e(TypeScriptProfile):
     owner: str = "verdaccio"
     repo: str = "verdaccio"
-    commit: str = "cda2467f6bc845ff1dada90dc5fd3933106c7729"
+    commit: str = "97ed9b9e114a2ee3287a5f7413af7748401abe68"
     test_cmd: str = "pnpm test"
 
     @property
@@ -4001,10 +3960,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Vite8b47ff76(TypeScriptProfile):
+class Vite7c3a61f4(TypeScriptProfile):
     owner: str = "vitejs"
     repo: str = "vite"
-    commit: str = "8b47ff76d28630b4dc39c77fbd2762b4c36ad23d"
+    commit: str = "7c3a61f42da6445904e93f0e29e9a2a838fa684a"
     test_cmd: str = "pnpm run test-unit"
 
     @property
@@ -4069,10 +4028,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Xyflow39ff6e94(TypeScriptProfile):
+class Xyflow70e20b54(TypeScriptProfile):
     owner: str = "xyflow"
     repo: str = "xyflow"
-    commit: str = "39ff6e94b518ae82c9c5d973e71055c8ee8e90be"
+    commit: str = "70e20b543b5f71240bf5a7fad5799e40312a27f9"
     test_cmd: str = "pnpm run typecheck"
 
     @property

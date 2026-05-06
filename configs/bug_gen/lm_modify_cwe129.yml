@@ -1,0 +1,61 @@
+name: lm_modify_cwe129
+parameters:
+  cwe_id: "CWE-129"
+  cwe_name: "Improper Validation of Array Index"
+  bug_examples:
+    - "Remove the bounds check on a user-provided array index: delete `if (index < 0 || index >= array.length) throw RangeError()` before `return array[index]`, so an attacker can supply negative indices or indices beyond the array length."
+    - "Remove validation on a query parameter used as an array subscript: delete `const idx = Math.max(0, Math.min(parseInt(req.query.page), pages.length - 1))` and use `pages[parseInt(req.query.page)]` directly, allowing out-of-bounds access."
+    - "Remove the integer validation before using input as a TypedArray index: delete `if (!Number.isInteger(offset) || offset < 0 || offset >= view.length) throw` before `view[offset]`, so NaN, negative, or oversized values can be used as indices."
+    - "Remove the array bounds check in a binary search or lookup table: delete `if (key >= table.length) return undefined` before `return table[key]`, where `key` is derived from user input and can exceed the table size."
+    - "Use a parsed integer directly as an array index without range validation: change `const item = items[Math.min(Math.max(0, parseInt(id)), items.length - 1)]` to `const item = items[parseInt(id)]`, where `id` comes from URL params and can be arbitrary."
+    - "Remove negative-index protection: delete `if (pos < 0) pos = 0` before `buffer[pos]`, so an attacker-controlled negative position accesses memory before the buffer start (significant in TypedArrays and native contexts)."
+    - "Remove modulo-based wrapping on a circular buffer index: delete `index = index % buffer.length` before `buffer[index]`, so indices larger than the buffer size access beyond its end."
+    - "Remove the length check before iterating with a user-provided count: delete `count = Math.min(count, array.length)` before a `for (let i = 0; i < count; i++) { result.push(array[i]); }` loop, so count > array.length reads undefined slots or (in typed arrays) accesses out of bounds."
+  tips:
+    - "The bug must be a realistic CWE-129 flaw — an array/buffer INDEX derived from user input is not properly validated (negative values, exceeding length, NaN, non-integer), leading to out-of-bounds access or unexpected behavior."
+    - "Do NOT introduce bugs better classified as CWE-119 (Improper Restriction of Operations within Bounds of Memory Buffer). CWE-129 is SPECIFICALLY about an INTEGER INDEX not being validated. CWE-119 covers broader pointer arithmetic and offset calculations."
+    - "Do NOT introduce bugs better classified as CWE-190 (Integer Overflow). If the index becomes invalid because of an arithmetic overflow (e.g., index + offset wraps), the root cause is CWE-190. CWE-129 is about the index VALUE not being bounds-checked regardless of how it got that value."
+    - "Do NOT introduce bugs better classified as CWE-193 (Off-by-one Error). If the index is validated but the boundary is off by one (using `<=` instead of `<`), that's CWE-193. CWE-129 is about validation being MISSING or INSUFFICIENT."
+    - "In JavaScript, accessing array[outOfBounds] returns `undefined` rather than crashing — but this can lead to: logic errors (undefined propagating), prototype chain lookups (`array[-1]` → `Array.prototype[-1]`), and TypedArray RangeError or native addon crashes."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors or syntax errors."
+    - "Do not add comments that hint at the flaw, bounds checking, index validation, or CWE."
+    - "The bug should be subtle: indices within the expected range work perfectly. The flaw manifests only with attacker-crafted out-of-range indices."
+    - "Prefer removing exactly ONE bounds check or clamping operation on a user-controlled index."
+    - "High-value targets: pagination handlers (page number as index), API endpoints with ID-based lookups into arrays, binary format parsers using field values as offsets, lookup tables indexed by user input, any `array[userInput]` pattern."
+    - "If the function has no array indexing with external input, no user-controlled subscripts, respond with `NO_GOOD_BUG_SITE` instead of forcing a contrived change."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-129 flaw (Improper Validation of Array Index). The resulting function must still compile, keep its signature, and work for normal inputs — the flaw should allow a user-controlled array index to go unchecked, enabling out-of-bounds access, undefined-value propagation, or crashes in typed array contexts.
+
+  CWE-129 is specifically about INTEGER INDICES used to access arrays/buffers without proper validation. In JavaScript, out-of-bounds array access returns undefined (enabling logic bugs and prototype pollution vectors), while in TypedArrays and native addon code it can cause RangeError or actual memory corruption. This is more specific than CWE-119 (general buffer bounds) and distinct from CWE-193 (off-by-one in the boundary itself).
+
+  Concretely, some kinds of CWE-129 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-129 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-129 site (e.g., no array indexing with external input, no user-controlled subscripts), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

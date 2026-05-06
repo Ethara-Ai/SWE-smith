@@ -326,10 +326,10 @@ def parse_log_jasmine(log: str) -> dict[str, str]:
 
 
 @dataclass
-class ReactPDFee5c96b8(JavaScriptProfile):
+class Reactpdfd41a8207(JavaScriptProfile):
     owner: str = "diegomura"
     repo: str = "react-pdf"
-    commit: str = "ee5c96b80326ba4441b71be4c7a85ba9f61d4174"
+    commit: str = "d41a8207fb06a56e60fcb53ac0e18ce27e7d32d6"
     test_cmd: str = "./node_modules/.bin/vitest --no-color --reporter verbose"
 
     @property
@@ -393,10 +393,10 @@ RUN npm test
 
 
 @dataclass
-class Babel2ea3fc8f(JavaScriptProfile):
+class Babelb79f64a1(JavaScriptProfile):
     owner: str = "babel"
     repo: str = "babel"
-    commit: str = "2ea3fc8f9b33a911840f17fbc407e7bfae2ed66f"
+    commit: str = "b79f64a144c2db466d09770298b4ece0adca34bf"
     test_cmd: str = "yarn jest --verbose"
     eval_sets: set[str] = field(
         default_factory=lambda: {"SWE-bench/SWE-bench_Multilingual"}
@@ -427,10 +427,10 @@ RUN make build
 
 
 @dataclass
-class GithubReadmeStats3e974011(JavaScriptProfile):
+class Githubreadmestats5df91f9b(JavaScriptProfile):
     owner: str = "anuraghazra"
     repo: str = "github-readme-stats"
-    commit: str = "3e97401177143bb35abb42279a13991cbd584ca3"
+    commit: str = "5df91f9bfa89c356a55cbb3c2bbc164fdbf94a86"
     test_cmd: str = "npm test -- --verbose"
 
     @property
@@ -442,10 +442,10 @@ class GithubReadmeStats3e974011(JavaScriptProfile):
 
 
 @dataclass
-class Mongoose5f57a5bb(JavaScriptProfile):
+class Mongoose2b7bb96c(JavaScriptProfile):
     owner: str = "Automattic"
     repo: str = "mongoose"
-    commit: str = "5f57a5bbb2e8dfed8d04be47cdd17728633c44c1"
+    commit: str = "2b7bb96c517d7ce0e6a2c386a894149959efbe38"
     test_cmd: str = "npm test -- --verbose"
 
     @property
@@ -457,10 +457,10 @@ class Mongoose5f57a5bb(JavaScriptProfile):
 
 
 @dataclass
-class Axios05436fd5(JavaScriptProfile):
+class Axios23fd0a6a(JavaScriptProfile):
     owner: str = "axios"
     repo: str = "axios"
-    commit: str = "05436fd562027a9d10531d58d13dd33d7f222c0c"
+    commit: str = "23fd0a6a16a4879bc2601c867db0caa2ce178824"
     test_cmd: str = "npm run test:mocha -- --verbose"
     eval_sets: set[str] = field(
         default_factory=lambda: {"SWE-bench/SWE-bench_Multilingual"}
@@ -475,10 +475,10 @@ class Axios05436fd5(JavaScriptProfile):
 
 
 @dataclass
-class Async23dbf76a(JavaScriptProfile):
+class Async03fbed25(JavaScriptProfile):
     owner: str = "caolan"
     repo: str = "async"
-    commit: str = "23dbf76aeb04c7c3dd56276115b277e3fa9dd5cc"
+    commit: str = "03fbed25c728e78b503df4f21e946948d9459cc9"
     test_cmd: str = "npm run mocha-node-test -- --verbose"
 
     @property
@@ -490,10 +490,10 @@ class Async23dbf76a(JavaScriptProfile):
 
 
 @dataclass
-class Expressef5f2e13(JavaScriptProfile):
+class Expressf873ac23(JavaScriptProfile):
     owner: str = "expressjs"
     repo: str = "express"
-    commit: str = "ef5f2e13ef64a1575ce8c2d77b180d593644ccfa"
+    commit: str = "f873ac23124ffcff8c040b4bd257b32c29828d53"
     test_cmd: str = "npm test -- --verbose"
 
     @property
@@ -505,10 +505,10 @@ class Expressef5f2e13(JavaScriptProfile):
 
 
 @dataclass
-class Dayjsc8a26460(JavaScriptProfile):
+class Dayjsb84592fe(JavaScriptProfile):
     owner: str = "iamkun"
     repo: str = "dayjs"
-    commit: str = "c8a26460d89a2ee9a7d3b9cafa124ea856ee883f"
+    commit: str = "b84592fe4e89abb23749de9a772454d5d2e65f19"
     test_cmd: str = "npm test -- --verbose"
 
     @property
@@ -520,10 +520,10 @@ class Dayjsc8a26460(JavaScriptProfile):
 
 
 @dataclass
-class Svelte6c9717a9(JavaScriptProfile):
+class Svelted4c5a917(JavaScriptProfile):
     owner: str = "sveltejs"
     repo: str = "svelte"
-    commit: str = "6c9717a91f2f6ae10641d1cf502ba13d227fbe45"
+    commit: str = "d4c5a917356a4ef0905681bdd98113c84707db42"
     test_cmd: str = "pnpm test -- --verbose"
 
     @property
@@ -543,10 +543,10 @@ RUN pnpm exec playwright install-deps
 
 
 @dataclass
-class Commanderjs395cf714(JavaScriptProfile):
+class Commanderjs8247364d(JavaScriptProfile):
     owner: str = "tj"
     repo: str = "commander.js"
-    commit: str = "395cf7145fe28122f5a69026b310e02df114f907"
+    commit: str = "8247364da749736570161e95682b07fc2d72497b"
     test_cmd: str = "npm test -- --verbose"
 
     @property
@@ -558,10 +558,10 @@ class Commanderjs395cf714(JavaScriptProfile):
 
 
 @dataclass
-class Wretch661865a6(JavaScriptProfile):
+class Wretch0b90bc4a(JavaScriptProfile):
     owner: str = "elbywan"
     repo: str = "wretch"
-    commit: str = "661865a6642f6be26e742a90a3e0a9b9bd5542ff"
+    commit: str = "0b90bc4a71f60e113167a83e716142d43fa1c4f7"
     test_cmd: str = "npm run test -- --verbose"
 
     @property
@@ -579,10 +579,10 @@ RUN npm run build
 
 
 @dataclass
-class Html5Boilerplateac08a17c(JavaScriptProfile):
+class Html5boilerplate31357fdb(JavaScriptProfile):
     owner: str = "h5bp"
     repo: str = "html5-boilerplate"
-    commit: str = "ac08a17cb60a975336664c0090657a3e593f686e"
+    commit: str = "31357fdb7c4c4da60a7c910e95440444c2ca7a6d"
     test_cmd: str = "npm run test -- --verbose"
 
     @property
@@ -623,10 +623,10 @@ RUN npm run build
 
 
 @dataclass
-class Prism31b467fa(JavaScriptProfile):
+class Prismded4a65b(JavaScriptProfile):
     owner: str = "PrismJS"
     repo: str = "prism"
-    commit: str = "31b467fa7c92c5ce90c3e7c6c8fe2b8a946d9484"
+    commit: str = "ded4a65b75a246b4dbc6c5a84e584db1078529aa"
     test_cmd: str = "npm run test"
     eval_sets: set[str] = field(
         default_factory=lambda: {"SWE-bench/SWE-bench_Multimodal"}
@@ -647,10 +647,10 @@ RUN npm run build
 
 
 @dataclass
-class ChromaJS498427ea(JavaScriptProfile):
+class Chromajs87058d62(JavaScriptProfile):
     owner: str = "gka"
     repo: str = "chroma.js"
-    commit: str = "498427eafc2e987a3751f8d5fe0612fa7a4a76ec"
+    commit: str = "87058d62a50c1de02043bd2c15aa6a30e4256b0a"
     test_cmd: str = "npm run test -- --run"
 
     @property
@@ -668,10 +668,10 @@ RUN npm run build
 
 
 @dataclass
-class Colorfef7b619(JavaScriptProfile):
+class Color4fda9a3e(JavaScriptProfile):
     owner: str = "Qix-"
     repo: str = "color"
-    commit: str = "fef7b619edd678455595b9b6a10780f13b58d285"
+    commit: str = "4fda9a3edf1a966070e4cd9ed91e47b500df2110"
     test_cmd: str = "npm run test -- --verbose"
 
     @property
@@ -703,10 +703,10 @@ class Qd180f4a0(JavaScriptProfile):
 
 
 @dataclass
-class ImmutableJS879adab5(JavaScriptProfile):
+class Immutablejs9acd11a8(JavaScriptProfile):
     owner: str = "immutable-js"
     repo: str = "immutable-js"
-    commit: str = "879adab5ea333a5ca341635bcf799c3b8f9e7559"
+    commit: str = "9acd11a87e1c628f08639f9ae0539073f4ee46d8"
     test_cmd: str = "npm run test -- --verbose"
     eval_sets: set[str] = field(
         default_factory=lambda: {"SWE-bench/SWE-bench_Multilingual"}
@@ -721,10 +721,10 @@ class ImmutableJS879adab5(JavaScriptProfile):
 
 
 @dataclass
-class ThreeJS73b3f248(JavaScriptProfile):
+class Threejs9bc5f5cc(JavaScriptProfile):
     owner: str = "mrdoob"
     repo: str = "three.js"
-    commit: str = "73b3f248016fb73f2fe71da8616cdd7e20386f81"
+    commit: str = "9bc5f5ccdbffd1797ce44f29fa510a96da2f94c3"
     test_cmd: str = "npm run test -- --verbose"
     eval_sets: set[str] = field(
         default_factory=lambda: {"SWE-bench/SWE-bench_Multilingual"}
@@ -739,10 +739,10 @@ class ThreeJS73b3f248(JavaScriptProfile):
 
 
 @dataclass
-class Echarts6be0e145(JavaScriptProfile):
+class Echartsd6a812f8(JavaScriptProfile):
     owner: str = "apache"
     repo: str = "echarts"
-    commit: str = "6be0e145946db37824c8635067b8b7b23c547b74"
+    commit: str = "d6a812f8482f23933692ce3ab99d8bf73131835f"
     test_cmd: str = "npm run test -- --verbose"
 
     @property
@@ -806,10 +806,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Pdfmake719e7314(JavaScriptProfile):
+class Pdfmake700b4fa9(JavaScriptProfile):
     owner: str = "bpampuch"
     repo: str = "pdfmake"
-    commit: str = "719e73140cce75a792f7f419c27fc33a230e73d2"
+    commit: str = "700b4fa9f71af1e6fec7c55373386ed711ae397b"
     test_cmd: str = "npm run test"
 
     @property
@@ -836,10 +836,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Multerb6e4b1f6(JavaScriptProfile):
+class Multer368c8a10(JavaScriptProfile):
     owner: str = "expressjs"
     repo: str = "multer"
-    commit: str = "b6e4b1f6abb85673e9307b42368b3e7bfb1fc63b"
+    commit: str = "368c8a10cca11854cf17c24029fefd1eafb1c059"
     test_cmd: str = "npm test -- --reporter spec"
 
     @property
@@ -856,10 +856,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Pdfkitd0108157(JavaScriptProfile):
+class Pdfkit224971a3(JavaScriptProfile):
     owner: str = "foliojs"
     repo: str = "pdfkit"
-    commit: str = "d0108157f13d763ad5287a2293436b5a1aecf055"
+    commit: str = "224971a3c23c2bb3b722fa175b558f59bff1b386"
     test_cmd: str = "yarn test --verbose"
 
     @property
@@ -896,10 +896,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Mathjs04e6e2d7(JavaScriptProfile):
+class Mathjsef44f12a(JavaScriptProfile):
     owner: str = "josdejong"
     repo: str = "mathjs"
-    commit: str = "04e6e2d7a949d6ddc7d7139bf1e3a88e6fe5365b"
+    commit: str = "ef44f12a37f6a227a37aef94c78cd6c62b241ea9"
     test_cmd: str = "npm run test:src -- --reporter spec"
 
     @property
@@ -961,10 +961,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Koa0a6afa5a(JavaScriptProfile):
+class Koae0ba8ef3(JavaScriptProfile):
     owner: str = "koajs"
     repo: str = "koa"
-    commit: str = "0a6afa5a6107c0c8baf4722e29de7566f33d1651"
+    commit: str = "e0ba8ef39d27fe5dae5492f9fe753d155124f994"
     test_cmd: str = "node --test"
 
     @property
@@ -986,10 +986,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Layuiabdb748b(JavaScriptProfile):
+class Layui349b924f(JavaScriptProfile):
     owner: str = "layui"
     repo: str = "layui"
-    commit: str = "abdb748b5cc792c394fbdf56daa2727af1846488"
+    commit: str = "349b924fc61a336e8775b8324bb766c9104bebce"
     test_cmd: str = "npm test -- --verbose"
 
     @property
@@ -1014,10 +1014,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Mocha410ce0d2(JavaScriptProfile):
+class Mocha441c32aa(JavaScriptProfile):
     owner: str = "mochajs"
     repo: str = "mocha"
-    commit: str = "410ce0d2a0f799aaca2c0bc627294d70c62dd3f4"
+    commit: str = "441c32aa076f2b0e1c1ba39d67f267c46c1dee4b"
     test_cmd: str = "npm run test-node:unit"
 
     @property
@@ -1075,10 +1075,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Piskel51373322(JavaScriptProfile):
+class Piskela6b9c02d(JavaScriptProfile):
     owner: str = "piskelapp"
     repo: str = "piskel"
-    commit: str = "513733227695da58780a4df30f44e4af9f85b1a6"
+    commit: str = "a6b9c02daefceb10093f71e92d52d16920ccb16e"
     test_cmd: str = "npm run unit-tests"
 
     @property
@@ -1154,10 +1154,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Riot32aecfaa(JavaScriptProfile):
+class Riotde59df6f(JavaScriptProfile):
     owner: str = "riot"
     repo: str = "riot"
-    commit: str = "32aecfaa424609ba35829f645138f182f3273dce"
+    commit: str = "de59df6f8129c7e13d2c2559ec69de286d78345a"
     test_cmd: str = "npm test"
 
     @property
@@ -1182,10 +1182,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Svgoc06d8f68(JavaScriptProfile):
+class Svgo581fe687(JavaScriptProfile):
     owner: str = "svg"
     repo: str = "svgo"
-    commit: str = "c06d8f6899788defae9594537063c2f4307803e4"
+    commit: str = "581fe687825740e425012bbdf6491ee4bbc9dc65"
     test_cmd: str = "yarn cross-env NODE_OPTIONS=--experimental-vm-modules jest --maxWorkers=4 --verbose"
 
     @property
@@ -1210,10 +1210,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Bruno80e09d1a(JavaScriptProfile):
+class Brunod39d5ef5(JavaScriptProfile):
     owner: str = "usebruno"
     repo: str = "bruno"
-    commit: str = "80e09d1a267ed2283e6d58a643800d3d632372a7"
+    commit: str = "d39d5ef5750a98e983a45c85aa7b1378b4525004"
     test_cmd: str = "npm test --workspaces --if-present -- --verbose"
 
     @property
@@ -1235,10 +1235,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Webtorrentfd8f39e1(JavaScriptProfile):
+class Webtorrent02bfbc52(JavaScriptProfile):
     owner: str = "webtorrent"
     repo: str = "webtorrent"
-    commit: str = "fd8f39e1560c5ae5db6b12153077877f0f33b076"
+    commit: str = "02bfbc529af17371894af77eecb205e781552fe4"
     test_cmd: str = "npx tape test/*.js test/node/*.js"
 
     @property
@@ -1299,10 +1299,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Eleventye9a16667(JavaScriptProfile):
+class Eleventy29a22aa0(JavaScriptProfile):
     owner: str = "11ty"
     repo: str = "eleventy"
-    commit: str = "e9a16667cbf44226d4dc88ac18241003e05908d2"
+    commit: str = "29a22aa0c431c169d5434d50d86d4e72637d60d5"
     test_cmd: str = "npm test"
 
     @property
@@ -1324,10 +1324,10 @@ CMD ["npm", "test"]"""
 
 
 @dataclass
-class Workbox1893b3f6(JavaScriptProfile):
+class Workbox62b9d8ba(JavaScriptProfile):
     owner: str = "GoogleChrome"
     repo: str = "workbox"
-    commit: str = "1893b3f6ca3d82338f18acc84309f2f38fc67292"
+    commit: str = "62b9d8ba8eb3c1a2ab8aac9d84c90cda7865d6a3"
     test_cmd: str = "npm run test_node -- --verbose"
 
     @property
@@ -1350,10 +1350,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Habiticae0af620b(JavaScriptProfile):
+class Habitica1178da3a(JavaScriptProfile):
     owner: str = "HabitRPG"
     repo: str = "habitica"
-    commit: str = "e0af620b4045d46dffb4c22ea01f95ba8a8af009"
+    commit: str = "1178da3a26466be153e31d916c3461060204313d"
     test_cmd: str = "npm run test:api:unit -- --verbose"
 
     @property
@@ -1381,10 +1381,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Modernizr1d4c9cee(JavaScriptProfile):
+class Modernizrbab42e37(JavaScriptProfile):
     owner: str = "Modernizr"
     repo: str = "Modernizr"
-    commit: str = "1d4c9cee1f358f50c31be9a1f247e1153ed9143c"
+    commit: str = "bab42e37f8f2951a5fedffa010cb01c481b14348"
     test_cmd: str = "npm test -- --verbose --reporter spec"
 
     @property
@@ -1445,10 +1445,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Pm2ff1ca974(JavaScriptProfile):
+class Pm2ba62cae9(JavaScriptProfile):
     owner: str = "Unitech"
     repo: str = "pm2"
-    commit: str = "ff1ca974afada8730aa55f8ed1df40e700cedbcb"
+    commit: str = "ba62cae9b9b7116ee758b70f538919a52515fa26"
     test_cmd: str = "npm run test:unit -- --reporter spec"
 
     @property
@@ -1469,10 +1469,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Audiobookshelf626596b1(JavaScriptProfile):
+class Audiobookshelf47ea6b50(JavaScriptProfile):
     owner: str = "advplyr"
     repo: str = "audiobookshelf"
-    commit: str = "626596b192013ba9f5a011dd110e288124c95ebe"
+    commit: str = "47ea6b50922e310acf523dbfaa4abd2f43d61940"
     test_cmd: str = "npm test -- --verbose"
 
     @property
@@ -1507,10 +1507,10 @@ CMD ["npm", "start"]"""
 
 
 @dataclass
-class Sailsffebacc5(JavaScriptProfile):
+class Sailsfd71efbd(JavaScriptProfile):
     owner: str = "balderdashy"
     repo: str = "sails"
-    commit: str = "ffebacc58c27f878c9373702bc3a3f91a02bca0c"
+    commit: str = "fd71efbd4f13a31525d9fa936560d3c99efe3da6"
     test_cmd: str = "npm run custom-tests -- --reporter spec"
 
     @property
@@ -1554,10 +1554,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Nodepostgresecff60dc(JavaScriptProfile):
+class Nodepostgres341cb60b(JavaScriptProfile):
     owner: str = "brianc"
     repo: str = "node-postgres"
-    commit: str = "ecff60dc8aa0bd1ad5ea8f4623af0756a86dc110"
+    commit: str = "341cb60b0f4579382c7f65be97815c3fe4621064"
     test_cmd: str = "service postgresql start && sleep 5 && sudo -u postgres psql -c \"ALTER USER postgres WITH PASSWORD 'postgres';\" && export PGPASSWORD=postgres && export PGUSER=postgres && export PGHOST=localhost && yarn test"
 
     @property
@@ -1588,10 +1588,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Claudecodetemplates734b8a50(JavaScriptProfile):
+class Claudecodetemplates63298a5f(JavaScriptProfile):
     owner: str = "davila7"
     repo: str = "claude-code-templates"
-    commit: str = "734b8a50cc2cf55222643e32a3b205483e244747"
+    commit: str = "63298a5f286905e4f79e2bf8fadb23e4d5a7bbe5"
     test_cmd: str = "cd api && npm test -- --verbose"
 
     @property
@@ -1698,10 +1698,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Superagentcec26064(JavaScriptProfile):
+class Superagent3ef36761(JavaScriptProfile):
     owner: str = "forwardemail"
     repo: str = "superagent"
-    commit: str = "cec260643d6d8854865cf6a18997606be4b150f6"
+    commit: str = "3ef367619fbb2a8d07082238892ae12dafe4b0b0"
     test_cmd: str = "./node_modules/.bin/mocha --require should --trace-warnings --throw-deprecation --reporter spec --slow 2000 --timeout 5000 --exit test/*.js test/node/*.js"
 
     @property
@@ -1725,10 +1725,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Supertest14d905dc(JavaScriptProfile):
+class Supertestd7997513(JavaScriptProfile):
     owner: str = "forwardemail"
     repo: str = "supertest"
-    commit: str = "14d905dc313b7c050596342f833a52f0bc573c70"
+    commit: str = "d7997513dcfb2f918e617f48ea4d56006aa0c3c3"
     test_cmd: str = "npm test -- --reporter spec"
 
     @property
@@ -1747,10 +1747,10 @@ CMD ["npm", "test"]"""
 
 
 @dataclass
-class Revealjsbecc9bd1(JavaScriptProfile):
+class Revealjs76dc9006(JavaScriptProfile):
     owner: str = "hakimel"
     repo: str = "reveal.js"
-    commit: str = "becc9bd19e418b75027b541c41952105a1425c96"
+    commit: str = "76dc90065968d4ead13692489c2c4e506c50e382"
     test_cmd: str = "npm test"
 
     @property
@@ -1817,10 +1817,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Handsontablee71f0f42(JavaScriptProfile):
+class Handsontable51a9db2a(JavaScriptProfile):
     owner: str = "handsontable"
     repo: str = "handsontable"
-    commit: str = "e71f0f427c43eaaac9362d947270b8856a9766cd"
+    commit: str = "51a9db2a6c8b584434bcffd97bdef2a0de362845"
     test_cmd: str = "pnpm test"
 
     @property
@@ -1844,10 +1844,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Joi481e270e(JavaScriptProfile):
+class Joi048fe05b(JavaScriptProfile):
     owner: str = "hapijs"
     repo: str = "joi"
-    commit: str = "481e270e6c4ff8728d6fda248fd83f6ff70f7ed9"
+    commit: str = "048fe05b82355f445c5aab7881d836b2e9811296"
     test_cmd: str = "npx lab -t 100 -a @hapi/code -L -Y -v"
 
     @property
@@ -1920,10 +1920,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Htmlwebpackplugin9a39db80(JavaScriptProfile):
+class Htmlwebpackpluginfdef1b4e(JavaScriptProfile):
     owner: str = "jantimon"
     repo: str = "html-webpack-plugin"
-    commit: str = "9a39db807c09d8e6145e5047cfe2ec5e928e1dee"
+    commit: str = "fdef1b4e7847413e67f7826120073ea282bfe927"
     test_cmd: str = "npm run test:only -- --verbose"
 
     @property
@@ -1945,10 +1945,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Backbonee8bc45ac(JavaScriptProfile):
+class Backbonecbeb7e31(JavaScriptProfile):
     owner: str = "jashkenas"
     repo: str = "backbone"
-    commit: str = "e8bc45acb0a8b035fe5a0d7338e1b2757681564f"
+    commit: str = "cbeb7e31d95f64dbe92f2202c1131858f905280e"
     test_cmd: str = "npx karma start --browsers ChromeHeadlessNoSandbox --single-run"
 
     @property
@@ -2000,10 +2000,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Jsoneditor0319b213(JavaScriptProfile):
+class Jsoneditoreebd07cb(JavaScriptProfile):
     owner: str = "josdejong"
     repo: str = "jsoneditor"
-    commit: str = "0319b2131df47f1220d74e3ff174d5c02973ec7d"
+    commit: str = "eebd07cb8b8d89259dc9aeabd3174aa16fb415e3"
     test_cmd: str = "npm test -- --reporter spec"
 
     @property
@@ -2025,10 +2025,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Uptimekumaf43087ac(JavaScriptProfile):
+class Uptimekumad60feb90(JavaScriptProfile):
     owner: str = "louislam"
     repo: str = "uptime-kuma"
-    commit: str = "f43087ac075387a29aa933881fdb2e7cb114d097"
+    commit: str = "d60feb909cc3c9f2003db162c226e37b9079d9f5"
     test_cmd: str = "npm run test-backend"
 
     @property
@@ -2062,10 +2062,10 @@ CMD ["npm", "start"]"""
 
 
 @dataclass
-class Jsmarko24b9402c(JavaScriptProfile):
+class Markoc4980211(JavaScriptProfile):
     owner: str = "marko-js"
     repo: str = "marko"
-    commit: str = "24b9402cd54c3a74f200da0f79dd19350995a9ba"
+    commit: str = "c4980211fa5d26118fbc3c66eb7a3b6b8893d53a"
     test_cmd: str = "env MARKO_DEBUG=1 ./node_modules/.bin/mocha --reporter spec"
 
     @property
@@ -2087,10 +2087,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Jsmdx00046053(JavaScriptProfile):
+class Mdx1b31316e(JavaScriptProfile):
     owner: str = "mdx-js"
     repo: str = "mdx"
-    commit: str = "000460532e6a558693cbe73c2ffdb8d6c098a07b"
+    commit: str = "1b31316e2a60005fec14b2dec2219b59cd81f449"
     test_cmd: str = "npm run test-api --workspaces --if-present"
 
     @property
@@ -2114,10 +2114,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class PapaParseb10b87ef(JavaScriptProfile):
+class PapaParsecc8c801f(JavaScriptProfile):
     owner: str = "mholt"
     repo: str = "PapaParse"
-    commit: str = "b10b87ef8686c6f88299b50dd25e83606e9c36d4"
+    commit: str = "cc8c801f83fa2bdbf4baab5048e79b0911d9aa58"
     test_cmd: str = "npm test"
 
     @property
@@ -2141,10 +2141,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Materialui1a233f88(JavaScriptProfile):
+class Materialuibbcd5eae(JavaScriptProfile):
     owner: str = "mui"
     repo: str = "material-ui"
-    commit: str = "1a233f8805ea20f456afd41165b1d6d9e22c0adb"
+    commit: str = "bbcd5eae5077ce8dece3a1480e299ac4665186f8"
     test_cmd: str = "pnpm test:node run"
 
     @property
@@ -2168,10 +2168,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Nightwatch54c8550c(JavaScriptProfile):
+class Nightwatch646fc9cd(JavaScriptProfile):
     owner: str = "nightwatchjs"
     repo: str = "nightwatch"
-    commit: str = "54c8550c75a16c61827c0bad043c7ffa073a52e6"
+    commit: str = "646fc9cd846d7db699d525eb9939dbc5cd59aa59"
     test_cmd: str = "npm test -- --verbose"
 
     @property
@@ -2193,10 +2193,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Nocke7418da2(JavaScriptProfile):
+class Nock215cd2a8(JavaScriptProfile):
     owner: str = "nock"
     repo: str = "nock"
-    commit: str = "e7418da29feb4a7bf0aa1612bfb9d32a4051651e"
+    commit: str = "215cd2a8f1780960e5984fdcd1ea84cd42df463d"
     test_cmd: str = "npm test -- --reporter spec"
 
     @property
@@ -2216,10 +2216,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class NoVNCd44f7e04(JavaScriptProfile):
+class NoVNC8e1ebdff(JavaScriptProfile):
     owner: str = "novnc"
     repo: str = "noVNC"
-    commit: str = "d44f7e04fc456844836c7c5ac911d0f4e8dd06e6"
+    commit: str = "8e1ebdffba02e651c399dacef841f8941f6ad6e4"
     test_cmd: str = "npm test"
 
     @property
@@ -2259,10 +2259,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class JsPDFe6cf03db(JavaScriptProfile):
+class JsPDFbfeae27a(JavaScriptProfile):
     owner: str = "parallax"
     repo: str = "jsPDF"
-    commit: str = "e6cf03db2499ef0a9ccc54b2aba45156c5b32b3c"
+    commit: str = "bfeae27a27087f9a3279031959086cb7ff7bcaee"
     test_cmd: str = "npm run test-node"
 
     @property
@@ -2326,10 +2326,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Filepond38294959(JavaScriptProfile):
+class Filepond3107602c(JavaScriptProfile):
     owner: str = "pqina"
     repo: str = "filepond"
-    commit: str = "38294959147229eb09126008fc09d295da4e30cd"
+    commit: str = "3107602c21555108d5c60def540cd58617c84192"
     test_cmd: str = "npm test -- --verbose"
 
     @property
@@ -2397,10 +2397,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Nodemondaad5c16(JavaScriptProfile):
+class Nodemonfd5c1130(JavaScriptProfile):
     owner: str = "remy"
     repo: str = "nodemon"
-    commit: str = "daad5c162919fa6abff53be16832bdf55f2204ad"
+    commit: str = "fd5c11309c0eb4618af4d6b932d600bdb442774c"
     test_cmd: str = "for FILE in test/**/*.test.js; do echo $FILE; TEST=1 ./node_modules/.bin/mocha --exit --timeout 30000 $FILE || true; sleep 1; done"
 
     @property
@@ -2443,10 +2443,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Serverlessde62c71e(JavaScriptProfile):
+class Serverless2d2cff12(JavaScriptProfile):
     owner: str = "serverless"
     repo: str = "serverless"
-    commit: str = "de62c71e30855eff688f032ff10b9ad22de13afc"
+    commit: str = "2d2cff12200dc62970d3ec5c430d848180a29042"
     test_cmd: str = "npm test -- --reporter spec"
 
     @property
@@ -2494,10 +2494,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Jsonserverf5dfdaff(JavaScriptProfile):
+class Jsonserver89a34a44(JavaScriptProfile):
     owner: str = "typicode"
     repo: str = "json-server"
-    commit: str = "f5dfdaff725ecd5384b1f922b37757f023e13b63"
+    commit: str = "89a34a44b7a6a5311dc84f3b8a1b8b45c0905aea"
     test_cmd: str = "npm test"
 
     @property
@@ -2516,10 +2516,10 @@ CMD ["npm", "start"]"""
 
 
 @dataclass
-class Webpack2fd88ddd(JavaScriptProfile):
+class Webpackead3dc97(JavaScriptProfile):
     owner: str = "webpack"
     repo: str = "webpack"
-    commit: str = "2fd88ddd44057a2ede9e9bddce820c712699374e"
+    commit: str = "ead3dc97fee131d4bfe62127ee824b1d7854e537"
     test_cmd: str = (
         "yarn test:base --verbose --testMatch '<rootDir>/test/*.basictest.js'"
     )
@@ -2543,10 +2543,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Ws726c3732(JavaScriptProfile):
+class Ws84392554(JavaScriptProfile):
     owner: str = "websockets"
     repo: str = "ws"
-    commit: str = "726c3732b3e5319219ed73cac4826fd36917e2e1"
+    commit: str = "843925544e2f4cffe445e0179947f56d6c5b608f"
     test_cmd: str = "npm test -- --reporter spec"
     timeout: int = 300
 

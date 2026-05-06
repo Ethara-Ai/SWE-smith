@@ -103,10 +103,10 @@ class PhpProfile(RepoProfile):
 
 
 @dataclass
-class Dbalacb68b38(PhpProfile):
+class Dbalb69736d4(PhpProfile):
     owner: str = "doctrine"
     repo: str = "dbal"
-    commit: str = "acb68b388b2577bb211bb26dc22d20a8ad93d97d"
+    commit: str = "b69736d45fe6dc6e2204cf73ae56b3c2f746b75c"
 
     @property
     def dockerfile(self):
@@ -187,10 +187,10 @@ RUN composer install
 
 
 @dataclass
-class Monolog6db20ca0(PhpProfile):
+class Monolog68b97480(PhpProfile):
     owner: str = "Seldaek"
     repo: str = "monolog"
-    commit: str = "6db20ca029219dd8de378cea8e32ee149399ef1b"
+    commit: str = "68b974809baff3f071893de61447212e9e688ee7"
 
     @property
     def dockerfile(self):

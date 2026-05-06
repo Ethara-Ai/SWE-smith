@@ -1,0 +1,65 @@
+name: lm_modify_cwe863
+parameters:
+  cwe_id: "CWE-863"
+  cwe_name: "Incorrect Authorization"
+  bug_examples:
+    - "Invert an authorization condition: change `if (user.role === 'admin')` to `if (user.role !== 'admin')`, granting access to non-admins while denying it to admins. The check visually appears to exist but evaluates backwards."
+    - "Use OR instead of AND in a compound permission check: change `if (user.isAdmin && user.isVerified && user.isActive)` to `if (user.isAdmin || user.isVerified || user.isActive)`, so any single attribute grants full access rather than requiring all three."
+    - "Check the wrong permission for an action: change `if (user.can('delete:posts'))` to `if (user.can('read:posts'))` for a delete operation, so users with read-only access can delete resources because the wrong capability is being checked."
+    - "Compare against the wrong user ID for ownership: change `if (resource.ownerId === req.user.id)` to `if (resource.ownerId === req.params.userId)`, so authorization is checked against a user-SUPPLIED ID in the URL rather than the authenticated user's actual identity — an attacker passes their own ID in the URL to authorize themselves."
+    - "Authorize based on a user-modifiable attribute: change from checking `req.user.role` (server-assigned, immutable) to checking `req.user.profile.role` or `req.body.role` (user-editable field), so users can self-promote by editing their profile."
+    - "Use loose equality where strict is needed: change `if (user.accessLevel === requiredLevel)` to `if (user.accessLevel >= requiredLevel)` where higher numbers mean LESS privilege (level 1=admin, level 5=basic), so all basic users pass the admin check."
+    - "Skip authorization for a specific resource type without proper validation: add `if (resource.type === 'public') return allow;` without verifying the resource is ACTUALLY public, so setting `type: 'public'` on a private resource bypasses authorization."
+    - "Use string prefix matching instead of exact matching for roles: change `if (user.role === 'admin')` to `if (user.role.startsWith('admin'))`, so a user with role 'admin_readonly' or 'administrator_pending' passes the admin check."
+  tips:
+    - "The bug must be a realistic INCORRECT authorization flaw (CWE-863) — an authorization check EXISTS but evaluates INCORRECTLY, granting access to the wrong principals or denying access to the right ones."
+    - "CRITICAL DISTINCTION from CWE-862 (Missing Authorization): CWE-862 means the check is ABSENT/DELETED. CWE-863 means the check is PRESENT but WRONG — inverted condition, wrong field compared, wrong operator, wrong permission checked. The code APPEARS to authorize but does it incorrectly."
+    - "CRITICAL DISTINCTION from CWE-287 (Improper Authentication): CWE-287 is about verifying IDENTITY (who are you?). CWE-863 is about an incorrect PERMISSION decision (the system knows who you are but makes the wrong allow/deny decision)."
+    - "CRITICAL DISTINCTION from CWE-639 (Authorization Bypass Through User-Controlled Key): CWE-639 specifically involves using a user-supplied identifier (IDOR) to bypass access control. CWE-863 is broader — any logical error in the authorization decision."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors."
+    - "Do not add comments that hint at the flaw, authorization logic, permission, or CWE."
+    - "The bug should be subtle: the authorization check is clearly PRESENT in the code — someone reading it casually would think 'yes, there's an auth check here'. The incorrectness is in the LOGIC of the check, not its absence."
+    - "Prefer modifying exactly ONE condition, ONE comparator, ONE field reference, or ONE logical operator in an existing authorization check to make it evaluate incorrectly."
+    - "High-value targets: role comparisons, permission-string matching, ownership checks, scope validation, RBAC condition trees, any `if` statement that decides allow/deny."
+    - "If the function has no authorization logic at all (no permission checks, no role comparisons), respond with `NO_GOOD_BUG_SITE` instead of forcing a contrived change."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-863 flaw (Incorrect Authorization). The resulting function must still compile, keep its signature, and APPEAR to perform authorization — the flaw should make an existing authorization check evaluate INCORRECTLY, granting access to unauthorized principals.
+
+  CWE-863 specifically means the authorization check EXISTS but is LOGICALLY WRONG. This is distinct from:
+  - CWE-862 (Missing Authorization) — the check is completely ABSENT/DELETED
+  - CWE-287 (Improper Authentication) — identity verification is broken (authentication ≠ authorization)
+  - CWE-639 (IDOR) — specifically user-controlled key used to bypass access control
+
+  The authorization check should be VISIBLE in the code. A casual reviewer should see it and think 'auth is being checked here.' The wrongness is subtle — inverted condition, wrong field, wrong operator, wrong permission string, loose matching where strict is needed.
+
+  Concretely, some kinds of CWE-863 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-863 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-863 site (e.g., no authorization logic to corrupt — no role checks, permission checks, ownership comparisons), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

@@ -1,0 +1,61 @@
+name: lm_modify_cwe497
+parameters:
+  cwe_id: "CWE-497"
+  cwe_name: "Exposure of Sensitive System Information to an Unauthorized Control Sphere"
+  bug_examples:
+    - "Add system metadata to a public API response: include `process.version`, `os.platform()`, `os.arch()`, or `os.hostname()` in a JSON response body returned to unauthenticated users, aiding attacker reconnaissance."
+    - "Expose environment variables in a status/health endpoint: add `env: process.env` or specific sensitive env vars (`DB_HOST`, `AWS_SECRET_ACCESS_KEY`, internal URLs) to a `/health` or `/status` response accessible without authentication."
+    - "Include internal IP addresses or network topology in HTTP headers: add `X-Internal-IP: ${req.socket.localAddress}` or `X-Backend-Server: ${os.hostname()}` to response headers visible to external clients."
+    - "Return the full `process.memoryUsage()` or `os.cpus()` in an unauthenticated API endpoint, revealing server capacity, memory layout, and potential side-channel information."
+    - "Expose software dependency versions in a public endpoint: return `{ dependencies: require('./package.json').dependencies }` from an API route, revealing exact library versions with known CVEs to attackers."
+    - "Include internal DNS names or service-mesh endpoints in a response: add `upstream: 'http://internal-auth-service.cluster.local:3000'` to a client-facing error or debug response."
+    - "Remove the production check that hides debug info: delete `if (process.env.NODE_ENV !== 'production')` around a block that adds `{ debug: { pid: process.pid, uptime: process.uptime(), loadavg: os.loadavg() } }` to responses."
+    - "Expose the server's file system structure in an auto-generated API listing: include `{ routes: app._router.stack.map(r => ({ path: r.route?.path, file: r.route?.__file })) }` revealing internal file organization to any caller."
+  tips:
+    - "The bug must be a realistic CWE-497 flaw — sensitive SYSTEM information (hostnames, IPs, software versions, env vars, file paths, process details, network topology) is exposed to unauthorized users through INTENDED OUTPUT channels (API responses, HTTP headers, public endpoints)."
+    - "Do NOT introduce bugs better classified as CWE-209 (Error Message Containing Sensitive Information). CWE-497 is about system info leaking through NORMAL responses or intentional output — NOT through error messages. If the info only appears in a catch/error path, that is CWE-209."
+    - "Do NOT introduce bugs better classified as CWE-532 (Sensitive Information in Logs). CWE-497 is about info reaching the EXTERNAL USER/CLIENT. If it only goes to server-side log files, that is CWE-532."
+    - "Do NOT introduce bugs better classified as CWE-200 (general info exposure) if the exposed info is specifically about APPLICATION DATA (user records, business data). CWE-497 is about SYSTEM/INFRASTRUCTURE information."
+    - "CWE-497 focuses on system-level details: OS version, Node.js version, hostnames, internal IPs, env vars, process metrics, dependency versions, file paths, service topology. User data (passwords, PII) exposed through normal channels would be CWE-200."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors or syntax errors."
+    - "Do not add comments that hint at the flaw, information exposure, system info, or CWE."
+    - "The bug should be subtle: the endpoint or response still serves its primary purpose correctly, it just includes additional system metadata that should be hidden from external users."
+    - "Prefer adding or un-redacting exactly ONE piece of system information to an existing response or header."
+    - "High-value targets: health/status endpoints, API response constructors, middleware that adds headers, debug endpoints missing auth checks, version endpoints, any response that already includes metadata."
+    - "If the function has no response construction, no header manipulation, no API output visible to external users, respond with `NO_GOOD_BUG_SITE` instead of forcing a contrived change."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-497 flaw (Exposure of Sensitive System Information to an Unauthorized Control Sphere). The resulting function must still compile, keep its signature, and work correctly — the flaw should expose sensitive system information (hostnames, internal IPs, software versions, environment variables, process details, file paths) to unauthorized external users through normal response channels.
+
+  CWE-497 is a child of CWE-200 (Exposure of Sensitive Information). It specifically targets system/infrastructure metadata exposed via INTENDED OUTPUT — API responses, HTTP headers, public endpoints — rather than via error messages (CWE-209) or log files (CWE-532). The key distinction is that the information channel is a NORMAL, NON-ERROR response path.
+
+  Concretely, some kinds of CWE-497 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-497 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-497 site (e.g., no response construction, no headers, no API output — a pure internal helper), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

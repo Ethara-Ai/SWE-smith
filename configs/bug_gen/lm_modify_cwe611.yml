@@ -1,0 +1,61 @@
+name: lm_modify_cwe611
+parameters:
+  cwe_id: "CWE-611"
+  cwe_name: "Improper Restriction of XML External Entity Reference"
+  bug_examples:
+    - "Remove the external entity processing prohibition: delete `parser.setFeature('http://apache.org/xml/features/disallow-doctype-decl', true)` or the equivalent `{ noent: false, dtdload: false }` libxml2 options, so `<!ENTITY xxe SYSTEM 'file:///etc/passwd'>` references are resolved."
+    - "Remove the DTD/DOCTYPE rejection check: delete `if (xmlInput.includes('<!DOCTYPE') || xmlInput.includes('<!ENTITY')) throw new Error('DTD not allowed');` before parsing, so entity declarations are processed."
+    - "Switch from a hardened XML parser to an unsafe one: replace `const doc = libxmljs.parseXml(input, { noent: false, nonet: true })` with `const doc = libxmljs.parseXml(input, { noent: true })` enabling entity substitution including external entities."
+    - "Remove the entity resolver override: delete `parser.entityResolver = () => ''` which blocks all entity resolution, reverting to the default resolver that fetches external files and URLs."
+    - "Enable external DTD loading: remove `{ externalEntities: false }` from the XML parser options or change it to `true`, allowing `SYSTEM` entities that reference file:// or http:// URLs."
+    - "Remove the network fetch restriction: delete `{ nonet: true }` from libxml2 parser options, so external entities pointing to `http://attacker.com/xxe` are fetched server-side (SSRF via XXE)."
+    - "Remove the XML security middleware: delete the pre-processing step that strips DOCTYPE declarations before the XML reaches the parser, so crafted XML with entity declarations is parsed directly."
+    - "Replace a safe streaming XML parser with a DOM parser that resolves entities: change from SAX-based parsing (which can skip entity events) to full DOM parsing with entity resolution enabled."
+  tips:
+    - "The bug must be a realistic XXE flaw (CWE-611) — an XML parser is configured (or misconfigured) to process external entity references, allowing file reading (file://), SSRF (http://), or DoS via entity expansion."
+    - "CWE-611 specifically targets XML EXTERNAL entity references — entities whose definitions reference EXTERNAL resources (files, URLs) via SYSTEM or PUBLIC keywords in DOCTYPE declarations."
+    - "CRITICAL DISTINCTION from CWE-776 (XML Entity Expansion): CWE-776 is about RECURSIVE/NESTED INTERNAL entities (billion laughs — exponential expansion within the document itself). CWE-611 is about EXTERNAL entities that cause the parser to fetch EXTERNAL resources (file system, network)."
+    - "CRITICAL DISTINCTION from CWE-918 (SSRF): While XXE can CAUSE SSRF (via http:// entity URLs), CWE-611 is the ROOT CAUSE (unsafe XML parser config). CWE-918 covers SSRF regardless of vector. Use CWE-611 when the mechanism is specifically XML external entities."
+    - "CRITICAL DISTINCTION from CWE-409 (Data Amplification): Entity expansion that causes memory exhaustion via INTERNAL recursive entities is CWE-776, not CWE-611. External entity resolution causing data exfiltration or SSRF is CWE-611."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors."
+    - "Do not add comments that hint at the flaw, XXE, external entity, or CWE."
+    - "The bug should be subtle: normal XML without DOCTYPE declarations still parses correctly and safely."
+    - "Prefer modifying exactly ONE parser configuration setting or removing ONE safety check (DOCTYPE rejection, entity resolution override, noent flag)."
+    - "High-value targets: XML parsing of user-uploaded files, SOAP/XML-RPC endpoints, SVG processing, SAML/XML-Sig verification, RSS/Atom feed parsing, XLSX/DOCX (OpenXML) extraction, any `DOMParser`/`SAXParser`/`libxmljs` usage."
+    - "If the function has no XML parsing (no DOM/SAX/libxml/xpath), respond with `NO_GOOD_BUG_SITE`."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-611 flaw (XML External Entity Injection). The resulting function must still compile, keep its signature, and parse legitimate XML correctly — the flaw should allow attackers to craft XML with external entity references that read local files, perform SSRF, or exfiltrate data.
+
+  CWE-611 targets XML parser configurations that RESOLVE EXTERNAL ENTITIES — entities defined with SYSTEM or PUBLIC keywords that reference file://, http://, or other protocol URLs. This is distinct from CWE-776 (recursive internal entity expansion / billion laughs), CWE-918 (general SSRF not via XML), and CWE-409 (compression amplification). CWE-611 is specifically about EXTERNAL resource fetching triggered by XML entity resolution.
+
+  Concretely, some kinds of CWE-611 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-611 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-611 site (e.g., no XML parsing — a pure computation helper or JSON-only endpoint), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

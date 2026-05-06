@@ -1,0 +1,61 @@
+name: lm_modify_cwe426
+parameters:
+  cwe_id: "CWE-426"
+  cwe_name: "Untrusted Search Path"
+  bug_examples:
+    - "Remove an absolute path specification for a child process: change `execFile('/usr/bin/git', args)` to `execFile('git', args)` or `spawn('git', args)`, so an attacker who controls PATH or plants a malicious `git` in CWD gets code execution."
+    - "Remove PATH sanitization before executing a subprocess: delete `const env = { ...process.env, PATH: '/usr/local/bin:/usr/bin:/bin' }` and pass the inherited environment, so attacker-modified PATH is used to locate executables."
+    - "Remove the `shell: false` safeguard: change `spawn('cmd', args, { shell: false })` to `spawn('cmd', args, { shell: true })` or use `exec()` which uses shell by default, expanding the search path attack surface."
+    - "Replace a resolved absolute module path with a relative require: change `require('/app/lib/plugin.js')` to `require('./plugin')` or `require('plugin')` where NODE_PATH or node_modules resolution could be influenced by an attacker."
+    - "Remove the CWD restriction before process spawning: delete `{ cwd: SAFE_DIR }` from `spawn()` options so the child process inherits CWD which may contain attacker-placed executables."
+    - "Remove the environment variable filtering: delete the code that strips `LD_PRELOAD`, `LD_LIBRARY_PATH`, `DYLD_INSERT_LIBRARIES`, or `NODE_OPTIONS` from the environment before spawning a child process."
+    - "Replace a pinned binary path with environment-variable-controlled one: change `const gitBin = '/usr/bin/git'` to `const gitBin = process.env.GIT_PATH || 'git'`, so an attacker controlling the environment variable can substitute a malicious binary."
+    - "Remove the `.js` extension enforcement on dynamic require: delete `if (!modulePath.endsWith('.js')) throw;` so `require(userInput)` can load native `.node` addons or traverse to attacker-controlled locations."
+  tips:
+    - "The bug must be a realistic untrusted search path flaw (CWE-426) — the application uses a search path (PATH, NODE_PATH, require resolution, LD_LIBRARY_PATH) to locate executables or modules that an attacker can influence."
+    - "CWE-426 is about SEARCH PATH POISONING — the attacker can plant a malicious executable, library, or module in a location that the search path resolution will find BEFORE the legitimate one."
+    - "CRITICAL DISTINCTION from CWE-78 (OS Command Injection): CWE-78 is about attacker-controlled ARGUMENTS or command strings. CWE-426 is about attacker-controlled SEARCH PATHS that determine WHICH binary gets executed, even with safe arguments."
+    - "CRITICAL DISTINCTION from CWE-94 (Code Injection): CWE-94 is about injecting new code into the process. CWE-426 is about redirecting execution to a DIFFERENT BINARY/MODULE via search path manipulation."
+    - "CRITICAL DISTINCTION from CWE-22 (Path Traversal): CWE-22 is about traversing filesystem paths to access unauthorized files. CWE-426 is specifically about EXECUTABLE/LIBRARY search path resolution ordering."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors."
+    - "Do not add comments that hint at the flaw, search path, DLL hijacking, or CWE."
+    - "The bug should be subtle: in normal environments with clean PATHs and no attacker-controlled directories, the code works correctly."
+    - "Prefer modifying exactly ONE path specification or removing ONE sanitization step rather than restructuring."
+    - "High-value targets: `child_process.spawn/exec/execFile` calls, `require()` with dynamic paths, plugin loading systems, tool invocation (git, npm, python), any code that resolves binary paths at runtime."
+    - "If the function does not spawn processes, load modules dynamically, or resolve executable paths, respond with `NO_GOOD_BUG_SITE`."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-426 flaw (Untrusted Search Path). The resulting function must still compile, keep its signature, and work in clean environments — the flaw should allow an attacker who controls the search path (PATH, NODE_PATH, CWD, LD_LIBRARY_PATH) to redirect execution to a malicious executable or module.
+
+  CWE-426 targets SEARCH PATH RESOLUTION — the system uses a path-based search (PATH lookup, node_modules resolution, dynamic linker search) to find an executable or library, and an attacker can influence which locations are searched first. This is distinct from CWE-78 (command injection via arguments), CWE-94 (code injection into the process), and CWE-22 (path traversal for file access). CWE-426 is specifically about WHICH BINARY OR MODULE gets loaded due to search order manipulation.
+
+  Concretely, some kinds of CWE-426 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-426 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-426 site (e.g., no process spawning, no dynamic module loading, no executable path resolution — a pure computation helper or trivial getter), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

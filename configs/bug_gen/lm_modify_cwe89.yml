@@ -1,0 +1,69 @@
+name: lm_modify_cwe89
+parameters:
+  cwe_id: "CWE-89"
+  cwe_name: "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+  bug_examples:
+    - "Replace a parameterized query with string concatenation: change `db.query('SELECT * FROM users WHERE id = $1', [userId])` to `db.query('SELECT * FROM users WHERE id = ' + userId)`, so injected SQL in `userId` (like `1 OR 1=1`) alters the query structure."
+    - "Remove prepared statement parameters and use template literals: change `db.query('SELECT * FROM t WHERE name = ?', [name])` to `db.query(\\`SELECT * FROM t WHERE name = '${name}'\\`)`, allowing quote-breaking injection like `'; DROP TABLE t; --`."
+    - "Replace an ORM's safe query builder with a raw SQL call: change `User.findOne({ where: { email } })` to `sequelize.query('SELECT * FROM Users WHERE email = \\'' + email + '\\'')`, bypassing the ORM's automatic parameterization."
+    - "Remove type coercion that ensures a user-supplied value is numeric before interpolation: delete `const id = parseInt(req.params.id, 10); if (isNaN(id)) return 400;` before `db.query('SELECT * FROM t WHERE id = ' + req.params.id)`, so string payloads with SQL syntax pass through."
+    - "Switch from a query builder's parameterized `.where()` to `.whereRaw()` with concatenation: change `.where('email', '=', email)` to `.whereRaw('email = \\'' + email + '\\'')`, losing the query builder's escaping."
+    - "Remove the escaping from a LIKE clause: change `db.query('SELECT * FROM t WHERE name LIKE $1', ['%' + escapeLike(input) + '%'])` to `db.query('SELECT * FROM t WHERE name LIKE \\'%' + input + '%\\'')`, allowing `%` and `_` wildcards plus quote-breaking injection."
+    - "Use string interpolation in an ORDER BY clause: change a validated column name to directly interpolating user input: `db.query('SELECT * FROM t ORDER BY ' + req.query.sort)`, so `id; DROP TABLE t--` or `(SELECT password FROM admin LIMIT 1)` is injected."
+    - "Remove the allowlist check for dynamic table/column names: delete `if (!ALLOWED_COLUMNS.includes(col)) throw error;` before `db.query('SELECT ' + col + ' FROM users')`, so attacker-controlled column names can inject subqueries or function calls."
+  tips:
+    - "The bug must be a realistic SQL injection flaw (CWE-89) — user-controlled input is incorporated into a SQL command without proper parameterization, escaping, or type validation, allowing the attacker to alter query structure."
+    - "CRITICAL DISTINCTION from CWE-74 (Injection — general): CWE-89 is specifically about SQL. If the injection target is a different language (LDAP, XPath, shell, code), use the appropriate child CWE instead."
+    - "CRITICAL DISTINCTION from CWE-564 (SQL Injection: Hibernate/ORM): In most real-world JS/Node.js code, CWE-89 is the correct classification even when an ORM is involved. CWE-564 is rarely used outside Java/Hibernate contexts."
+    - "SQL injection occurs in multiple contexts: WHERE clauses, ORDER BY, LIMIT, GROUP BY, table/column names, HAVING, subqueries. The most dangerous allow UNION-based extraction or stacked queries."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors."
+    - "Do not add comments that hint at the flaw, SQL injection, parameterization, or CWE."
+    - "The bug should be subtle: inputs without SQL metacharacters (`'`, `;`, `--`, `UNION`) still produce correct query results. The flaw only manifests with adversarial input."
+    - "Prefer modifying exactly ONE query construction point — replace one parameterized query with concatenation, remove one escaping step, switch one safe method to raw SQL."
+    - "High-value targets in Node.js: `pg`/`mysql2`/`better-sqlite3` raw queries, Sequelize `literal()`/`query()`, Knex `.whereRaw()`/`.raw()`, Prisma `$queryRawUnsafe()`, any SQL template string with `${variable}` interpolation."
+    - "If the function does not construct or execute SQL queries (no database interaction, no query building), respond with `NO_GOOD_BUG_SITE`."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-89 flaw (SQL Injection). The resulting function must still compile, keep its signature, and return correct results for benign inputs — the flaw should only manifest when user-controlled data containing SQL metacharacters (`'`, `;`, `--`, `UNION SELECT`, `OR 1=1`) is incorporated into a query without proper parameterization.
+
+  CWE-89 is specifically about SQL command injection. This is distinct from:
+  - CWE-74 (Injection — general parent category)
+  - CWE-78 (OS Command Injection — shell commands, not SQL)
+  - CWE-94 (Code Injection — programming language eval/exec, not SQL)
+
+  SQL injection vectors in Node.js typically arise when:
+  1. Template literals or string concatenation build queries instead of parameterized placeholders (`$1`, `?`)
+  2. ORM safe methods are replaced with `.raw()` / `.literal()` / direct SQL
+  3. Dynamic identifiers (table/column names) come from user input without allowlist validation
+  4. Type coercion is skipped, allowing string SQL payloads where numbers are expected
+
+  Concretely, some kinds of CWE-89 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-89 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-89 site (e.g., no SQL query construction, no database calls — a utility function, template renderer, or in-memory processor), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

@@ -1,0 +1,69 @@
+name: lm_modify_cwe77
+parameters:
+  cwe_id: "CWE-77"
+  cwe_name: "Improper Neutralization of Special Elements used in a Command ('Command Injection')"
+  bug_examples:
+    - "Remove escaping before interpolating user input into a command language (not necessarily OS shell): delete sanitization before passing data to a Redis `EVAL` script, a database CLI command, a build-tool command string, or an FFmpeg filter expression."
+    - "Replace a structured/parameterized command interface with string concatenation: change from an API that accepts command + args separately to one that parses a single command string — e.g., change `redis.call('SET', key, value)` to `redis.eval('return redis.call(\"SET\", \"' + key + '\", \"' + value + '\")')` where key/value are user-controlled."
+    - "Remove validation on user input before incorporating it into an ImageMagick/GraphicsMagick command filter: delete the format check so `convert -resize ${userSize} in.png out.png` accepts `100x100; cat /etc/passwd` (shell) or MVG delegate injection."
+    - "Remove escaping for a database CLI tool's special characters: delete the escaping step before building a `mongosh --eval '...'` or `psql -c '...'` command string that includes user data."
+    - "Remove the safe-argument-set check before building an FFmpeg/Sox/ImageMagick filter graph: delete `if (!SAFE_FILTERS.includes(filterName))` before `-vf ${filterName}=${filterParams}`, allowing injection of `;` or format-string directives."
+    - "Remove escaping in a CI/CD pipeline command: delete sanitization before `exec('npm publish --tag ' + tagName)` where tagName comes from a webhook/API payload."
+    - "Replace a message broker's structured API with a raw protocol string: change from `channel.publish(exchange, routingKey, payload)` to building an AMQP/STOMP frame by string concatenation with user data, allowing protocol injection."
+    - "Remove escaping before building a LaTeX command from user input: delete `latexEscape(title)` before `\\title{${title}}`, so input containing `}\\input{/etc/passwd}` injects LaTeX commands."
+  tips:
+    - "The bug must be a realistic command injection flaw (CWE-77) — user-controlled input is incorporated into a COMMAND (broadly defined) without neutralization of special elements that the command interpreter treats as control syntax."
+    - "CWE-77 is the PARENT of CWE-78 (OS Command Injection). CWE-78 specifically targets OS shells (bash, sh, cmd.exe). CWE-77 covers command injection into ANY command interpreter — OS shells, database CLIs, build tools, media processing commands, protocol commands, CI/CD pipelines."
+    - "Use CWE-77 (not CWE-78) when the command target is NOT a traditional OS shell: Redis EVAL, database CLI tools, ImageMagick delegates, LaTeX processors, mail sendmail commands, CI/CD pipeline commands, AMQP/STOMP protocols."
+    - "CRITICAL DISTINCTION from CWE-94 (Code Injection): CWE-94 targets a PROGRAMMING LANGUAGE interpreter (eval/Function/vm). CWE-77 targets a COMMAND interpreter that is not a general-purpose programming language."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors."
+    - "Do not add comments that hint at the flaw, command injection, or CWE."
+    - "The bug should be subtle: inputs without the command language's special characters still produce correct results."
+    - "Prefer modifying exactly ONE escaping/parameterization step."
+    - "High-value targets in JS/Node.js: Redis `eval()` with user data, ImageMagick/GraphicsMagick commands, FFmpeg filter construction, LaTeX document generation, sendmail command strings, database CLI invocations, CI/CD webhook-triggered commands."
+    - "If the function does not construct or issue commands to any interpreter/CLI/protocol (pure data processing, no external command building), respond with `NO_GOOD_BUG_SITE`."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-77 flaw (Command Injection). The resulting function must still compile, keep its signature, and work on benign inputs — the flaw should allow attacker-crafted input containing special command elements to alter the behavior of a downstream command interpreter.
+
+  CWE-77 is the PARENT of CWE-78 (OS Command Injection) and covers injection into ANY command interpreter:
+  - OS shells (bash, cmd.exe) — more specifically CWE-78
+  - Database CLIs (redis-cli, mongosh, psql with -c flag)
+  - Media processors (ImageMagick, FFmpeg filter expressions)
+  - Build tools (npm scripts, make targets, webpack loaders)
+  - Document processors (LaTeX, Pandoc)
+  - Protocol interpreters (AMQP, STOMP, SMTP)
+  - CI/CD pipelines (GitHub Actions expressions, Jenkins pipeline strings)
+
+  Use CWE-77 when the target is a command interpreter that is NOT a traditional OS shell or when the injection is into the command-language layer specifically (as opposed to CWE-78's OS-shell-metacharacter focus or CWE-94's programming-language focus).
+
+  Concretely, some kinds of CWE-77 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-77 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-77 site (e.g., no command construction for any interpreter — a pure data function or in-memory processor), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

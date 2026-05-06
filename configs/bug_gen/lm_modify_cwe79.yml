@@ -1,0 +1,71 @@
+name: lm_modify_cwe79
+parameters:
+  cwe_id: "CWE-79"
+  cwe_name: "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
+  bug_examples:
+    - "Remove HTML entity encoding before inserting user data into an HTML body: delete the `escapeHtml()` / `he.encode()` / `DOMPurify.sanitize()` call so raw `<script>` tags in user input render as executable markup in the browser."
+    - "Change a template engine's auto-escaped output to raw/unescaped: replace `{{ user_input }}` (auto-escaped in Jinja2/Nunjucks) with `{{ user_input | safe }}` or `{{{ user_input }}}` (Handlebars raw) or `<%- user_input %>` (EJS unescaped), so HTML metacharacters pass through."
+    - "Remove attribute-context encoding when inserting user data into an HTML attribute: delete the attribute-specific encoder so a value like `\" onfocus=\"alert(1)\" autofocus=\"` breaks out of the attribute and injects an event handler — `<input value=\"${userInput}\">` without escaping."
+    - "Skip JavaScript-context escaping in an inline script: change `var name = ${JSON.stringify(userInput)};` to `var name = '${userInput}';`, so a value containing `'; alert(1); '` breaks the string and executes arbitrary JS."
+    - "Replace a DOM-based sanitizer with a naive regex strip: change from `DOMPurify.sanitize(html)` to `html.replace(/<script[^>]*>.*?<\\/script>/gi, '')` which misses event handlers (`onerror`), `<img src=x onerror=...>`, SVG/MathML contexts, and CSS `expression()` vectors."
+    - "Remove URL-scheme validation before inserting user data into an `href` or `src` attribute: delete the protocol whitelist check (`if (!['http:', 'https:'].includes(parsed.protocol))`) so `javascript:alert(document.cookie)` and `data:text/html,...` URLs inject scripts."
+    - "Disable Content-Security-Policy or auto-escaping for a template block: add `{% autoescape false %}` around a block rendering user-generated content, or remove the CSP `nonce` attribute from a script tag that includes user data."
+    - "Use `innerHTML` / `dangerouslySetInnerHTML` directly with unsanitized user input: change `element.textContent = userInput` (safe) to `element.innerHTML = userInput` (XSS), or in React change from `<div>{userContent}</div>` to `<div dangerouslySetInnerHTML={{__html: userContent}} />`."
+  tips:
+    - "The bug must be a realistic XSS flaw (CWE-79) — user-controlled input is reflected or stored into a web page without proper CONTEXT-AWARE encoding, allowing script injection in the victim's browser."
+    - "CRITICAL DISTINCTION from CWE-80 (Basic XSS): CWE-79 is the parent class. CWE-80 is specifically about script-related tags being injected into web pages. If the config targets CWE-79, broader context is fair game (attribute injection, javascript: URLs, CSS injection, DOM manipulation) — not just `<script>` tag injection."
+    - "CRITICAL DISTINCTION from CWE-94 (Code Injection): CWE-94 is server-side code execution (eval/exec). CWE-79 is CLIENT-side script execution in a victim's BROWSER. If the injected code runs on the server, it's CWE-94. If it runs in the user's browser, it's CWE-79."
+    - "CRITICAL DISTINCTION from CWE-74 (Injection — general): CWE-74 is the parent of ALL injection flaws. Only use CWE-79 when the injection target is specifically HTML/DOM/browser context. For other injection targets (LDAP, XML, headers, etc.), use the specific child CWE."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors."
+    - "Do not add comments that hint at the flaw, XSS, escaping, sanitization, or CWE."
+    - "The bug should be subtle: inputs without HTML metacharacters (`<`, `>`, `\"`, `'`, `&`) still render correctly. The flaw only manifests with adversarial input containing markup."
+    - "Prefer modifying exactly ONE encoding/escaping/sanitization step. Do not restructure the function or change its data flow."
+    - "Context matters: HTML body needs entity encoding, attributes need attribute encoding, JavaScript context needs JS string escaping, URL context needs scheme validation. Remove the encoding appropriate for the OUTPUT context."
+    - "High-value targets in JS/Node.js: template rendering (EJS, Handlebars, Nunjucks, Pug), React's `dangerouslySetInnerHTML`, `element.innerHTML`, URL construction for `href`/`src`, server-side HTML string builders, markdown renderers that allow HTML."
+    - "If the function does not generate HTML, DOM, or web page content from user-controlled input — a pure computation, data transformation, or API-only handler — respond with `NO_GOOD_BUG_SITE`."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-79 flaw (Cross-site Scripting). The resulting function must still compile, keep its signature, and render correctly for benign inputs — the flaw should only manifest when user-controlled data containing HTML/JavaScript metacharacters is rendered into a web page without proper context-aware encoding, enabling script execution in a victim's browser.
+
+  CWE-79 (XSS) is specifically about CLIENT-SIDE script injection through HTML output. This is distinct from:
+  - CWE-94 (Code Injection) — SERVER-SIDE code execution via eval/exec
+  - CWE-74 (Injection — general parent) — broader injection category
+  - CWE-80 (Basic XSS) — specifically script-related HTML tags; CWE-79 also covers attribute, URL, and JS-context injection
+
+  XSS contexts to consider:
+  1. **HTML body** — `<div>USER_INPUT</div>` → needs entity encoding (`<` → `&lt;`)
+  2. **HTML attribute** — `<input value="USER_INPUT">` → needs attribute encoding
+  3. **JavaScript** — `var x = 'USER_INPUT';` → needs JS string escaping
+  4. **URL** — `<a href="USER_INPUT">` → needs scheme validation + encoding
+  5. **CSS** — `style="background: USER_INPUT"` → needs CSS value encoding
+
+  Concretely, some kinds of CWE-79 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-79 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-79 site (e.g., no HTML/DOM/web page generation from user input — a pure API, data transformer, or computation), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

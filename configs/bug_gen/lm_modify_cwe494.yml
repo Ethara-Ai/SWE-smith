@@ -1,0 +1,61 @@
+name: lm_modify_cwe494
+parameters:
+  cwe_id: "CWE-494"
+  cwe_name: "Download of Code Without Integrity Check"
+  bug_examples:
+    - "Remove hash verification after downloading a script or module: delete `if (crypto.createHash('sha256').update(content).digest('hex') !== expectedHash) throw new Error('integrity mismatch');` so tampered code from a compromised CDN or mirror is executed."
+    - "Remove signature verification of downloaded packages/plugins: delete `if (!crypto.verify('sha256', data, publicKey, signature)) throw;` so attacker-modified packages pass without detection."
+    - "Disable TLS certificate verification on a code download channel: add `rejectUnauthorized: false` to the HTTPS agent options, or remove certificate pinning, so MITM-modified downloads are accepted."
+    - "Remove lockfile integrity comparison: delete `if (downloadedHash !== lockfileEntry.integrity.split('-')[1]) throw;` from a package installer, silently accepting modified dependencies."
+    - "Remove Subresource Integrity (SRI) hash from dynamically inserted script tags: delete the `integrity` attribute or the check that validates it, so CDN-compromised scripts execute without detection."
+    - "Downgrade from HTTPS to HTTP for code fetching: change `https://registry.npmjs.org/` to `http://registry.npmjs.org/` or remove the protocol enforcement, enabling MITM code injection."
+    - "Remove the checksum verification step in an auto-update mechanism: delete the step that compares the downloaded update binary's hash against the signed manifest, so a compromised update server can push malicious binaries."
+    - "Remove content-type validation on fetched code: delete `if (response.headers['content-type'] !== 'application/javascript') throw;` so HTML error pages or malicious payloads served with wrong content-type are eval'd."
+  tips:
+    - "The bug must be a realistic code integrity flaw (CWE-494) — executable code (scripts, modules, updates, plugins) is downloaded and used without verifying its integrity, enabling supply-chain attacks."
+    - "CWE-494 specifically targets EXECUTABLE CODE downloads — not just any data download. The downloaded content is subsequently EXECUTED (eval'd, required, loaded as a module, run as a binary)."
+    - "CRITICAL DISTINCTION from CWE-354 (Improper Validation of Integrity Check Value): CWE-354 is about any data with an integrity value that isn't validated (config files, messages, payloads). CWE-494 specifically targets EXECUTABLE CODE downloads."
+    - "CRITICAL DISTINCTION from CWE-295 (Improper Certificate Validation): CWE-295 is about TLS trust chain validation. CWE-494 covers the APPLICATION-LEVEL integrity verification (hash, signature) of the downloaded CODE, which should exist even over TLS (defense in depth)."
+    - "CRITICAL DISTINCTION from CWE-829 (Inclusion of Functionality from Untrusted Control Sphere): CWE-829 is about including code from an untrusted SOURCE. CWE-494 is about downloading from a potentially-trusted source WITHOUT VERIFYING the download wasn't tampered with in transit or at the source."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors."
+    - "Do not add comments that hint at the flaw, integrity, verification, or CWE."
+    - "The bug should be subtle: downloads from the legitimate untampered source still work correctly."
+    - "Prefer removing exactly ONE integrity verification step (one hash check, one signature verify, one SRI attribute)."
+    - "High-value targets: auto-update mechanisms, plugin/extension loaders, CDN script injection, package installation scripts, dynamic import from URLs, WebAssembly module fetching."
+    - "If the function does not download, fetch, or dynamically load executable code, respond with `NO_GOOD_BUG_SITE`."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-494 flaw (Download of Code Without Integrity Check). The resulting function must still compile, keep its signature, and work when the download source is legitimate — the flaw should allow execution of tampered/malicious code when the download is MITM'd or the source is compromised, because integrity verification is skipped.
+
+  CWE-494 specifically targets EXECUTABLE CODE downloads — scripts, modules, updates, plugins, WebAssembly — that are fetched and subsequently executed without verifying integrity (hash, signature, SRI). This is distinct from CWE-354 (general data integrity validation), CWE-295 (TLS certificate validation), and CWE-829 (inclusion from untrusted source). CWE-494 means the source might be trusted but the DOWNLOAD ITSELF is not verified.
+
+  Concretely, some kinds of CWE-494 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-494 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-494 site (e.g., no code downloading, no dynamic script loading, no auto-update mechanism — a pure computation helper or trivial getter), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

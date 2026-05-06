@@ -1,0 +1,61 @@
+name: lm_modify_cwe131
+parameters:
+  cwe_id: "CWE-131"
+  cwe_name: "Incorrect Calculation of Buffer Size"
+  bug_examples:
+    - "Use string length instead of byte length for buffer allocation: use `Buffer.alloc(str.length)` instead of `Buffer.alloc(Buffer.byteLength(str, 'utf8'))` for multi-byte strings, so the allocated buffer is too small for the actual UTF-8 encoded data."
+    - "Forget to account for a null terminator in a native addon: allocate `malloc(strlen(input))` instead of `malloc(strlen(input) + 1)` in N-API code, so the null byte written by strcpy overflows by one byte."
+    - "Use element count instead of byte count for TypedArray allocation: allocate `new ArrayBuffer(numFloats)` instead of `new ArrayBuffer(numFloats * Float32Array.BYTES_PER_ELEMENT)`, creating a buffer 4x too small for the intended Float32Array."
+    - "Miscalculate the output size of a base64 encoding: allocate `Buffer.alloc(input.length)` for base64 output instead of `Buffer.alloc(Math.ceil(input.length * 4 / 3))`, underallocating because base64 expands data by ~33%."
+    - "Forget to account for escape sequences in a string encoding: allocate based on `input.length` for a JSON-escaped or URL-encoded output where special characters expand to multiple bytes (`\\uXXXX` = 6 chars per char)."
+    - "Use wrong multiplier for wide-character conversion: allocate `numChars * 2` bytes for UTF-32 encoding instead of `numChars * 4`, halving the required buffer size."
+    - "Integer overflow in size calculation: compute `width * height * channels` for an image buffer without checking for overflow, so `65536 * 65536 * 4` wraps to a small number on 32-bit, allocating a tiny buffer that overflows on pixel writes."
+    - "Forget to account for padding/alignment in a struct buffer: allocate `fieldCount * fieldSize` without accounting for alignment padding between fields, so the buffer is too small for the actual packed/aligned struct layout in native code."
+  tips:
+    - "The bug must be a realistic CWE-131 flaw — the CALCULATION of a buffer's size is incorrect, resulting in an allocation that is too small for the data that will be written into it. The root cause is the MATH, not a missing bounds check on the write."
+    - "Do NOT introduce bugs better classified as CWE-120 (Buffer Copy without Checking Size). CWE-131 is about the ALLOCATION being wrong. CWE-120 is about the COPY not checking. If the buffer was allocated correctly but the copy doesn't verify fit, that's CWE-120."
+    - "Do NOT introduce bugs better classified as CWE-190 (Integer Overflow). If the size calculation overflows an integer, the ROOT CAUSE is CWE-190 and the CONSEQUENCE is CWE-131. Use CWE-131 when the math is logically wrong (wrong formula) rather than arithmetically overflowing."
+    - "Do NOT introduce bugs better classified as CWE-193 (Off-by-one Error). If the buffer is exactly ONE byte too small (forgot null terminator, fence-post), that's often CWE-193. CWE-131 covers broader miscalculations (wrong multiplier, wrong encoding assumption, missing expansion factor)."
+    - "Common patterns: byte-vs-character confusion in multi-byte encodings, missing expansion factor for base64/hex/URL-encoding, wrong sizeof() in native code, integer overflow in dimension calculations (width*height*channels), forgetting alignment/padding."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors or syntax errors."
+    - "Do not add comments that hint at the flaw, buffer size, calculation, allocation, or CWE."
+    - "The bug should be subtle: for ASCII-only or small inputs the buffer may happen to be large enough. The flaw manifests with multi-byte characters, large dimensions, or encoded outputs that expand beyond the miscalculated size."
+    - "Prefer introducing exactly ONE size calculation error (wrong multiplier, missing +1, wrong encoding length function, missing expansion factor)."
+    - "High-value targets: encoding/decoding functions (base64, hex, URL-encode, UTF conversions), image/video buffer allocations (width*height*channels), native addon struct allocations, protocol frame builders, any Buffer.alloc() or malloc() with a computed size."
+    - "If the function has no buffer allocations with computed sizes, no encoding conversions, no size calculations, respond with `NO_GOOD_BUG_SITE` instead of forcing a contrived change."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-131 flaw (Incorrect Calculation of Buffer Size). The resulting function must still compile, keep its signature, and work for some inputs — the flaw should cause a buffer to be allocated too small due to a calculation error, leading to overflow when the full data is written.
+
+  CWE-131 targets the SIZE CALCULATION specifically — the formula used to compute how much memory to allocate is wrong. This is distinct from CWE-120 (copy without checking size — correct allocation, unchecked write) and CWE-193 (off-by-one — boundary is one unit wrong). Common patterns include byte-vs-character confusion in multi-byte encodings, missing expansion factors, wrong sizeof() multipliers, and integer overflow in dimension calculations.
+
+  Concretely, some kinds of CWE-131 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-131 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-131 site (e.g., no buffer allocations with computed sizes, no encoding conversions, no size calculations), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

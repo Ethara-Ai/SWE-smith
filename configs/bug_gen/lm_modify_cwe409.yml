@@ -1,0 +1,61 @@
+name: lm_modify_cwe409
+parameters:
+  cwe_id: "CWE-409"
+  cwe_name: "Improper Handling of Highly Compressed Data (Data Amplification)"
+  bug_examples:
+    - "Remove a decompression ratio check: delete `if (decompressedSize / compressedSize > MAX_RATIO) throw new Error('zip bomb detected');` so a 1 KB gzip payload that expands to 1 GB is processed without detection."
+    - "Remove a total decompressed size limit in a streaming decompressor: delete `if (totalOutput > MAX_DECOMPRESSED_SIZE) { stream.destroy(); return; }` from the zlib/brotli `on('data')` handler, allowing unbounded memory growth."
+    - "Remove a nested archive depth limit: delete `if (nestingLevel > MAX_NESTING) return reject;` before recursively decompressing archives within archives (quine zip bombs)."
+    - "Remove a file count limit during archive extraction: delete `if (fileCount > MAX_FILES) throw;` from a tar/zip extraction loop, so an archive with millions of entries exhausts inodes, file descriptors, or memory."
+    - "Remove the declared-size validation from archive headers: delete `if (entry.size > MAX_ENTRY_SIZE) skip(entry);` that validates the uncompressed size field in zip local headers, trusting it for unbounded allocation."
+    - "Replace streaming decompression with full-buffer decompression: change `zlib.createGunzip()` piped with backpressure to `zlib.gunzipSync(entireBuffer)` without size limits, loading the entire decompressed output into memory at once."
+    - "Remove the Content-Length pre-check before decompression: delete `if (parseInt(headers['content-length']) > MAX_COMPRESSED_INPUT) return reject;` so arbitrarily large compressed payloads are accepted for decompression."
+    - "Remove the output chunk accumulator limit: delete `if (chunks.reduce((s, c) => s + c.length, 0) > MAX_OUTPUT) throw;` from a decompression callback that collects chunks into an array."
+  tips:
+    - "The bug must be a realistic data amplification flaw (CWE-409) — highly compressed data (zip bombs, gzip bombs, brotli bombs) is decompressed without limiting the expansion ratio or total output size, allowing resource exhaustion."
+    - "CWE-409 specifically targets the AMPLIFICATION vector: small compressed input → massive decompressed output. The attacker sends minimal data that expands to exhaust memory, disk, or CPU."
+    - "CRITICAL DISTINCTION from CWE-400 (Uncontrolled Resource Consumption): CWE-400 covers general resource exhaustion (timeouts, rate limits, concurrency). CWE-409 is specifically about the COMPRESSION AMPLIFICATION vector — the resource exhaustion happens through data expansion ratios."
+    - "CRITICAL DISTINCTION from CWE-770 (Allocation Without Limits): CWE-770 covers unbounded allocations in general. CWE-409 specifically targets allocations that grow unbounded due to DECOMPRESSION of highly compressed data."
+    - "CRITICAL DISTINCTION from CWE-776 (XML Entity Expansion): CWE-776 is about XML-specific entity expansion (billion laughs). CWE-409 covers general compression format bombs (gzip, brotli, zip, tar.gz, zstd)."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors."
+    - "Do not add comments that hint at the flaw, zip bomb, amplification, or CWE."
+    - "The bug should be subtle: normal compressed data (reasonable ratios) still decompresses correctly and quickly."
+    - "Prefer removing exactly ONE decompression guard (one ratio check, one size limit, one nesting cap) rather than restructuring."
+    - "High-value targets: HTTP request body decompression (gzip/brotli content-encoding), file upload extraction (zip/tar), image decoder pipelines, backup restoration, any `zlib.*` / `brotli.*` usage without output limits."
+    - "If the function has no decompression, archive extraction, or compressed data handling, respond with `NO_GOOD_BUG_SITE`."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-409 flaw (Improper Handling of Highly Compressed Data). The resulting function must still compile, keep its signature, and work correctly on normal compressed data — the flaw should allow a compression bomb (zip bomb, gzip bomb) to exhaust memory or disk by removing decompression ratio/size limits.
+
+  CWE-409 specifically targets the AMPLIFICATION vector in compression: an attacker sends a small compressed payload that expands by factors of 1000x-1000000x during decompression. This is distinct from CWE-400 (general resource exhaustion — timeouts, rate limits), CWE-770 (general unbounded allocation), and CWE-776 (XML-specific entity expansion). CWE-409 covers gzip, brotli, zip, tar, zstd, and any other compression format where amplification is the attack mechanism.
+
+  Concretely, some kinds of CWE-409 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-409 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-409 site (e.g., no decompression, no archive extraction, no compressed data handling — a pure computation helper or trivial getter), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

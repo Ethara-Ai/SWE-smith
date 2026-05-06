@@ -14,10 +14,10 @@ class CSharpProfile(RepoProfile):
 
 
 @dataclass
-class VirtualClient0bb16489(CSharpProfile):
+class VirtualClient5990ee69(CSharpProfile):
     owner: str = "microsoft"
     repo: str = "VirtualClient"
-    commit: str = "0bb16489e29d2b8ae18b1187ade52cda4eae68bd"
+    commit: str = "5990ee69b4e050b72c2569439c257cb45057b894"
     test_cmd: str = "./build-test.sh"
 
     @property

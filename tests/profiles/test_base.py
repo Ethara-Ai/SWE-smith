@@ -146,8 +146,8 @@ def test_python_log_parser():
 
 
 def test_golang_log_parser():
-    # Use Gin3c12d2a8 Go profile
-    key = "gin-gonic__gin.3c12d2a8"
+    # Use Gind3ffc998 Go profile
+    key = "gin-gonic__gin.d3ffc998"
     repo_profile = registry.get(key)
     log = """
 --- PASS: TestFoo (0.01s)

@@ -1,0 +1,65 @@
+name: lm_modify_cwe918
+parameters:
+  cwe_id: "CWE-918"
+  cwe_name: "Server-Side Request Forgery (SSRF)"
+  bug_examples:
+    - "Remove URL validation before making a server-side request: delete `if (isInternalIP(url) || isBlacklistedHost(url)) return forbidden;` before `fetch(url)`, allowing requests to internal services like cloud metadata (169.254.169.254)."
+    - "Remove protocol restriction on user-supplied URLs: delete `if (!url.startsWith('https://'))` before fetching, allowing `file://`, `gopher://`, or `dict://` protocols that access internal resources or local filesystem."
+    - "Remove IP address validation: delete the check that blocks requests to private IP ranges (10.x, 172.16-31.x, 192.168.x, 127.x, 169.254.x), allowing access to internal network services and cloud metadata endpoints."
+    - "Remove DNS rebinding protection: skip re-validating the resolved IP after DNS lookup, so a domain that initially resolves to a public IP can rebind to an internal IP (127.0.0.1, 169.254.169.254) during the actual connection."
+    - "Remove port restriction: delete `if (port !== 80 && port !== 443) return forbidden;` so the server can be directed to internal services on arbitrary ports (Redis on 6379, Memcached on 11211, SMTP on 25)."
+    - "Accept redirect responses without validating the redirect target: follow HTTP redirects from the user-supplied URL without checking if the redirect destination is an internal address, enabling redirect-based SSRF bypass."
+    - "Remove the blocklist check on a webhook/callback URL: delete URL validation for a user-configured webhook endpoint, allowing it to point to `http://127.0.0.1/admin` or `http://169.254.169.254/latest/meta-data/`."
+    - "Replace URL allowlist with a substring check: change `allowedHosts.includes(parsedUrl.hostname)` to `url.includes('trusted.com')` so an attacker can use `http://trusted.com.evil.com/` or `http://evil.com/trusted.com` to bypass the check."
+  tips:
+    - "The bug must be a realistic SSRF flaw (CWE-918) — user-controlled input determines a URL that the server fetches, without proper validation to prevent access to internal/restricted resources."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors or break the module's exports."
+    - "Do not add comments that hint at the flaw, SSRF, internal access, or CWE."
+    - "The bug should be subtle: requests to legitimate external URLs still work correctly — only crafted internal/metadata URLs become reachable."
+    - "Prefer removing exactly ONE URL/IP/protocol validation check rather than multiple guards simultaneously."
+    - "CRITICAL DISTINCTION from CWE-601 (Open Redirect): SSRF is about the SERVER making requests to attacker-chosen destinations. Open Redirect is about the CLIENT being redirected. If the code redirects a browser, that is CWE-601, not CWE-918."
+    - "CRITICAL DISTINCTION from CWE-284 (Improper Access Control): SSRF specifically exploits the server's network position and trust. Generic authorization bypass is CWE-284."
+    - "CRITICAL DISTINCTION from CWE-20 (Improper Input Validation): SSRF is specifically about URL/network-target validation, not generic input validation. The impact must be network access, not just bad data."
+    - "Target Node.js/JavaScript patterns: `fetch()`, `axios.get()`, `http.request()`, `got()`, `request()` with user-controlled URL parameters."
+    - "Consider cloud-specific impacts: AWS metadata at 169.254.169.254, GCP metadata at metadata.google.internal, Azure at 169.254.169.254."
+    - "If the function does not make HTTP requests based on user input (no outbound network calls driven by user-supplied URLs), respond with `NO_GOOD_BUG_SITE` instead of forcing a contrived change."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-918 flaw (Server-Side Request Forgery). SSRF occurs when a server-side application makes HTTP requests to a URL that is wholly or partially determined by user input, without adequate validation to prevent requests to internal services, cloud metadata endpoints, or other restricted network resources.
+
+  CWE-918 sits at the intersection of trust boundaries: the server has network access that the client does not (internal services, metadata APIs, private subnets). The vulnerability exists because user input crosses this boundary unchecked. This is fundamentally different from CWE-601 (Open Redirect) where the client is redirected, and from CWE-20 (Input Validation) which is the abstract parent — SSRF specifically exploits the server's privileged network position.
+
+  In JavaScript/Node.js contexts, SSRF commonly appears in: webhook URL configuration, URL preview/unfurling features, PDF/image generation from URLs, proxy endpoints, API integrations that fetch from user-supplied endpoints, and file import from URL features.
+
+  The resulting function must still compile, keep its signature, and fetch legitimate external URLs — the flaw should allow an attacker to make the server send requests to internal services, cloud metadata endpoints, or other restricted resources by supplying crafted URLs.
+
+  Concretely, some kinds of CWE-918 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-918 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-918 site (e.g., no server-side URL fetching driven by user input), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

@@ -1,0 +1,61 @@
+name: lm_modify_cwe502
+parameters:
+  cwe_id: "CWE-502"
+  cwe_name: "Deserialization of Untrusted Data"
+  bug_examples:
+    - "Replace safe JSON parsing with eval: change `JSON.parse(userInput)` to `eval('(' + userInput + ')')`, enabling arbitrary code execution via crafted input like `'); require('child_process').exec('rm -rf /'); //`."
+    - "Replace safe YAML parsing with unsafe: change `yaml.load(input, { schema: yaml.JSON_SCHEMA })` to `yaml.load(input)` (default schema allows `!!js/function` and custom tags), enabling code execution via `!!js/function 'return process.exit()'`."
+    - "Add node-serialize deserialization of user input: change a JSON.parse call to `require('node-serialize').unserialize(userInput)` which executes embedded IIFEs in the serialized data."
+    - "Remove class whitelist from a custom deserializer: delete `if (!ALLOWED_TYPES.includes(obj.__type)) throw;` before `new (registry[obj.__type])(obj.data)`, allowing instantiation of arbitrary registered classes."
+    - "Add Function constructor deserialization: change `const transform = transforms[userInput.name]` (safe lookup) to `const transform = new Function('data', userInput.code)` where the code comes from untrusted input."
+    - "Remove schema validation before object reconstruction: delete `validateSchema(serialized, EXPECTED_SCHEMA)` before reconstructing complex objects from serialized data, allowing unexpected properties that trigger prototype pollution or constructor abuse."
+    - "Replace structured clone with unsafe rehydration: change `structuredClone(data)` to a custom rehydrator that calls `obj.constructor(obj.args)` for each serialized object, enabling constructor-based attacks."
+    - "Remove the Content-Type restriction that limits deserialization format: delete `if (req.headers['content-type'] !== 'application/json') return 415;` so the endpoint also accepts `application/x-yaml` or custom serialization formats that enable code execution."
+  tips:
+    - "The bug must be a realistic deserialization flaw (CWE-502) — untrusted data is deserialized using a mechanism that can trigger code execution, object instantiation, or dangerous side effects."
+    - "CWE-502 is about the DESERIALIZATION MECHANISM being unsafe — it can instantiate arbitrary objects, call constructors, invoke functions, or trigger side effects beyond simple data parsing."
+    - "CRITICAL DISTINCTION from CWE-94 (Code Injection): If you're introducing `eval(userInput)` on a string that's NOT meant to be a serialized data format, that's CWE-94. CWE-502 is when the DESERIALIZATION PROCESS (parsing serialized objects/structures) enables code execution."
+    - "CRITICAL DISTINCTION from CWE-1321 (Prototype Pollution): CWE-1321 is about polluting Object.prototype via `__proto__` properties in JSON. CWE-502 is about the deserialization MECHANISM itself executing code (eval, Function, yaml.load, unserialize)."
+    - "CRITICAL DISTINCTION from CWE-20 (Improper Input Validation): CWE-20 covers general input validation. CWE-502 specifically targets deserialization operations that can trigger code execution or dangerous object construction from untrusted serialized data."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors."
+    - "Do not add comments that hint at the flaw, deserialization, or CWE."
+    - "The bug should be subtle: legitimate serialized data (safe objects, arrays, primitives) still deserializes correctly."
+    - "Prefer changing exactly ONE deserialization call from safe to unsafe, or removing ONE type restriction."
+    - "High-value targets: request body parsing, configuration file loading, message queue consumers, RPC deserializers, session data deserializers, cache value deserializers, any point where external serialized data enters the system."
+    - "If the function has no deserialization, no data parsing from untrusted sources, respond with `NO_GOOD_BUG_SITE`."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-502 flaw (Deserialization of Untrusted Data). The resulting function must still compile, keep its signature, and work on legitimate data — the flaw should allow an attacker to achieve code execution or dangerous object construction by supplying crafted serialized data to an unsafe deserialization mechanism.
+
+  CWE-502 targets the DESERIALIZATION MECHANISM — the system uses a deserialization method that can instantiate arbitrary objects, call constructors, execute embedded code, or trigger dangerous side effects when processing attacker-controlled serialized input. This is distinct from CWE-94 (code injection in non-deserialization context), CWE-1321 (prototype pollution via JSON properties), and CWE-20 (general input validation). CWE-502 means the PARSING OPERATION ITSELF is the attack vector.
+
+  Concretely, some kinds of CWE-502 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-502 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-502 site (e.g., no data parsing, no deserialization from untrusted sources — a pure computation helper or trivial getter), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

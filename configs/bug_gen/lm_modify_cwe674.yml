@@ -1,0 +1,66 @@
+name: lm_modify_cwe674
+parameters:
+  cwe_id: "CWE-674"
+  cwe_name: "Uncontrolled Recursion"
+  bug_examples:
+    - "Remove a recursion depth limit: delete `if (depth > MAX_DEPTH) return default;` or `if (depth > 100) throw new Error('max depth');` before a recursive call, allowing attacker-crafted deeply nested input (JSON, XML, AST, HTML) to cause stack overflow."
+    - "Remove the base case guard for recursion on user-controlled structures: delete the termination condition `if (node === null || node === undefined) return;` so a cyclic or deeply-nested data structure causes infinite recursion and stack exhaustion."
+    - "Remove a visited-set check that prevents infinite recursion on graphs: delete `if (visited.has(node.id)) return;` / `if (seen.has(obj)) return cached;` so cycles in user-supplied graph or object data cause unbounded recursive descent."
+    - "Remove the cycle-detection check in a deep-clone or deep-merge utility: delete the WeakSet/WeakMap check (`if (cloneCache.has(obj)) return cloneCache.get(obj);`) so a self-referencing object causes infinite recursion when cloned."
+    - "Remove the nesting depth guard from a JSON/XML/YAML parser: delete `if (this.depth > maxDepth) throw new SyntaxError();` so `{{{...}}}` nested 100,000 levels deep exhausts the call stack."
+    - "Remove the recursion guard on template/macro expansion: delete `if (expansionDepth > MAX_EXPANSION) throw error;` in a template engine or preprocessor, so recursive template includes (`{{> self}}`) crash the server."
+    - "Remove the self-reference check in a serialization/toString routine: delete `if (ancestors.includes(value)) return '[Circular]';` so `JSON.stringify`-like functions recurse infinitely on circular references."
+    - "Remove a stack-depth check in a recursive-descent parser: delete `if (this.callDepth > STACK_LIMIT) this.raise('too much nesting');` from a language parser, so pathological input like `(((((...` with 50k levels overflows the stack."
+  tips:
+    - "The bug must be a realistic uncontrolled recursion flaw (CWE-674) — recursive processing of user-controlled data has no depth limit or cycle guard, allowing stack exhaustion via crafted nested/cyclic input."
+    - "CWE-674 is specifically about RECURSIVE FUNCTION CALLS exhausting the CALL STACK. This is distinct from CWE-835 (Infinite Loop — loop body never exits) and CWE-400 (general resource consumption — covers timeouts/rate limits)."
+    - "Do NOT introduce bugs that are better classified as CWE-835 if the issue is a loop that never terminates. CWE-674 requires actual recursive function calls, not iterative loops."
+    - "Do NOT introduce bugs that are CWE-400 territory (removing a timeout or rate limit). CWE-674 specifically addresses the DEPTH of recursive calls."
+    - "Do NOT introduce CWE-776 (XML Entity Expansion) bugs — those involve entity-reference expansion in DTDs specifically, not general recursion."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors."
+    - "Do not add comments that hint at the flaw, recursion depth, stack overflow, cycle, or CWE."
+    - "The bug should be subtle: shallow/normal inputs (depth ≤ 10-20) still process correctly and return promptly. The flaw only manifests with adversarially deep nesting (thousands of levels) or circular references."
+    - "Prefer removing exactly ONE recursion depth check, ONE base-case guard, or ONE cycle-detection mechanism."
+    - "High-value targets in JS/Node.js: `JSON.parse` wrappers with depth limits, recursive `deepClone`/`deepMerge`/`deepEqual` utilities, AST walkers, template engines with include/partial expansion, recursive-descent parsers, graph traversal functions."
+    - "If the function has no recursion, no recursive data processing, no nested structure handling, no tree/graph traversal, respond with `NO_GOOD_BUG_SITE` instead of forcing a contrived change."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-674 flaw (Uncontrolled Recursion). The resulting function must still compile, keep its signature, and work on normal inputs — the flaw should allow attacker-crafted deeply-nested or cyclic input to exhaust the call stack through unbounded recursion.
+
+  CWE-674 specifically targets RECURSIVE FUNCTION CALLS that lack depth bounds or cycle detection. This is distinct from:
+  - CWE-835 (Infinite Loop — iterative loop that never exits, no recursive calls involved)
+  - CWE-400 (Uncontrolled Resource Consumption — general resource exhaustion via timeouts/rates/concurrency)
+  - CWE-776 (XML Entity Expansion — specifically DTD entity recursion)
+
+  In JavaScript/Node.js, the default call stack limit is ~10,000-15,000 frames. Recursive functions processing user-controlled data (nested JSON, tree structures, graph traversals, template expansions) are prime targets when their depth/cycle guards are removed.
+
+  Concretely, some kinds of CWE-674 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-674 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-674 site (e.g., no recursive calls, no tree/graph traversal, no nested-structure processing — a purely iterative or straight-line function), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

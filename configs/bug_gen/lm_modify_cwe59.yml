@@ -1,0 +1,70 @@
+name: lm_modify_cwe59
+parameters:
+  cwe_id: "CWE-59"
+  cwe_name: "Improper Link Resolution Before File Access ('Link Following')"
+  bug_examples:
+    - "Remove the symlink check before reading a file: delete `if (fs.lstatSync(filePath).isSymbolicLink()) throw;` so an attacker who can create symlinks in an upload directory can point `uploads/avatar.png` → `/etc/shadow` and have the application serve sensitive files."
+    - "Remove `O_NOFOLLOW` flag from file open operations: delete the `O_NOFOLLOW` flag from `fs.openSync(path, flags | O_NOFOLLOW)` so symlinks in the path are followed, allowing symlink-based escape from a chroot or restricted directory."
+    - "Replace `lstat()` with `stat()` in a security check: change `fs.lstatSync(path)` (which inspects the link itself) to `fs.statSync(path)` (which follows the link), so the security check operates on the link TARGET rather than detecting the link."
+    - "Remove the realpath comparison that detects symlink escape: delete `if (fs.realpathSync(filePath) !== filePath) throw;` or `if (realpath !== path.resolve(base, name)) reject;` so a symlinked file that resolves outside the base directory is accessed without detection."
+    - "Remove the TOCTOU-safe open sequence: replace the atomic `open(path, O_NOFOLLOW)` with a `lstat()` check followed by `readFile()` (check-then-act), creating a race window where an attacker can replace the file with a symlink between the check and the access."
+    - "Remove symlink detection in archive/zip extraction: delete `if (entry.isSymbolicLink()) { skip; }` in a tar/zip extraction loop, so a malicious archive containing `link → /etc/passwd` can be extracted and then accessed through the application's file-serving routes."
+    - "Remove hardlink detection: delete the inode/device comparison that prevents hardlink-based escape (`if (stat.ino === targetIno) throw;`), so an attacker with write access to a directory can hardlink a sensitive file into it."
+    - "Remove the tmpdir symlink race protection: delete the `mkdtemp()` usage and replace with a predictable path (`/tmp/app-cache`) without verifying it's not a symlink, so a local attacker can pre-create a symlink at that path pointing to a target file."
+  tips:
+    - "The bug must be a realistic improper link resolution flaw (CWE-59) — the application follows symbolic links (or hard links) without verification, allowing an attacker who can create links to access or modify files outside the intended scope."
+    - "CRITICAL DISTINCTION from CWE-22 (Path Traversal): CWE-22 is about the PATH STRING containing `../` or absolute path sequences. CWE-59 is about the FILESYSTEM OBJECT being a symlink that resolves to an unintended target. The path string looks fine (`uploads/file.txt`) but it's actually a link to `/etc/passwd`."
+    - "CRITICAL DISTINCTION from CWE-367 (TOCTOU): CWE-367 is about a race condition between check and use. CWE-59 can exist even without a race — if the application NEVER checks for symlinks, there's no race needed. However, CWE-59 flaws often enable or are enabled by TOCTOU races."
+    - "Symlink attacks require the attacker to CREATE the link. Common scenarios: user-writable upload directories, temp directories (`/tmp`), extracted archives (zip slip variant), shared filesystems, containerized environments with mounted volumes."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors."
+    - "Do not add comments that hint at the flaw, symlink, link following, or CWE."
+    - "The bug should be subtle: when no symlinks exist in the path, the function works correctly. The flaw only manifests when an attacker has created a symlink in a location they control."
+    - "Prefer removing exactly ONE symlink/link check: one `lstat()` call, one `O_NOFOLLOW` flag, one `realpathSync()` comparison, one archive-entry type check."
+    - "High-value targets in JS/Node.js: file-upload handlers that store to user-accessible directories, archive extraction (tar, unzip) without symlink filtering, temp file creation with predictable names, file-serving from user-writable directories."
+    - "If the function does not perform file operations on paths that could be symlinks (no filesystem access, no file serving, no archive extraction), respond with `NO_GOOD_BUG_SITE`."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-59 flaw (Improper Link Resolution Before File Access). The resulting function must still compile, keep its signature, and work on normal files — the flaw should allow an attacker who can create symbolic links in a writable location to escape directory restrictions by having the application follow a symlink to a sensitive target.
+
+  CWE-59 is about FOLLOWING FILESYSTEM LINKS (symbolic or hard links) to unintended targets. This is distinct from:
+  - CWE-22 (Path Traversal) — the PATH STRING contains `../` sequences; CWE-59's path string looks innocent but the filesystem object is a link
+  - CWE-367 (TOCTOU) — race condition between check and use; CWE-59 can exist without races (never checking at all)
+
+  Attack scenarios for CWE-59:
+  1. Upload directory: attacker creates `uploads/avatar.png` → `/etc/shadow`
+  2. Temp files: attacker pre-places symlink at predictable `/tmp/app-*` path
+  3. Archive extraction: malicious tar/zip contains symlink entries (zip slip via symlinks)
+  4. Shared filesystem: attacker creates symlinks in shared directories
+
+  Defenses removed by CWE-59 bugs: `lstat()` checks, `O_NOFOLLOW` flags, `realpathSync()` comparisons, symlink-type filtering in archive extraction, `mkdtemp()` usage.
+
+  Concretely, some kinds of CWE-59 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-59 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-59 site (e.g., no filesystem file access on user-influenced paths, no archive extraction, no temp-file handling), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

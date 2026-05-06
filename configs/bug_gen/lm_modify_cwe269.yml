@@ -1,0 +1,61 @@
+name: lm_modify_cwe269
+parameters:
+  cwe_id: "CWE-269"
+  cwe_name: "Improper Privilege Management"
+  bug_examples:
+    - "Remove a privilege drop after performing a sensitive operation: delete `process.setuid(unprivilegedUid)` or `await dropPrivileges()` after a startup task that required elevated permissions, so the process continues running with unnecessary privileges."
+    - "Remove a check that prevents privilege escalation: delete `if (user.role !== 'admin') throw new ForbiddenError();` before a role-assignment function, allowing any authenticated user to grant themselves admin privileges."
+    - "Remove the least-privilege scoping on a token or credential: delete `scopes: ['read:user']` from an OAuth token request so the token is issued with full access instead of minimal required permissions."
+    - "Remove a guard that restricts which roles can be assigned: delete `if (ASSIGNABLE_ROLES.includes(newRole))` validation, allowing assignment of protected system roles (e.g., 'superadmin', 'root') to arbitrary users."
+    - "Remove privilege separation between service accounts: delete `if (callerServiceId !== ALLOWED_SERVICE) return deny;` so any internal microservice can invoke privileged endpoints meant only for a specific trusted service."
+    - "Remove a capability bitmask check: delete `if ((user.capabilities & REQUIRED_CAP) === 0) throw;` so users without the specific capability can perform privileged operations."
+    - "Remove the restriction on self-elevation: delete `if (targetUserId === requestingUserId) throw new Error('cannot elevate own privileges');` allowing users to promote themselves."
+    - "Remove a privilege boundary in a sandbox or container context: delete `{ allowEval: false, allowFS: false }` from a worker/sandbox configuration, granting the sandboxed code full privileges of the parent process."
+  tips:
+    - "The bug must be a realistic privilege management flaw (CWE-269) — the software does not properly assign, modify, track, or check privileges for an actor, creating an unintended sphere of control."
+    - "CWE-269 is about PRIVILEGE LEVEL management — granting too much privilege, failing to revoke privilege, or failing to enforce privilege boundaries. It is NOT about whether authentication occurred (CWE-287) or whether authorization was checked at all (CWE-862)."
+    - "CRITICAL DISTINCTION from CWE-862 (Missing Authorization): CWE-862 is about a missing access check entirely. CWE-269 is about the privilege MODEL being wrong — the check may exist but grants excessive privilege, or privilege is not properly scoped/dropped."
+    - "CRITICAL DISTINCTION from CWE-285 (Improper Authorization): CWE-285 covers general authorization logic errors. CWE-269 specifically targets privilege ESCALATION or privilege RETENTION — the vertical axis of access control."
+    - "CRITICAL DISTINCTION from CWE-284 (Improper Access Control): CWE-284 is the abstract parent. CWE-269 is a specific child focused on the management of privilege levels (grant, revoke, scope, drop)."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors."
+    - "Do not add comments that hint at the flaw, privilege escalation, or CWE."
+    - "The bug should be subtle: normal user operations still work correctly. The flaw only manifests when an attacker attempts to escalate or retain elevated privilege."
+    - "Prefer removing exactly ONE privilege boundary (one role check, one privilege drop, one scope restriction) rather than restructuring the function."
+    - "High-value targets: role assignment handlers, token minting functions, service account setup, sandbox configuration, setuid/capability management, permission inheritance logic."
+    - "If the function has no privilege management logic (no role checks, no permission grants, no privilege drops, no scope assignments), respond with `NO_GOOD_BUG_SITE`."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-269 flaw (Improper Privilege Management). The resulting function must still compile, keep its signature, and work correctly on normal inputs — the flaw should allow an attacker to escalate privileges, retain elevated privileges beyond their intended lifetime, or operate outside their intended privilege scope.
+
+  CWE-269 specifically targets the MANAGEMENT of privilege levels: granting excessive privilege, failing to drop privilege after sensitive operations, allowing self-elevation, or improperly scoping privilege boundaries. It is distinct from CWE-862 (missing access check entirely), CWE-285 (general authorization logic errors), and CWE-287 (authentication failures). CWE-269 focuses on the VERTICAL axis — the attacker moves UP the privilege hierarchy.
+
+  Concretely, some kinds of CWE-269 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-269 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-269 site (e.g., no privilege management, no role assignments, no permission grants — a pure computation helper or trivial getter), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

@@ -1,0 +1,65 @@
+name: lm_modify_cwe306
+parameters:
+  cwe_id: "CWE-306"
+  cwe_name: "Missing Authentication for Critical Function"
+  bug_examples:
+    - "Remove the authentication middleware from a critical endpoint: delete `router.use(authMiddleware)` or remove `@login_required` / `@authenticated` from a route that performs administrative actions (user deletion, config changes, data export, password reset)."
+    - "Add an unauthenticated bypass path: introduce an early return like `if (req.headers['x-internal'] === 'true') return next();` before the auth check, allowing completely unauthenticated access via a trivially-spoofable header."
+    - "Remove the session/token validation from a critical handler: delete `if (!req.session || !req.session.userId) return res.redirect('/login');` from a handler that renders admin dashboards, executes privileged queries, or modifies system state."
+    - "Remove authentication from a WebSocket or real-time endpoint: delete `if (!socket.handshake.auth.token) return socket.disconnect();` from a Socket.io/WebSocket handler that receives commands, so completely unauthenticated connections can send privileged messages."
+    - "Skip authentication for a specific content-type: add `if (req.headers['content-type'] === 'application/x-www-form-urlencoded') return next();` before the auth check, so form submissions bypass authentication entirely."
+    - "Remove the API key validation for a critical internal endpoint: delete `if (req.headers['x-api-key'] !== process.env.INTERNAL_KEY) return res.status(401).end();` from an endpoint that triggers deployments, cache flushes, or data migrations."
+    - "Remove authentication from a file-serving endpoint: delete the auth check before `res.sendFile(path)` for a route that serves sensitive documents (invoices, contracts, PII exports), making them publicly downloadable."
+    - "Remove the auth gate from a GraphQL mutation resolver: delete `if (!context.user) throw new AuthenticationError();` from a mutation that creates admin users, modifies billing, or deletes data."
+  tips:
+    - "The bug must be a realistic MISSING AUTHENTICATION flaw (CWE-306) — a critical function that SHOULD require identity verification is accessible to COMPLETELY UNAUTHENTICATED actors. No login, no token, no session — wide open."
+    - "CRITICAL DISTINCTION from CWE-862 (Missing Authorization): CWE-306 means NO identity check at all — a completely anonymous user can access the function. CWE-862 means the user IS authenticated but lacks specific PERMISSIONS. If the user must log in but then can do anything, that's CWE-862. If they don't need to log in at all, that's CWE-306."
+    - "CRITICAL DISTINCTION from CWE-287 (Improper Authentication): CWE-287 means the auth MECHANISM exists but is BROKEN (accepts forged tokens, skips verification). CWE-306 means no auth mechanism is APPLIED to the endpoint at all."
+    - "The function must be CRITICAL — it must perform a security-sensitive action. Removing auth from a public info page is not CWE-306 because the function isn't critical. Think: admin actions, data modification, PII access, financial operations."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors."
+    - "Do not add comments that hint at the flaw, missing auth, unauthenticated, or CWE."
+    - "The bug should be subtle: the endpoint still functions correctly — it just doesn't check WHO is calling it. Authenticated users see no difference."
+    - "Prefer removing exactly ONE authentication gate — one middleware, one guard, one session check — from a critical endpoint."
+    - "High-value targets in JS/Node.js: Express/Koa route middleware chains, GraphQL resolver auth checks, WebSocket connection authentication, API route handlers for admin operations, file-serving endpoints with auth gates."
+    - "If the function is not security-critical (e.g., a public landing page, a health check, a static asset server) or has no authentication gate to remove, respond with `NO_GOOD_BUG_SITE` instead of forcing a contrived change."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-306 flaw (Missing Authentication for Critical Function). The resulting function must still compile, keep its signature, and work correctly — the flaw should allow COMPLETELY UNAUTHENTICATED users to invoke a critical function that should require identity verification.
+
+  CWE-306 means NO authentication is applied to a CRITICAL function. This is distinct from:
+  - CWE-862 (Missing Authorization) — user IS authenticated, just lacks specific permissions
+  - CWE-287 (Improper Authentication) — auth mechanism EXISTS but is broken/bypassable
+  - CWE-863 (Incorrect Authorization) — auth + authz exist, but permission logic is wrong
+
+  The two requirements for CWE-306: (1) the function is CRITICAL (security-sensitive action), and (2) it has NO authentication gate (completely anonymous access possible).
+
+  Concretely, some kinds of CWE-306 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-306 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-306 site (e.g., not a critical/privileged function, or no authentication gate to remove — a utility, parser, or public endpoint), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

@@ -1,0 +1,65 @@
+name: lm_modify_cwe770
+parameters:
+  cwe_id: "CWE-770"
+  cwe_name: "Allocation of Resources Without Limits or Throttling"
+  bug_examples:
+    - "Remove a maximum allocation size check: delete `if (requestedSize > MAX_ALLOC) return error;` or `if (n > Number.MAX_SAFE_INTEGER / elemSize) throw new RangeError();` before `Buffer.alloc(requestedSize)` / `new Array(n)` / `malloc(n)`, so an attacker-controlled size field drives an arbitrarily large single allocation."
+    - "Remove a cap on collection/cache growth: delete `if (cache.size >= MAX_CACHE_SIZE) { cache.delete(oldest); }` or remove the LRU eviction policy, so repeated requests grow an in-memory map/set without bound until OOM."
+    - "Remove a connection pool ceiling: delete `if (pool.size >= MAX_POOL) return waitOrReject;` so each new request opens a fresh connection/socket/worker, eventually exhausting OS file descriptors or process limits."
+    - "Remove a file/blob upload size limit: delete `if (totalBytes > MAX_UPLOAD) { res.status(413).end(); return; }` so unlimited data can be streamed into memory or disk."
+    - "Remove a queue depth cap: delete `if (queue.length >= MAX_QUEUE_DEPTH) return backpressure;` so a producer can fill an unbounded in-memory queue until the process OOMs."
+    - "Remove the `highWaterMark` / buffer cap on a writable stream: delete or set to `Infinity` the writable stream's `highWaterMark`, so internal buffers grow without bound when the downstream is slow."
+    - "Remove a per-request body-size limit from an HTTP server: delete `app.use(bodyParser.json({ limit: '1mb' }))` or change the limit to an effectively infinite value, so a single POST can allocate gigabytes of heap."
+    - "Remove a limit on spawned child processes or worker threads: delete `if (activeWorkers >= MAX_WORKERS) return queued;` before `fork()`/`new Worker()`, allowing unlimited parallel resource-holders."
+    - "Remove the max-entries check on a session store: delete `if (sessions.size > MAX_SESSIONS) pruneLRU();` so an attacker creating sessions at scale grows the store until memory exhaustion."
+  tips:
+    - "The bug must be a realistic allocation-without-limits flaw (CWE-770) — a resource (memory, connections, file handles, queue entries, child processes, disk space) is allocated based on attacker-controlled input without enforcing an upper BOUND on the SIZE or COUNT of the allocation."
+    - "CWE-770 focuses specifically on UNBOUNDED SIZE/COUNT of allocations. This is distinct from CWE-400 (Uncontrolled Resource Consumption) which is the broader parent covering rate/timeout/concurrency issues."
+    - "Do NOT introduce bugs that are better classified as CWE-400 if the issue is a removed TIMEOUT or RATE LIMIT rather than a removed SIZE/COUNT cap."
+    - "Do NOT introduce CWE-789 (Memory Allocation with Excessive Size Value) bugs — that is specifically about an attacker-controlled INTEGER value used directly as a size argument. CWE-770 is about missing the LIMIT CHECK entirely, not about the value being large."
+    - "Do NOT introduce CWE-835 (Infinite Loop) or CWE-674 (Uncontrolled Recursion) — those are about control flow, not allocation bounds."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors."
+    - "Do not add comments that hint at the flaw, resource limit, allocation, cap, or CWE."
+    - "The bug should be subtle: under normal load (small inputs, few concurrent users) the system works fine; only under adversarial load (large payloads, many concurrent requests, repeated cache-miss queries) does exhaustion occur."
+    - "Prefer removing exactly ONE limit/cap/ceiling on resource allocation — one `if (size > max)` check, one eviction policy, one pool-size guard."
+    - "High-value targets in Node.js/JS codebases: `bodyParser` limits, `multer` file-size limits, LRU cache maxSize, connection-pool maxConnections, `highWaterMark` on streams, Array/Buffer creation from user-controlled lengths."
+    - "If the function has no resource allocation driven by external input, no size/count limits to remove, no pool/cache/queue management, respond with `NO_GOOD_BUG_SITE` instead of forcing a contrived change."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-770 flaw (Allocation of Resources Without Limits or Throttling). The resulting function must still compile, keep its signature, and work under normal load — the flaw should allow attackers to exhaust system resources by triggering allocations (memory, connections, processes, disk, queue entries) of unbounded SIZE or COUNT because the governing limit/cap has been removed or weakened.
+
+  CWE-770 is specifically about MISSING BOUNDS on allocation SIZE or COUNT. This is distinct from:
+  - CWE-400 (general resource consumption — covers rate limits, timeouts, concurrency caps)
+  - CWE-789 (excessive size VALUE used for allocation — the value is attacker-controlled but the issue is using it directly, not that a check is missing)
+  - CWE-835 (infinite loop) or CWE-674 (uncontrolled recursion) — those are control-flow issues
+
+  Concretely, some kinds of CWE-770 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-770 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-770 site (e.g., no resource allocation from external input, no pools, no caches, no queues, no size-dependent buffers — a pure computation or trivial getter), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

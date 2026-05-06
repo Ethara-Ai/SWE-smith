@@ -1,0 +1,61 @@
+name: lm_modify_cwe352
+parameters:
+  cwe_id: "CWE-352"
+  cwe_name: "Cross-Site Request Forgery (CSRF)"
+  bug_examples:
+    - "Remove CSRF token validation from a state-changing endpoint: delete `if (req.body._csrf !== req.session.csrfToken) return res.status(403).end();` so the endpoint accepts forged cross-origin requests."
+    - "Disable CSRF middleware for a sensitive route: remove `csrfProtection` from the middleware chain of a route that performs password change, email update, fund transfer, or account deletion."
+    - "Downgrade CSRF enforcement from blocking to logging: change `if (!validToken) return res.status(403).end();` to `if (!validToken) console.warn('csrf missing');` so requests without tokens are processed with only a warning."
+    - "Accept GET requests for a state-changing action: delete `if (req.method !== 'POST') return res.status(405).end();` from a sensitive endpoint, so the action can be triggered via `<img src=...>` from an attacker's page."
+    - "Weaken SameSite cookie attribute: change `sameSite: 'strict'` or `sameSite: 'lax'` to `sameSite: 'none'` in the session cookie configuration, allowing the session cookie to be sent with cross-origin form submissions."
+    - "Remove the double-submit cookie verification: delete `if (req.cookies['csrf-token'] !== req.headers['x-csrf-token']) return deny;` so any request with a valid session cookie passes regardless of CSRF token presence."
+    - "Skip Origin/Referer header validation: remove the check `if (new URL(req.headers.origin).hostname !== ALLOWED_HOST) return deny;` that verifies requests come from the same site."
+    - "Remove token binding to user session: change CSRF token generation from session-bound (`csrfToken = hmac(sessionId + secret)`) to a static or predictable value, making tokens forgeable."
+  tips:
+    - "The bug must be a realistic CSRF flaw (CWE-352) — a state-changing request can be forged by an attacker's website because anti-CSRF protections are removed or weakened."
+    - "CWE-352 specifically targets STATE-CHANGING cross-origin request forgery. The attack vector is: victim visits attacker's page → attacker's page sends a request to the vulnerable app → the app processes it using the victim's session."
+    - "CRITICAL DISTINCTION from CWE-346 (Origin Validation Error): CWE-346 is about general origin validation failures (CORS, WebSocket origin, postMessage). CWE-352 is specifically about FORGED STATE-CHANGING REQUESTS that exploit the browser's automatic credential attachment."
+    - "CRITICAL DISTINCTION from CWE-384 (Session Fixation): CWE-384 is about the attacker forcing a known session ID onto the victim. CWE-352 is about using the victim's EXISTING session via cross-origin request forgery."
+    - "CRITICAL DISTINCTION from CWE-862 (Missing Authorization): CWE-862 is about missing permission checks. CSRF bypasses are about missing INTENT verification — the user IS authorized but did NOT intend to make the request."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors."
+    - "Do not add comments that hint at the flaw, CSRF, or CWE."
+    - "The bug should be subtle: legitimate same-origin requests from the application's own forms still work correctly."
+    - "Prefer removing exactly ONE CSRF protection (one token check, one SameSite setting, one Origin validation) rather than restructuring."
+    - "High-value targets: password change handlers, email/profile update endpoints, fund transfer actions, account deletion routes, admin operations, any POST/PUT/DELETE handler with CSRF middleware."
+    - "If the function does not handle state-changing web requests or has no CSRF protection to remove, respond with `NO_GOOD_BUG_SITE`."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-352 flaw (Cross-Site Request Forgery). The resulting function must still compile, keep its signature, and work correctly for legitimate same-origin requests — the flaw should allow an attacker's website to forge cross-origin requests that perform state-changing actions using the victim's authenticated session.
+
+  CWE-352 targets the absence or weakness of INTENT VERIFICATION on state-changing requests. The browser automatically attaches cookies/credentials to cross-origin requests; CSRF protections (tokens, SameSite cookies, Origin validation) verify that the authenticated user actually INTENDED the request. This is distinct from CWE-346 (general origin validation for CORS/WebSocket), CWE-384 (session fixation), and CWE-862 (missing authorization — user has no permission vs. user didn't intend the request).
+
+  Concretely, some kinds of CWE-352 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-352 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-352 site (e.g., no state-changing web request handling, no CSRF protections to weaken — a pure computation helper or read-only endpoint), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

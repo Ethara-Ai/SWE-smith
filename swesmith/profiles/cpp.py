@@ -785,10 +785,10 @@ def parse_log_qtest(log: str) -> dict[str, str]:
 
 
 @dataclass
-class Waybard527ccd4(CppProfile):
+class Waybar05945748(CppProfile):
     owner: str = "Alexays"
     repo: str = "Waybar"
-    commit: str = "d527ccd4c1f53f4bb161677b451aabb89556f2d5"
+    commit: str = "05945748dccce28bf96d26d8f64a9e69a8dd49ba"
     test_cmd: str = "meson test -C build --verbose"
 
     @property
@@ -842,10 +842,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class FTXUIf73d92d3(CppProfile):
+class FTXUI03224dca(CppProfile):
     owner: str = "ArthurSonzogni"
     repo: str = "FTXUI"
-    commit: str = "f73d92d31f5efeccadfb7081edadbc070ef42f73"
+    commit: str = "03224dcaf7f9a059dbb13cd2977d3d06729107ed"
     test_cmd: str = "cd build && ./ftxui-tests --gtest_color=no"
 
     @property
@@ -873,10 +873,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class LibreCAD7a288fff(CppProfile):
+class LibreCAD8bd7f28c(CppProfile):
     owner: str = "LibreCAD"
     repo: str = "LibreCAD"
-    commit: str = "7a288ffff76215dea36c3bc4794765ccb85d1a06"
+    commit: str = "8bd7f28c355498a06f8d10c1d2d81363347da721"
     test_cmd: str = "cd build && ./librecad_tests"
 
     @property
@@ -917,10 +917,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class LibreSprite85ced3b6(CppProfile):
+class LibreSprite4b30f8fb(CppProfile):
     owner: str = "LibreSprite"
     repo: str = "LibreSprite"
-    commit: str = "85ced3b6b23d38a5cf03ecab2218bc755131cc21"
+    commit: str = "4b30f8fb3520c61238f1de9770ebf13c95d6fb35"
     test_cmd: str = "cd build && ninja -k 0 || true"
 
     @property
@@ -973,10 +973,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Magicenumc1aa6de9(CppProfile):
+class Magicenum1384769c(CppProfile):
     owner: str = "Neargye"
     repo: str = "magic_enum"
-    commit: str = "c1aa6de965960250f4ab762e97e67e6290395dc7"
+    commit: str = "1384769c66bd16ec9bb1353f45fe8ec8ccc12dbd"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -1004,10 +1004,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class OpenRCT2f228d738(CppProfile):
+class OpenRCT210019dcf(CppProfile):
     owner: str = "OpenRCT2"
     repo: str = "OpenRCT2"
-    commit: str = "f228d738155b06f13156af70ec6560db97b1b2cb"
+    commit: str = "10019dcfb5462ca6cd62a90e3028bd423ea76c78"
     test_cmd: str = "cd build && ./openrct2-cli scan-objects && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -1065,10 +1065,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class OpenTTDae80a47c(CppProfile):
+class OpenTTDebba01a4(CppProfile):
     owner: str = "OpenTTD"
     repo: str = "OpenTTD"
-    commit: str = "ae80a47c7db48e543d9a9ebc682df1a889661d2a"
+    commit: str = "ebba01a4c87311b1a3dbc7a8e5f8548b59af554b"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure"
 
     @property
@@ -1183,10 +1183,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class WasmEdgecb41f751(CppProfile):
+class WasmEdgeef427c62(CppProfile):
     owner: str = "WasmEdge"
     repo: str = "WasmEdge"
-    commit: str = "cb41f751daac037b61ebf9df3bb3fcbcf625edb4"
+    commit: str = "ef427c62b7b1e87677f9a4a5d1dc4618253a15e8"
     test_cmd: str = 'export LD_LIBRARY_PATH="/app/build/lib/api:$LD_LIBRARY_PATH" && cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1'
 
     @property
@@ -1234,10 +1234,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class ImHexf4768420(CppProfile):
+class ImHexc6045c70(CppProfile):
     owner: str = "WerWolv"
     repo: str = "ImHex"
-    commit: str = "f4768420087f27fc9f40a41b028529b2f0efd6e3"
+    commit: str = "c6045c7044668b5d9b6442aad837f888d4ba4933"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure"
 
     @property
@@ -1295,10 +1295,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Albert897c7797(CppProfile):
+class Albert755b61a3(CppProfile):
     owner: str = "albertlauncher"
     repo: str = "albert"
-    commit: str = "897c77979d55fdfaba23babddc91fbe841ee7a3e"
+    commit: str = "755b61a3514508be168560ea9c0d4735ffad5945"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -1346,10 +1346,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Brpcd22fa17f(CppProfile):
+class Brpc2a02d9e3(CppProfile):
     owner: str = "apache"
     repo: str = "brpc"
-    commit: str = "d22fa17f09514ed42e7b15e0a439827dc8310a8e"
+    commit: str = "2a02d9e3fb4e03df1da1ff4eb7665e4773188930"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -1396,10 +1396,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Aria2b4fd7cb1(CppProfile):
+class Aria2dc89cd3d(CppProfile):
     owner: str = "aria2"
     repo: str = "aria2"
-    commit: str = "b4fd7cb1ca03e38ad9d7ab9308b8200cb1d41c25"
+    commit: str = "dc89cd3dac031bda6ba34ba6b7b69eba6862c9bd"
     test_cmd: str = "cd test && ./aria2c"
 
     @property
@@ -1466,10 +1466,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Btopabcb906c(CppProfile):
+class Btop6e39144a(CppProfile):
     owner: str = "aristocratos"
     repo: str = "btop"
-    commit: str = "abcb906c951d1e79ccc1c03d219f55d2e5c52655"
+    commit: str = "6e39144aaf5a6bc01b9f795010b0914431067183"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -1540,10 +1540,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Asepriteda0d3228(CppProfile):
+class Asepriteab7c48ea(CppProfile):
     owner: str = "aseprite"
     repo: str = "aseprite"
-    commit: str = "da0d3228599580ec4bc447bab303751a51c09d9a"
+    commit: str = "ab7c48eadf754e9a6e24f6b0dd6d0bda59349b33"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -1674,10 +1674,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Azerothcorewotlk3ffbbe98(CppProfile):
+class Azerothcorewotlkd9f96a63(CppProfile):
     owner: str = "azerothcore"
     repo: str = "azerothcore-wotlk"
-    commit: str = "3ffbbe981f9a94377b6e13761da45fdd405448d9"
+    commit: str = "d9f96a63e2313bdb081e98d6adbe66ca759a55f8"
     test_cmd: str = "cd build && ./src/test/unit_tests --gtest_color=no"
 
     @property
@@ -1716,10 +1716,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class ArduinoJsonaa7fbd6c(CppProfile):
+class ArduinoJsond4e745ab(CppProfile):
     owner: str = "bblanchon"
     repo: str = "ArduinoJson"
-    commit: str = "aa7fbd6c8be280121cf57044ef986da7353ffd67"
+    commit: str = "d4e745ab5490c977b3a64651891c3bba522f807d"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -1741,10 +1741,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Conky4f829244(CppProfile):
+class Conky3256c513(CppProfile):
     owner: str = "brndnmtthws"
     repo: str = "conky"
-    commit: str = "4f8292449ae8c1a0a6138f2bfe2ebc5368221633"
+    commit: str = "3256c51389fb87a9e3f780fceb3d2f498302ad4e"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -1836,10 +1836,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Cppcheck67606e6e(CppProfile):
+class Cppcheck747e2579(CppProfile):
     owner: str = "danmar"
     repo: str = "cppcheck"
-    commit: str = "67606e6ee50aaefa3ba6c312c644b8b962d7d9da"
+    commit: str = "747e25796f7d1a133c813850d44d63fe42204cda"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -1871,10 +1871,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class DevilutionXafdaa2ac(CppProfile):
+class DevilutionX3eb2b44e(CppProfile):
     owner: str = "diasurgical"
     repo: str = "DevilutionX"
-    commit: str = "afdaa2ac5e8e92830e8dac5be1976ea42ae67434"
+    commit: str = "3eb2b44e5a572c7ae1aaf8eaaa3856d188110d88"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -1922,10 +1922,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Doctest1da23a3e(CppProfile):
+class Doctestd44d4f6e(CppProfile):
     owner: str = "doctest"
     repo: str = "doctest"
-    commit: str = "1da23a3e8119ec5cce4f9388e91b065e20bf06f5"
+    commit: str = "d44d4f6e66232d716af82f00a063759e9d0e50d6"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -1953,10 +1953,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Doxygencbd8c4bc(CppProfile):
+class Doxygen4ddadea0(CppProfile):
     owner: str = "doxygen"
     repo: str = "doxygen"
-    commit: str = "cbd8c4bcf0ebb58651fefbfbf9142a92e0a26a2f"
+    commit: str = "4ddadea0bf9f824981a403c4bc6d71c5c3a03040"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure"
 
     @property
@@ -1988,10 +1988,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Dragonfly14103bde(CppProfile):
+class Dragonfly624cb425(CppProfile):
     owner: str = "dragonflydb"
     repo: str = "dragonfly"
-    commit: str = "14103bde242967fa55dea98d08391640c12cd4db"
+    commit: str = "624cb4259b0b9fe8f7997ac6623bc53a6cc3ee4f"
     test_cmd: str = "cd build-opt && ctest --verbose --output-on-failure"
 
     @property
@@ -2030,10 +2030,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Drogon34955222(CppProfile):
+class Drogondb973097(CppProfile):
     owner: str = "drogonframework"
     repo: str = "drogon"
-    commit: str = "3495522200664bfef150257157c30aa076188a79"
+    commit: str = "db973097f7a20e277a0eb3acd1e0d08679e1e537"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -2079,10 +2079,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Duckdbb3ed0d51(CppProfile):
+class Duckdba31fae95(CppProfile):
     owner: str = "duckdb"
     repo: str = "duckdb"
-    commit: str = "b3ed0d5191465b8e10fc1dc74fe1880e26e4ca45"
+    commit: str = "a31fae9512d6ac2af168f73ffea5d472e6f8fbfe"
     test_cmd: str = './build/test/unittest "[common]" -s'
 
     @property
@@ -2113,10 +2113,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Endlesskyf1dba50f(CppProfile):
+class Endlesssky2d14be69(CppProfile):
     owner: str = "endless-sky"
     repo: str = "endless-sky"
-    commit: str = "f1dba50fe4cd22bd5ed51dc601203c9f62cd9164"
+    commit: str = "2d14be69937685d9b52df1ea3270cacab1f1cfcc"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -2141,10 +2141,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Falco43aaffc4(CppProfile):
+class Falcocd1a862d(CppProfile):
     owner: str = "falcosecurity"
     repo: str = "falco"
-    commit: str = "43aaffc4e05a62f6f29d719a1dee51a5ccc3856d"
+    commit: str = "cd1a862d42e7f2b086380a2a44bc5408b450c801"
     test_cmd: str = "cd build && ./unit_tests/falco_unit_tests"
 
     @property
@@ -2187,10 +2187,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Spdlog472945ba(CppProfile):
+class Spdloga2976707(CppProfile):
     owner: str = "gabime"
     repo: str = "spdlog"
-    commit: str = "472945ba489e3f5684761affc431ae532ab5ed8c"
+    commit: str = "a2976707813e9f5e3d86568c6018b9dbeff6b43f"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -2212,10 +2212,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Ggwave3b877d07(CppProfile):
+class Ggwave060aec73(CppProfile):
     owner: str = "ggerganov"
     repo: str = "ggwave"
-    commit: str = "3b877d07b102d8242a3fa9f333bddde464848f1b"
+    commit: str = "060aec73dd7123ccac200442f75bdc7369795ffe"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -2242,10 +2242,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Benchmarkeed8f5c6(CppProfile):
+class Benchmarkff773f8c(CppProfile):
     owner: str = "google"
     repo: str = "benchmark"
-    commit: str = "eed8f5c682ed70d596b2b07c68b1588ecab3b24a"
+    commit: str = "ff773f8c97717424a7855ce0933b036b79628a02"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -2278,10 +2278,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Bloatya277a440(CppProfile):
+class Bloaty04bca29f(CppProfile):
     owner: str = "google"
     repo: str = "bloaty"
-    commit: str = "a277a440f906729cd69894ca8ceb9b7144eb7f42"
+    commit: str = "04bca29ffdd781de1bff5b751e0d5459c844a596"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -2313,10 +2313,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Dracob91aa918(CppProfile):
+class Draco77e616e1(CppProfile):
     owner: str = "google"
     repo: str = "draco"
-    commit: str = "b91aa9181a753e70d005fdb0cdcde06acddf68fa"
+    commit: str = "77e616e1a4a4720be3c5690b5ef50c21b411de42"
     test_cmd: str = "./build/draco_tests --gtest_color=no"
 
     @property
@@ -2376,10 +2376,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Googletest5a9c3f9e(CppProfile):
+class Googletestd72f9c8a(CppProfile):
     owner: str = "google"
     repo: str = "googletest"
-    commit: str = "5a9c3f9e8d9b90bbbe8feb32902146cb8f7c1757"
+    commit: str = "d72f9c8aea6817cdf1ca0ac10887f328de7f3da2"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -2405,10 +2405,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Highway224b014b(CppProfile):
+class Highway619b1861(CppProfile):
     owner: str = "google"
     repo: str = "highway"
-    commit: str = "224b014b1e6ebd1b9c1e134ebb5fbce899844c79"
+    commit: str = "619b18616168bf3f153747cf5fae846eeb359c07"
     test_cmd: str = (
         "cd build && ctest --verbose --output-on-failure -j $(nproc) --timeout 300"
     )
@@ -2475,10 +2475,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Sentencepiece0f4ca43a(CppProfile):
+class Sentencepiecef7afe19b(CppProfile):
     owner: str = "google"
     repo: str = "sentencepiece"
-    commit: str = "0f4ca43a084fac098420afc110d81e2c23cf1dc3"
+    commit: str = "f7afe19b0f165fd6b7a72d26b6fbc79f2a9001c0"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -2509,10 +2509,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Snappyda459b52(CppProfile):
+class Snappy6281a07b(CppProfile):
     owner: str = "google"
     repo: str = "snappy"
-    commit: str = "da459b5263676ccf0dc65a3fcf93fb876e09baac"
+    commit: str = "6281a07b7e08629884ec93a89fea6e05c62e599c"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -2543,10 +2543,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Gperftoolsa4724315(CppProfile):
+class Gperftools07c5e922(CppProfile):
     owner: str = "gperftools"
     repo: str = "gperftools"
-    commit: str = "a47243150ec41097602730ff8779fafcc172d1fb"
+    commit: str = "07c5e9226bda1720bdf783a11f5df0f515e3c9d3"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -2577,10 +2577,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Grpc9d7a53ea(CppProfile):
+class Grpc5c6185c7(CppProfile):
     owner: str = "grpc"
     repo: str = "grpc"
-    commit: str = "9d7a53ea80b719178be5753400e104c3f6ad4afc"
+    commit: str = "5c6185c7c8e1cef5647ead8962ca4f8c76df9e15"
     test_cmd: str = "bazel test --enable_bzlmod=false --test_output=all --nocache_test_results //test/core/filters:filter_test_test"
 
     @property
@@ -2625,10 +2625,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Halidec2a6e34e(CppProfile):
+class Halidee7475f36(CppProfile):
     owner: str = "halide"
     repo: str = "Halide"
-    commit: str = "c2a6e34e7f3cff6657de1a85e8bc0e82fd545003"
+    commit: str = "e7475f36e3161d16204951bf7a1f203f3f2eddb5"
     test_cmd: str = 'cd build && ctest -R "^_test_internal$" --verbose'
 
     @property
@@ -2722,10 +2722,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Yamlcpp2e6383d2(CppProfile):
+class Yamlcpp4861d049(CppProfile):
     owner: str = "jbeder"
     repo: str = "yaml-cpp"
-    commit: str = "2e6383d272f676e1ad28ae5c47016045cbaff938"
+    commit: str = "4861d049534ed6f2c51c45b01d7c2926022e5f3f"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -2755,10 +2755,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Keepassxc5bd42c47(CppProfile):
+class Keepassxc7c7ca457(CppProfile):
     owner: str = "keepassxreboot"
     repo: str = "keepassxc"
-    commit: str = "5bd42c4725b54bab8114bb41303159aec9f63fa4"
+    commit: str = "7c7ca4575e7fe6c3412d3fffcd1d5ad580211a17"
     test_cmd: str = "export CTEST_OUTPUT_ON_FAILURE=1 && xvfb-run -a --server-args='-screen 0 1024x768x24' ninja -C build test"
 
     @property
@@ -2815,10 +2815,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class QuantLiba05b6ab3(CppProfile):
+class QuantLibfedf402a(CppProfile):
     owner: str = "lballabio"
     repo: str = "QuantLib"
-    commit: str = "a05b6ab328ca7c01063d8209fcfb9e54a0eecf0b"
+    commit: str = "fedf402ab8423d027468757c110259e2d7a9c8cd"
     test_cmd: str = "cd build/test-suite && ./quantlib-test-suite --log_level=all --report_level=detailed"
 
     @property
@@ -2850,10 +2850,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Ledger920059e6(CppProfile):
+class Ledger21a84425(CppProfile):
     owner: str = "ledger"
     repo: str = "ledger"
-    commit: str = "920059e6a4a9fbb7ccb9e2cbd6e8a8a06648c113"
+    commit: str = "21a84425bb7c651d890ee363f14d28ce646acadf"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -2903,10 +2903,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Stablediffusioncppf0f641a1(CppProfile):
+class Stablediffusioncpp3d6064b3(CppProfile):
     owner: str = "leejet"
     repo: str = "stable-diffusion.cpp"
-    commit: str = "f0f641a142705798d5064ffd3808165d75723344"
+    commit: str = "3d6064b37ef4607917f8acf2ca8c8906d5087413"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -2937,10 +2937,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Tinyxml23324d04d(CppProfile):
+class Tinyxml23dcad8e3(CppProfile):
     owner: str = "leethomason"
     repo: str = "tinyxml2"
-    commit: str = "3324d04d58de9d5db09327db6442f075e519f11b"
+    commit: str = "3dcad8e3c38e7091ae3771bf63020027f91715ce"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -2964,10 +2964,10 @@ CMD ["./build/xmltest"]"""
 
 
 @dataclass
-class Cpr22a41e60(CppProfile):
+class Cpr99e55089(CppProfile):
     owner: str = "libcpr"
     repo: str = "cpr"
-    commit: str = "22a41e60836f2207bf54131e6ef7752009ec31e1"
+    commit: str = "99e5508968004218033967cb178481d1336b9e05"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -2989,10 +2989,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Luantifc363085(CppProfile):
+class Luantibb7fcd32(CppProfile):
     owner: str = "luanti-org"
     repo: str = "luanti"
-    commit: str = "fc363085dd46330908b3a485dbe5bd7adfcc91b8"
+    commit: str = "bb7fcd32c7da2f5610458e679f567dbc09a1c909"
     test_cmd: str = "./bin/luanti --run-unittests"
 
     @property
@@ -3042,10 +3042,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Luau54a2ea00(CppProfile):
+class Luaua56f6024(CppProfile):
     owner: str = "luau-lang"
     repo: str = "luau"
-    commit: str = "54a2ea00831df4c791e6cfc896a98da75d1ae126"
+    commit: str = "a56f60243a964058c21154708e5d0b1f61eed43b"
     test_cmd: str = "./build/Luau.UnitTest --reporters=console --no-colors"
 
     @property
@@ -3067,10 +3067,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class AirSim13448700(CppProfile):
+class AirSim0b2db65f(CppProfile):
     owner: str = "microsoft"
     repo: str = "AirSim"
-    commit: str = "13448700ec2b36d6aad7a4e0909bc9daf9d3d931"
+    commit: str = "0b2db65ff1bb78d1a36fd16c71e54de9f0735197"
     test_cmd: str = "echo '[==========] Running 1 test'; ./build_release/output/bin/AirLibUnitTests || true; echo '[  PASSED  ] AirLibUnitTests.Main'"
 
     @property
@@ -3108,10 +3108,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class GSL756c91ab(CppProfile):
+class GSL0249144a(CppProfile):
     owner: str = "microsoft"
     repo: str = "GSL"
-    commit: str = "756c91ab895aa52f650599bb1a3fc131f1f4b5ef"
+    commit: str = "0249144ad1487bea10a2b553918e581c0c16a1c5"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -3140,10 +3140,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Magnumf3a4ce7d(CppProfile):
+class Magnum2b573489(CppProfile):
     owner: str = "mosra"
     repo: str = "magnum"
-    commit: str = "f3a4ce7d1d0cd8085d4f05811c378813ada3cfcc"
+    commit: str = "2b5734891afd2c3007ef240edfcf0d6157efeafb"
     test_cmd: str = "export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH && cd build && ctest --verbose --output-on-failure"
 
     @property
@@ -3184,10 +3184,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Mumble997ecba9(CppProfile):
+class Mumbleea64b124(CppProfile):
     owner: str = "mumble-voip"
     repo: str = "mumble"
-    commit: str = "997ecba92c7314d9b8964c50a0621230694bbf85"
+    commit: str = "ea64b1246f3f020172fa9fbcda94f2c8ed0810de"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -3254,10 +3254,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Ninjacc60300a(CppProfile):
+class Ninjaa830ae5b(CppProfile):
     owner: str = "ninja-build"
     repo: str = "ninja"
-    commit: str = "cc60300ab94dae9bb28fece3c9b7c397235b17de"
+    commit: str = "a830ae5b156f899b6c42043a8d8d284120c0a893"
     test_cmd: str = "./build/ninja_test"
 
     @property
@@ -3308,10 +3308,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Jsoncppe799ca05(CppProfile):
+class Jsoncpp755d0a69(CppProfile):
     owner: str = "open-source-parsers"
     repo: str = "jsoncpp"
-    commit: str = "e799ca052df0f859d8d4133211344581c211b925"
+    commit: str = "755d0a69d7109d465db6196a3c7e1c6f3c62a48f"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -3387,10 +3387,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Opencv96d8a785(CppProfile):
+class Opencv30fffe2f(CppProfile):
     owner: str = "opencv"
     repo: str = "opencv"
-    commit: str = "96d8a78537725e149c3bd36c1992e83842849945"
+    commit: str = "30fffe2fa080b83b3cffecce05225475dbbdf012"
     test_cmd: str = (
         "cd build && ./bin/opencv_test_core --gtest_color=no --gtest_filter=-*OCL*"
     )
@@ -3443,10 +3443,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Srs6e2392f3(CppProfile):
+class Srs3663a8e3(CppProfile):
     owner: str = "ossrs"
     repo: str = "srs"
-    commit: str = "6e2392f3667512e8c75899dd7d71294785ea0cf7"
+    commit: str = "3663a8e38f0cb786d04306faab21155b6c6e4954"
     test_cmd: str = "./objs/srs_utest --gtest_color=no"
 
     @property
@@ -3545,10 +3545,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Recastnavigation13f43344(CppProfile):
+class Recastnavigation9f4ce644(CppProfile):
     owner: str = "recastnavigation"
     repo: str = "recastnavigation"
-    commit: str = "13f433443867c4fb283bf230089b7250d09e331e"
+    commit: str = "9f4ce64458dfae86e1239c525ddc219c4e9e06f1"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -3579,10 +3579,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Seastar7e457cf7(CppProfile):
+class Seastar9f66a520(CppProfile):
     owner: str = "scylladb"
     repo: str = "seastar"
-    commit: str = "7e457cf72dad2987c8fbf8f2382ea712e8bf1c34"
+    commit: str = "9f66a52024b42d7e0d71cb0d1560d64ac64fe89a"
     test_cmd: str = (
         "cd build/release && ctest --verbose --output-on-failure --repeat until-pass:1"
     )
@@ -3646,10 +3646,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Entte08302e1(CppProfile):
+class Entt1333fa53(CppProfile):
     owner: str = "skypjack"
     repo: str = "entt"
-    commit: str = "e08302e169690a40500fe6547209fa82f17f913e"
+    commit: str = "1333fa53129e7cfded5a9640c4336a254049917b"
     test_cmd: str = "cd build_dir && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -3672,10 +3672,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Snapcast439dc886(CppProfile):
+class Snapcastf1237347(CppProfile):
     owner: str = "snapcast"
     repo: str = "snapcast"
-    commit: str = "439dc88637bb7ac227c24d8ad383e7cdf46a76d7"
+    commit: str = "f12373479243e93a97237592d6a3703539ec41d5"
     test_cmd: str = "/app/bin/snapcast_test"
 
     @property
@@ -3717,10 +3717,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Sqlitebrowser95f92180(CppProfile):
+class Sqlitebrowser4b96149e(CppProfile):
     owner: str = "sqlitebrowser"
     repo: str = "sqlitebrowser"
-    commit: str = "95f92180cd88f7e51f3678fc5133191393edc19d"
+    commit: str = "4b96149ef5019e43394dbacdd245c2333deb612e"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -3758,10 +3758,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Supercollider438bf480(CppProfile):
+class Supercollider9ab9d3ca(CppProfile):
     owner: str = "supercollider"
     repo: str = "supercollider"
-    commit: str = "438bf480d84af4978a5773fdee05a861ac69136a"
+    commit: str = "9ab9d3cacfd87a433b264f1c157efaf9e5c0d15c"
     test_cmd: str = "export QT_QPA_PLATFORM=offscreen && cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -3830,10 +3830,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Taskflowd8776bc0(CppProfile):
+class Taskflow93c307d1(CppProfile):
     owner: str = "taskflow"
     repo: str = "taskflow"
-    commit: str = "d8776bc0d3317efbf2c2376006d74a04a6eabf2a"
+    commit: str = "93c307d16051294eee8bebd8ce794e328add0385"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -3862,10 +3862,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class OneTBB3ebfedd8(CppProfile):
+class OneTBB22d6c1af(CppProfile):
     owner: str = "uxlfoundation"
     repo: str = "oneTBB"
-    commit: str = "3ebfedd8638e3bf39db754d458099684488ad8f4"
+    commit: str = "22d6c1af11fe35aa23f5661eaeca63b484eeddf9"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -3941,10 +3941,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Libzmq51a5a9cb(CppProfile):
+class Libzmqb946c18f(CppProfile):
     owner: str = "zeromq"
     repo: str = "libzmq"
-    commit: str = "51a5a9cbe315ab149357afe063e9e2d41f4c99a8"
+    commit: str = "b946c18f676760387276cd095bbdd8c0e18c09bf"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -3994,10 +3994,10 @@ class CppProfile(CppProfile):
 
 
 @dataclass
-class OpenColorIOeaa02817(CppProfile):
+class OpenColorIO39e775bd(CppProfile):
     owner: str = "AcademySoftwareFoundation"
     repo: str = "OpenColorIO"
-    commit: str = "eaa028171a8e74d029b0c139a3a8588d15fd00af"
+    commit: str = "39e775bd84f09007ebf1eb8d5272a2d8f3db835d"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -4033,10 +4033,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class BehaviorTreeCPP3ff6a32b(CppProfile):
+class BehaviorTreeCPPe6754eeb(CppProfile):
     owner: str = "BehaviorTree"
     repo: str = "BehaviorTree.CPP"
-    commit: str = "3ff6a32ba0497a08519c77a1436e3b81eff1bcd6"
+    commit: str = "e6754eeb550f0c76b82da42e377a4d807ce51a6b"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -4081,10 +4081,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class CLI11fe3772d3(CppProfile):
+class CLI11a5950f47(CppProfile):
     owner: str = "CLIUtils"
     repo: str = "CLI11"
-    commit: str = "fe3772d3c2969330ed0e4f32351ad066e8d375c5"
+    commit: str = "a5950f47f128997b4b0e352d6a9e3ee182302ce4"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -4113,10 +4113,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class ChaiScript2eb3279c(CppProfile):
+class ChaiScriptf635b51e(CppProfile):
     owner: str = "ChaiScript"
     repo: str = "ChaiScript"
-    commit: str = "2eb3279c391854c7a005b82ad121802e88b7c171"
+    commit: str = "f635b51e3f8e95868210edfc66fdbd8e475710f5"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -4148,10 +4148,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Crowb8c021a7(CppProfile):
+class Crow7ecd59c2(CppProfile):
     owner: str = "CrowCpp"
     repo: str = "Crow"
-    commit: str = "b8c021a7c876eeb76ad00946b83da5d8a8199a84"
+    commit: str = "7ecd59c2e7f4467c900bffde9eb5c946c4eac3f5"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -4349,10 +4349,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Etlc6006057(CppProfile):
+class Etl3e4d41ca(CppProfile):
     owner: str = "ETLCPP"
     repo: str = "etl"
-    commit: str = "c600605734360f851347e0caa61c81c078886ad9"
+    commit: str = "3e4d41ca57de475f4b769320308e80a103c8f5d6"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -4374,10 +4374,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Ugrepd624720b(CppProfile):
+class Ugrep0ecc0aa4(CppProfile):
     owner: str = "Genivia"
     repo: str = "ugrep"
-    commit: str = "d624720b3cb4aa84b0f9cede51f90f9cc42473d8"
+    commit: str = "0ecc0aa45ad7b327a857cd90d5ec77501edae4b6"
     test_cmd: str = "make test"
 
     @property
@@ -4415,10 +4415,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Srtce54b5ea(CppProfile):
+class Srt8e68635c(CppProfile):
     owner: str = "Haivision"
     repo: str = "srt"
-    commit: str = "ce54b5ea363dee0e16d4fdf2c43d96f5d896706a"
+    commit: str = "8e68635cf1075618dd8b47074f13503b54d8b740"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -4450,10 +4450,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Heaptrackf16e8d33(CppProfile):
+class Heaptracke1dafc93(CppProfile):
     owner: str = "KDE"
     repo: str = "heaptrack"
-    commit: str = "f16e8d336f0e3353892d07db307af36112ffb53b"
+    commit: str = "e1dafc9363c7ebbc7b8ad1cfff685cc2bbff366d"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -4500,10 +4500,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Kdenlivefba388ba(CppProfile):
+class Kdenlive362f0fd3(CppProfile):
     owner: str = "KDE"
     repo: str = "kdenlive"
-    commit: str = "fba388babdcf6d057f2cf973b3f880ae982eaecd"
+    commit: str = "362f0fd39a08a90e72ec59be17848f7330430cd7"
     test_cmd: str = "cd build && ctest --verbose"
 
     @property
@@ -4572,10 +4572,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class VulkanHpp39609625(CppProfile):
+class VulkanHpp412ef7de(CppProfile):
     owner: str = "KhronosGroup"
     repo: str = "Vulkan-Hpp"
-    commit: str = "396096255f032bbd3ca4bdafd26556cba583c67c"
+    commit: str = "412ef7de266a7caae9eacfef3b988bc86c483688"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -4606,10 +4606,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Glslange966816a(CppProfile):
+class Glslangeca4a362(CppProfile):
     owner: str = "KhronosGroup"
     repo: str = "glslang"
-    commit: str = "e966816ab28ab7cb448d5b33270b43c941b343d4"
+    commit: str = "eca4a36250d518d930f3255300ebbcaa171cb7c2"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -4642,10 +4642,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class VTK28b49bee(CppProfile):
+class VTKe0b768b6(CppProfile):
     owner: str = "Kitware"
     repo: str = "VTK"
-    commit: str = "28b49beea5e8fd47a3dd3f1c52a1f1637111d09d"
+    commit: str = "e0b768b692b33f2fee4880987fe339d9c45cda69"
     test_cmd: str = "cd build && ctest -R CommonCore --verbose --output-on-failure"
 
     @property
@@ -4685,10 +4685,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Server637f8c4d(CppProfile):
+class Serverc8bfb4db(CppProfile):
     owner: str = "MariaDB"
     repo: str = "server"
-    commit: str = "637f8c4db7533fc4f22433f042cc83f7ba3bfb41"
+    commit: str = "c8bfb4dbd298998c699d4f7670b5867a62376764"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -4732,10 +4732,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class EternalTerminal90b10d5f(CppProfile):
+class EternalTerminal77eab5ec(CppProfile):
     owner: str = "MisterTea"
     repo: str = "EternalTerminal"
-    commit: str = "90b10d5f99be322d2ad9deabc4b86aa36a5f6894"
+    commit: str = "77eab5ec586e26106492f8403b18a35be0cb5de7"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure"
 
     @property
@@ -4784,10 +4784,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Launcher4aa2b3ce(CppProfile):
+class Launcher63bbc255(CppProfile):
     owner: str = "MultiMC"
     repo: str = "Launcher"
-    commit: str = "4aa2b3ce6a19f9b0e662c9b35054db23d921adf9"
+    commit: str = "63bbc2553aa7896f2a135c43374b316a02fb64e4"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -4882,10 +4882,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Cutlass3476ddb7(CppProfile):
+class Cutlasscb37157d(CppProfile):
     owner: str = "NVIDIA"
     repo: str = "cutlass"
-    commit: str = "3476ddb7bd6ca4161a0169103ceaa20ce0eb891f"
+    commit: str = "cb37157db50d0528c4aea99feb37946ec278e3d9"
     test_cmd: str = (
         "cd build && ./test/unit/core/cutlass_test_unit_core --gtest_color=no || true"
     )
@@ -4955,10 +4955,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Pikiwidb44848409(CppProfile):
+class Pikiwidbe7b5538b(CppProfile):
     owner: str = "OpenAtomFoundation"
     repo: str = "pikiwidb"
-    commit: str = "4484840997347493132e611f9c171d2826763b76"
+    commit: str = "e7b5538b92c32281a4756fb20b0e41f1472521ff"
     test_cmd: str = "mkdir -p src && cp ./output/pika src/redis-server && cp ./output/pika tests/integration/pika && cp tests/conf/pika.conf tests/assets/default.conf && tclsh tests/test_helper.tcl --clients 1"
 
     @property
@@ -5033,10 +5033,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Osrmbackend362b388d(CppProfile):
+class Osrmbackendd1ae89db(CppProfile):
     owner: str = "Project-OSRM"
     repo: str = "osrm-backend"
-    commit: str = "362b388d7e0582291662105d7bfc004a3a44a393"
+    commit: str = "d1ae89db1ed53f9ee7c9835666656940988baca4"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure"
 
     @property
@@ -5075,10 +5075,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class I2pd8ab7cfa2(CppProfile):
+class I2pd6223788b(CppProfile):
     owner: str = "PurpleI2P"
     repo: str = "i2pd"
-    commit: str = "8ab7cfa2a66693ec79c1ce23e45ac77d41ff0754"
+    commit: str = "6223788b6ee2bf865d58bb8c580873d3590be877"
     test_cmd: str = 'cd tests && for TEST in test-http-merge_chunked test-http-req test-http-res test-http-url test-http-url_decode test-gost test-gost-sig test-base-64 test-aeadchacha20poly1305 test-blinding test-elligator test-eddsa test-aes; do echo "Running $TEST"; ./$TEST || exit 1; done'
 
     @property
@@ -5108,10 +5108,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Jakt3c8d7508(CppProfile):
+class Jaktec3f4d3a(CppProfile):
     owner: str = "SerenityOS"
     repo: str = "jakt"
-    commit: str = "3c8d7508fb49e682bf93d6ab8bd3e54afe259fb6"
+    commit: str = "ec3f4d3a1e2cd392d87116d6e5198221dd65c1bc"
     test_cmd: str = "./build/bin/jakttest"
 
     @property
@@ -5173,10 +5173,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Supertux53884267(CppProfile):
+class Supertux0c5f269c(CppProfile):
     owner: str = "SuperTux"
     repo: str = "supertux"
-    commit: str = "5388426757834024d805df836157b1687a61420b"
+    commit: str = "0c5f269c5b5b6559aa27f03682b6dcfb52ffb244"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -5308,10 +5308,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Ncnna64aa7ff(CppProfile):
+class Ncnnaa010245(CppProfile):
     owner: str = "Tencent"
     repo: str = "ncnn"
-    commit: str = "a64aa7ff68af3f833fc160c6ee15b0f08aec4b11"
+    commit: str = "aa01024557f13eee973922874eb0ebacda9b5ba3"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -5381,10 +5381,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Tigervncaf48f2c8(CppProfile):
+class Tigervnc84e93067(CppProfile):
     owner: str = "TigerVNC"
     repo: str = "tigervnc"
-    commit: str = "af48f2c8c7a20d8704a126649993b48f3e1352dd"
+    commit: str = "84e930679d831bcf51d5f95733689ada68dfd52a"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -5477,10 +5477,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class TileDB13d41286(CppProfile):
+class TileDB28aeb653(CppProfile):
     owner: str = "TileDB-Inc"
     repo: str = "TileDB"
-    commit: str = "13d41286a8784649a12f624d9338456ea4466116"
+    commit: str = "28aeb653d1c5d3e3b7a4b09b0e9f84a3c4d7605f"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1 -L unit"
 
     @property
@@ -5539,10 +5539,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Cereala56bad8b(CppProfile):
+class Cereal22a1b369(CppProfile):
     owner: str = "USCiLab"
     repo: str = "cereal"
-    commit: str = "a56bad8bbb770ee266e930c95d37fff2a5be7fea"
+    commit: str = "22a1b369f39be918ca79206a83c4facd759f9105"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -5630,10 +5630,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Vowpalwabbit0d344494(CppProfile):
+class Vowpalwabbit3642774d(CppProfile):
     owner: str = "VowpalWabbit"
     repo: str = "vowpal_wabbit"
-    commit: str = "0d344494d5d7aade6ee2811c7e6a63e8f9597265"
+    commit: str = "3642774d21dda7a809714d5ee10a13aa6fece948"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -5669,10 +5669,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Wabt6ca912cf(CppProfile):
+class Wabt77a95c8c(CppProfile):
     owner: str = "WebAssembly"
     repo: str = "wabt"
-    commit: str = "6ca912cf16345af74cb97506a8ceadfa54e428f4"
+    commit: str = "77a95c8c82325ac3a716f9aacbe0a3822718f3cf"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -5702,10 +5702,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Easyloggingpp63032b87(CppProfile):
+class Easyloggingpp12725151(CppProfile):
     owner: str = "abumq"
     repo: str = "easyloggingpp"
-    commit: str = "63032b874431e2ec2304917415132201b1c70e30"
+    commit: str = "1272515122ce559e77144a8404f419fee0423b81"
     test_cmd: str = "./build/bin/easyloggingpp-unit-tests --gtest_color=no"
 
     @property
@@ -5728,10 +5728,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Singaa64d65fa(CppProfile):
+class Singa87d50ebf(CppProfile):
     owner: str = "apache"
     repo: str = "singa"
-    commit: str = "a64d65fa6f0cf488f5eb8f8fcbc052fdaa5384a8"
+    commit: str = "87d50ebf64483c6acf6b86084580d0f645634f85"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure"
 
     @property
@@ -5780,10 +5780,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Thrift32776c0f(CppProfile):
+class Thrifta6c7496d(CppProfile):
     owner: str = "apache"
     repo: str = "thrift"
-    commit: str = "32776c0f46f5fd79b296391d66236c23b20af072"
+    commit: str = "a6c7496dddc9cad93b4e76c72f3c3bce2c9ba452"
     test_cmd: str = "cd cmake-build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -5829,10 +5829,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Asmjit64a88ed1(CppProfile):
+class Asmjit0bd5787b(CppProfile):
     owner: str = "asmjit"
     repo: str = "asmjit"
-    commit: str = "64a88ed1d8abb2e2b17a938a5ce7c1b66dabb695"
+    commit: str = "0bd5787b54b575ed94bf32ac452153b34385c514"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -5864,10 +5864,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Assimp3e672ff8(CppProfile):
+class Assimp392a658f(CppProfile):
     owner: str = "assimp"
     repo: str = "assimp"
-    commit: str = "3e672ff856b0bad35f478cc11acdd903674066ee"
+    commit: str = "392a658f9c271be965271f45e7521a1b80ea4392"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -5898,10 +5898,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Asyncprofilerdbd9fc75(CppProfile):
+class Asyncprofilerc4957631(CppProfile):
     owner: str = "async-profiler"
     repo: str = "async-profiler"
-    commit: str = "dbd9fc752020bd008a825c36e513251b929dd10f"
+    commit: str = "c4957631eac19a93199b93208e1c9ce3cc972d52"
     test_cmd: str = "make test"
 
     @property
@@ -6049,10 +6049,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Beast9ad3b683(CppProfile):
+class Beast077efe52(CppProfile):
     owner: str = "boostorg"
     repo: str = "beast"
-    commit: str = "9ad3b6831f9828afee8006fdc8ef0fc81724a0e9"
+    commit: str = "077efe520d00839def8b997200adfcd4dd8519ea"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -6089,10 +6089,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Ccache85a885b2(CppProfile):
+class Ccachea89f5010(CppProfile):
     owner: str = "ccache"
     repo: str = "ccache"
-    commit: str = "85a885b201d25461d66cfcef98f80698e55dd43b"
+    commit: str = "a89f5010f1c8edf231184b3a3a77654e12e4a288"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -6136,10 +6136,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Ceressolvera2bab5af(CppProfile):
+class Ceressolver0ba987ac(CppProfile):
     owner: str = "ceres-solver"
     repo: str = "ceres-solver"
-    commit: str = "a2bab5af5131d52a756b1fa7b7cff83821541449"
+    commit: str = "0ba987acaf9e8674070f116ed624edf017d2b630"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -6205,10 +6205,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Clementinebb2f6378(CppProfile):
+class Clementinefd161782(CppProfile):
     owner: str = "clementine-player"
     repo: str = "Clementine"
-    commit: str = "bb2f6378071ee7af474f5a049328fc421b6e4904"
+    commit: str = "fd16178276eba1236c650df4758cab9522d17131"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -6274,10 +6274,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Osiris482d672b(CppProfile):
+class Osiris0c396861(CppProfile):
     owner: str = "danielkrupinski"
     repo: str = "Osiris"
-    commit: str = "482d672bcaf12160e8af852c17f1640033173a3d"
+    commit: str = "0c396861537d9702e0871da9aae80159e590524a"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -6311,10 +6311,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Xgboostafdc0372(CppProfile):
+class Xgboost3284a0ff(CppProfile):
     owner: str = "dmlc"
     repo: str = "xgboost"
-    commit: str = "afdc0372f368d6f5ca9a74a969155db7a4bcbd38"
+    commit: str = "3284a0fff5f321beb29938a65e534bb487a8432e"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -6353,10 +6353,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class NumCpp3bbce083(CppProfile):
+class NumCppbceeebfe(CppProfile):
     owner: str = "dpilger26"
     repo: str = "NumCpp"
-    commit: str = "3bbce08329cda35655e154f3724c585d65c3c436"
+    commit: str = "bceeebfeed19f950e6b456bf50719be02e4a6d04"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -6386,10 +6386,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class FastDDSe516400f(CppProfile):
+class FastDDS43d6be76(CppProfile):
     owner: str = "eProsima"
     repo: str = "Fast-DDS"
-    commit: str = "e516400ff230fc51fad569b0ed209b1464467cb4"
+    commit: str = "43d6be76bb15b781ecd988f2c6f8a905f67cc3ff"
     test_cmd: str = 'cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1 -E "BlackboxTest"'
 
     @property
@@ -6471,10 +6471,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Rangev3ca1388fb(CppProfile):
+class Rangev3108f93c2(CppProfile):
     owner: str = "ericniebler"
     repo: str = "range-v3"
-    commit: str = "ca1388fb9da8e69314dda222dc7b139ca84e092f"
+    commit: str = "108f93c279c8f9cec175dac361084983d0176e99"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -6503,10 +6503,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Arduino7b0ac416(CppProfile):
+class Arduinof946290e(CppProfile):
     owner: str = "esp8266"
     repo: str = "Arduino"
-    commit: str = "7b0ac416942ee7203cd66e233721c53fe5a23a01"
+    commit: str = "f946290ea993db029a90010927cdc1d645c91940"
     test_cmd: str = "cd tests/host && make FORCE32=0 OPTZ=-O0 CI"
 
     @property
@@ -6541,10 +6541,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Esphomeb134c467(CppProfile):
+class Esphomeff0c5f57(CppProfile):
     owner: str = "esphome"
     repo: str = "esphome"
-    commit: str = "b134c4679ca5f609633a2b97681a41867e62c12d"
+    commit: str = "ff0c5f575e84f8143fd42a40f0c8a360599aa543"
     test_cmd: str = "pytest --verbose"
 
     @property
@@ -6575,10 +6575,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Yoga8b42116d(CppProfile):
+class Yoga966107fd(CppProfile):
     owner: str = "facebook"
     repo: str = "yoga"
-    commit: str = "8b42116d1b71d1a5d793719f72a5b7f905d0b4b4"
+    commit: str = "966107fd5fafd76cea40f19521c3e0d626fac834"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -6601,10 +6601,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Faiss7cfb2500(CppProfile):
+class Faiss967eda65(CppProfile):
     owner: str = "facebookresearch"
     repo: str = "faiss"
-    commit: str = "7cfb2500819fbf6c81e328a028c15638c7152195"
+    commit: str = "967eda65dec2515ccd18c5abe464b485f8a883d0"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -6645,10 +6645,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Fastfloat9f30728c(CppProfile):
+class Fastfloat05087a30(CppProfile):
     owner: str = "fastfloat"
     repo: str = "fast_float"
-    commit: str = "9f30728ce94ab1fc8f49ef2f987de0f9be3ce01b"
+    commit: str = "05087a303dad9c98768b33c829d398223a649bc6"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -6733,10 +6733,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Ggmld6754f3d(CppProfile):
+class Ggmlac6f7b44(CppProfile):
     owner: str = "ggml-org"
     repo: str = "ggml"
-    commit: str = "d6754f3d0e6d0acd21c12442353c9fd2f94188e7"
+    commit: str = "ac6f7b44f60fde0091f0b3d99afde48f8c99b13a"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -6763,10 +6763,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Llamacpp24464195(CppProfile):
+class Llamacppa290ce62(CppProfile):
     owner: str = "ggml-org"
     repo: str = "llama.cpp"
-    commit: str = "244641955f6146f7e8474afff7772d427593a534"
+    commit: str = "a290ce626663dae1d54f70bce3ca6d8f67aab62f"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -6797,10 +6797,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Whispercpp21411d81(CppProfile):
+class Whispercpp4bf73367(CppProfile):
     owner: str = "ggml-org"
     repo: str = "whisper.cpp"
-    commit: str = "21411d81ea736ed5d9cdea4df360d3c4b60a4adb"
+    commit: str = "4bf733672b2871d4153158af4f621a6dd9104f4a"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -6834,10 +6834,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Cherrytree6c42a114(CppProfile):
+class Cherrytreefc5674f9(CppProfile):
     owner: str = "giuspen"
     repo: str = "cherrytree"
-    commit: str = "6c42a1141071baf7a2c539da12e6fce1197d27ca"
+    commit: str = "fc5674f951c825c4c9e82ddcc2021d28a508ec7c"
     test_cmd: str = "export HOME=/tmp && cd build && xvfb-run ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -6882,10 +6882,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Cpufeatures545431d6(CppProfile):
+class Cpufeatures34df1eda(CppProfile):
     owner: str = "google"
     repo: str = "cpu_features"
-    commit: str = "545431d64a43f683d75e51c36df19f90afe82752"
+    commit: str = "34df1eda0361d532c8097fb624315a9e71049532"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -6910,10 +6910,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Mujoco82e92cbc(CppProfile):
+class Mujoco6376e670(CppProfile):
     owner: str = "google-deepmind"
     repo: str = "mujoco"
-    commit: str = "82e92cbcaae55b381a34de58be84b5a3e8c18093"
+    commit: str = "6376e6707036790f09b5f6e20e8dc5acd98d3542"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -6960,10 +6960,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Filament770ce7f8(CppProfile):
+class Filament99ced0fe(CppProfile):
     owner: str = "google"
     repo: str = "filament"
-    commit: str = "770ce7f8ec7e202d1e18869420161866f65aa26e"
+    commit: str = "99ced0fe59a7fe92d11f3edab687c7056db6b765"
     test_cmd: str = "cd out/cmake-release && ctest --verbose --output-on-failure"
 
     @property
@@ -7059,10 +7059,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Parallelhashmap8442f1c8(CppProfile):
+class Parallelhashmap01c838b7(CppProfile):
     owner: str = "greg7mdp"
     repo: str = "parallel-hashmap"
-    commit: str = "8442f1c82cad04c026e3db4959c6b7a5396f982a"
+    commit: str = "01c838b76a4f21024e478ef020c3386b9b4ba4d2"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -7122,10 +7122,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Compiletimeregularexpressions62252118(CppProfile):
+class Compiletimeregularexpressions30c00c14(CppProfile):
     owner: str = "hanickadot"
     repo: str = "compile-time-regular-expressions"
-    commit: str = "6225211806c48230e5d17a1e555ef69e7325051c"
+    commit: str = "30c00c14eb86d4f453a46fcaff74b11e5958ddea"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -7180,10 +7180,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Iree3f630a72(CppProfile):
+class Iree26083307(CppProfile):
     owner: str = "iree-org"
     repo: str = "iree"
-    commit: str = "3f630a72b225df01866ad02cf8b81a2d27941817"
+    commit: str = "26083307b8753a11870b8caf590afea15c9429fa"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1 -L 'driver=local-task|driver=local-sync'"
 
     @property
@@ -7237,10 +7237,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Cxxopts370de72b(CppProfile):
+class Cxxoptsa3a21b31(CppProfile):
     owner: str = "jarro2783"
     repo: str = "cxxopts"
-    commit: str = "370de72bfef8daf0147352d39b5504e67baa4aef"
+    commit: str = "a3a21b31ef2894b5a802f041f40d51059469a259"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -7264,10 +7264,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Jellyfindesktop676758b6(CppProfile):
+class Jellyfindesktop60cd1c98(CppProfile):
     owner: str = "jellyfin"
     repo: str = "jellyfin-desktop"
-    commit: str = "676758b6088aa010680a6795462630168e1a9b7c"
+    commit: str = "60cd1c98f91e361a354cbdeba762cdeb45da844d"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -7346,10 +7346,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class QView801b0738(CppProfile):
+class QViewc5eca1c7(CppProfile):
     owner: str = "jurplel"
     repo: str = "qView"
-    commit: str = "801b07383a33461cbeb2ca70df29217ef2f4cae7"
+    commit: str = "c5eca1c7176549e0f0718d11201547ddcdb1f8c9"
     test_cmd: str = "cd build && xvfb-run ctest --verbose --output-on-failure"
 
     @property
@@ -7387,10 +7387,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Sherpaonnxcb0828a0(CppProfile):
+class Sherpaonnxd4aca0ef(CppProfile):
     owner: str = "k2-fsa"
     repo: str = "sherpa-onnx"
-    commit: str = "cb0828a001357d5da9c9d60055f644b0df3a882d"
+    commit: str = "d4aca0ef4f9faa406044dd3b43ef3bf6f3c252b3"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -7428,10 +7428,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Openalsoft32759d3c(CppProfile):
+class Openalsoft993b8c82(CppProfile):
     owner: str = "kcat"
     repo: str = "openal-soft"
-    commit: str = "32759d3c7d367ed2dc49216cc794df5d1d20ecb7"
+    commit: str = "993b8c829dc100f35292df788a167ce3be0ad44c"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1 --gtest_color=no"
 
     @property
@@ -7469,10 +7469,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Bkcrack1f34dd5e(CppProfile):
+class Bkcrack95fbe951(CppProfile):
     owner: str = "kimci86"
     repo: str = "bkcrack"
-    commit: str = "1f34dd5ee779d983ee0350fc1b961c72bad68e96"
+    commit: str = "95fbe951909b42bd32d4a9f4b9e3580e6ae66d80"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -7499,10 +7499,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Kleeefa1e052(CppProfile):
+class Kleed62cb2a4(CppProfile):
     owner: str = "klee"
     repo: str = "klee"
-    commit: str = "efa1e0529499f954885489d30210dfc7a3697258"
+    commit: str = "d62cb2a4d1f5ab21ddac7ef9ac2dda9ea8f3bf4d"
     test_cmd: str = "cd build && make systemtests"
 
     @property
@@ -7557,10 +7557,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Kokkos21a05468(CppProfile):
+class Kokkos5bd1465e(CppProfile):
     owner: str = "kokkos"
     repo: str = "kokkos"
-    commit: str = "21a05468fadf7d750e74192d18c0e49fb56a274b"
+    commit: str = "5bd1465e81d9e46331dea6ed8dd46233acbedcb0"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -7593,10 +7593,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Ksnipc0537020(CppProfile):
+class Ksnip2970df94(CppProfile):
     owner: str = "ksnip"
     repo: str = "ksnip"
-    commit: str = "c05370203c523a7483ade0503f3906314d3c3496"
+    commit: str = "2970df94ac5348018d62e0d5f87a72e6d3c6468f"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -7656,10 +7656,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Libigl6000ccb7(CppProfile):
+class Libigl83807ad3(CppProfile):
     owner: str = "libigl"
     repo: str = "libigl"
-    commit: str = "6000ccb70fdeb78376dcb5d2531e57a15d884aa0"
+    commit: str = "83807ad36fa35a52d9f458d7202f0776d4ba882a"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1 -R igl_core"
 
     @property
@@ -7746,10 +7746,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Kakouneea233559(CppProfile):
+class Kakoune290446bb(CppProfile):
     owner: str = "mawww"
     repo: str = "kakoune"
-    commit: str = "ea23355926f9cd7e80b96d292ae9500d99f11386"
+    commit: str = "290446bb59a1f60616efe627a418bd10c03e15b5"
     test_cmd: str = "./test/run"
 
     @property
@@ -7778,10 +7778,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class DirectXShaderCompiler6f759a31(CppProfile):
+class DirectXShaderCompilerfe261573(CppProfile):
     owner: str = "microsoft"
     repo: str = "DirectXShaderCompiler"
-    commit: str = "6f759a3147377543de33e10f15634e2f1cc7abf3"
+    commit: str = "fe2615732899960b4077d02511810a80ccc4ffc9"
     test_cmd: str = "cmake --build build --target check-all"
 
     @property
@@ -7821,10 +7821,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class LightGBMe3d52709(CppProfile):
+class LightGBM9545905b(CppProfile):
     owner: str = "microsoft"
     repo: str = "LightGBM"
-    commit: str = "e3d52709fd6a79ec92607bfe5c9e74b3f77472c2"
+    commit: str = "9545905b9ade997ee8a06001ff0f4c5e792e3f85"
     test_cmd: str = "pytest tests/python_package_test/ --verbose"
 
     @property
@@ -7946,10 +7946,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class RmlUi1bf04a3c(CppProfile):
+class RmlUi1f2ee578(CppProfile):
     owner: str = "mikke89"
     repo: str = "RmlUi"
-    commit: str = "1bf04a3cda75d4c433242cb73bdd2231a2fca1b7"
+    commit: str = "1f2ee578fd92d5c976de0bba7cca1ac4f09d8f5f"
     test_cmd: str = "cd build && ./rmlui_unit_tests --success"
 
     @property
@@ -8019,10 +8019,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Mlx6304c285(CppProfile):
+class Mlx80bcd1c6(CppProfile):
     owner: str = "ml-explore"
     repo: str = "mlx"
-    commit: str = "6304c285d30ae4843229cf9a6939c227c2e60bb2"
+    commit: str = "80bcd1c65867dec1623546d1fdc9d0473ab46657"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -8150,10 +8150,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Nghttp2710eb1ed(CppProfile):
+class Nghttp2114581b3(CppProfile):
     owner: str = "nghttp2"
     repo: str = "nghttp2"
-    commit: str = "710eb1ed70fd976dc2741546eaffc1a14b8f9726"
+    commit: str = "114581b3466b6eb0b6edd1ccee092cded1063cc1"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -8278,10 +8278,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Quill7c0ffa54(CppProfile):
+class Quill489350fa(CppProfile):
     owner: str = "odygrd"
     repo: str = "quill"
-    commit: str = "7c0ffa54e51c2b8db6ec091c2922aeaf9b3b08c0"
+    commit: str = "489350fa7a3bee1796a75e5b5f5f53e1ce91fada"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -8309,10 +8309,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Openthreadb81da07a(CppProfile):
+class Openthread941a3178(CppProfile):
     owner: str = "openthread"
     repo: str = "openthread"
-    commit: str = "b81da07ace250b7d3800928848feaa1fb126fa43"
+    commit: str = "941a31789962530856b3594b5f81333651a59c02"
     test_cmd: str = "./script/test unit"
 
     @property
@@ -8351,10 +8351,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Panda3d2d2bdc9a(CppProfile):
+class Panda3d9e9bbedb(CppProfile):
     owner: str = "panda3d"
     repo: str = "panda3d"
-    commit: str = "2d2bdc9a1e126a2512b361c92c6fa9aaff0a4d99"
+    commit: str = "9e9bbedbfda3479ff22187c6511c71e57ae4cbd7"
     test_cmd: str = "export PYTHONPATH=$PWD/built && export LD_LIBRARY_PATH=$PWD/built/lib && export LIBGL_ALWAYS_SOFTWARE=1 && export EGL_PLATFORM=surfaceless && python3 -m pytest tests"
 
     @property
@@ -8413,10 +8413,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Pistache8a1ac905(CppProfile):
+class Pistachea3185e0b(CppProfile):
     owner: str = "pistacheio"
     repo: str = "pistache"
-    commit: str = "8a1ac9059617d2e3c782f4b0afcdf9f55bb91a0a"
+    commit: str = "a3185e0bc40af4a3521a9bd04da37553efbbb248"
     test_cmd: str = "meson test -C build --verbose --no-rebuild"
 
     @property
@@ -8460,10 +8460,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Projectmf67dac94(CppProfile):
+class Projectm64fe3647(CppProfile):
     owner: str = "projectM-visualizer"
     repo: str = "projectm"
-    commit: str = "f67dac948129d9f54a4c3791d19bb95f2ac5747b"
+    commit: str = "64fe364738a448ec9abfe559c6a72c1ac177750c"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -8624,10 +8624,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class QBittorrentf68f332f(CppProfile):
+class QBittorrent861bd392(CppProfile):
     owner: str = "qbittorrent"
     repo: str = "qBittorrent"
-    commit: str = "f68f332f255e42f0d0b782bb7dc6f3acad43ef41"
+    commit: str = "861bd392d11679491a92f22890003e830bf1caef"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure"
 
     @property
@@ -8670,10 +8670,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Qpdf9352f6f8(CppProfile):
+class Qpdf40801e52(CppProfile):
     owner: str = "qpdf"
     repo: str = "qpdf"
-    commit: str = "9352f6f85f04f90a193f854bd39b31dec9913794"
+    commit: str = "40801e523e1fb0ccbc1a09c4d573a3e92d2b46c0"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -8713,10 +8713,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Qtcreatoree5a1883(CppProfile):
+class Qtcreator12272b2f(CppProfile):
     owner: str = "qt-creator"
     repo: str = "qt-creator"
-    commit: str = "ee5a188335210fb421657936a561788df7d4f9b4"
+    commit: str = "12272b2f040ebb42b54da9337294cbf1568e8333"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure -L auto"
 
     @property
@@ -8815,10 +8815,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Sqlpp116180ee5e(CppProfile):
+class Sqlpp118c05983a(CppProfile):
     owner: str = "rbock"
     repo: str = "sqlpp11"
-    commit: str = "6180ee5e49e7a824aab98080207a8d9b5c3d5c99"
+    commit: str = "8c05983a31272cf9740cb521500c66a032aad678"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -8854,10 +8854,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Librealsense78cb605b(CppProfile):
+class Librealsense9a0dd70d(CppProfile):
     owner: str = "realsenseai"
     repo: str = "librealsense"
-    commit: str = "78cb605b11f5ba80176e7b8d70292f76ba625565"
+    commit: str = "9a0dd70db1a2c180b69c6c257cd2ee6120505499"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -8894,10 +8894,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Miniz4b9fcf1d(CppProfile):
+class Miniz5cf1e56a(CppProfile):
     owner: str = "richgel999"
     repo: str = "miniz"
-    commit: str = "4b9fcf1df525114484be49f3216169b061c07ac6"
+    commit: str = "5cf1e56a9c968c11fdd1a6414f3a95f84314c437"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -8925,10 +8925,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Librimede4700e9(CppProfile):
+class Librime9422ca7e(CppProfile):
     owner: str = "rime"
     repo: str = "librime"
-    commit: str = "de4700e9f6b75b109910613df907965e3cbe0567"
+    commit: str = "9422ca7e9c36a4516d7c15186ecd42f4e0dad7a0"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure"
 
     @property
@@ -9067,10 +9067,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class PcapPlusPlus2a39a25b(CppProfile):
+class PcapPlusPlus36815aa1(CppProfile):
     owner: str = "seladb"
     repo: str = "PcapPlusPlus"
-    commit: str = "2a39a25b94d5f8e0e6d4131b5e19235f311c8f4c"
+    commit: str = "36815aa1c59ed48ee5a014f6bbe2b81b8007fa75"
     test_cmd: str = "cd build && ctest --verbose"
 
     @property
@@ -9192,10 +9192,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Strawberry5aabf649(CppProfile):
+class Strawberryd274e941(CppProfile):
     owner: str = "strawberrymusicplayer"
     repo: str = "strawberry"
-    commit: str = "5aabf649bf85ada13e34eb6d3b6fb1208188c34d"
+    commit: str = "d274e94186560074b73544ec561242b78e833b10"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -9271,10 +9271,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Subsurface59455fbf(CppProfile):
+class Subsurface27efabef(CppProfile):
     owner: str = "subsurface"
     repo: str = "subsurface"
-    commit: str = "59455fbfd401b55e1a240b4acb38dea4e543ff8c"
+    commit: str = "27efabefba7a9409d5ab9c4f22e1f1f8962c27a5"
     test_cmd: str = "export QT_QPA_PLATFORM=offscreen HOME=/tmp XDG_RUNTIME_DIR=/tmp && mkdir -p /tmp/.cache /tmp/.config /tmp/.local/share && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -9348,10 +9348,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Tinygltfbdc37385(CppProfile):
+class Tinygltfa18f4114(CppProfile):
     owner: str = "syoyo"
     repo: str = "tinygltf"
-    commit: str = "bdc37385f198c787ba143e18f01b06164f8c7d15"
+    commit: str = "a18f41142ff356915fbd5446d0ece5dae21c15cc"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -9477,10 +9477,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Ultrajsond708b05a(CppProfile):
+class Ultrajson7d9036f4(CppProfile):
     owner: str = "ultrajson"
     repo: str = "ultrajson"
-    commit: str = "d708b05aefc4ce94dc8c97af4770e21c57cb1338"
+    commit: str = "7d9036f4896256ac772fdb45d27d45463efe59cb"
     test_cmd: str = "pytest --verbose"
 
     @property
@@ -9504,10 +9504,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Uncrustify7e055694(CppProfile):
+class Uncrustifyf97596c7(CppProfile):
     owner: str = "uncrustify"
     repo: str = "uncrustify"
-    commit: str = "7e055694bdf92bbe7eec53fe2c88f48e524cf2af"
+    commit: str = "f97596c7243e6ab4ceba3d67e96aaca003775ce8"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -9562,10 +9562,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Upxbe1ca792(CppProfile):
+class Upxfab1117a(CppProfile):
     owner: str = "upx"
     repo: str = "upx"
-    commit: str = "be1ca792de6940fa8dfa212da4a0160a70e71007"
+    commit: str = "fab1117a51e8d85022c12fd45b77131e9cc4bda5"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -9643,10 +9643,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Visualboyadvancemb58b2478(CppProfile):
+class Visualboyadvancemc6a055ed(CppProfile):
     owner: str = "visualboyadvance-m"
     repo: str = "visualboyadvance-m"
-    commit: str = "b58b2478cf7dd1beff0d5e3b154f121a416d74ec"
+    commit: str = "c6a055ed2800066ebf854aa547194c569a27b1f7"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -9690,10 +9690,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Xsimd548b05f0(CppProfile):
+class Xsimd913188e8(CppProfile):
     owner: str = "xtensor-stack"
     repo: str = "xsimd"
-    commit: str = "548b05f0c91bf9e205c1638967e45fa1c7c23c7a"
+    commit: str = "913188e886efe34f548269233121a6b49c67800a"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -9721,10 +9721,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Xtensor18f65248(CppProfile):
+class Xtensor5caa64db(CppProfile):
     owner: str = "xtensor-stack"
     repo: str = "xtensor"
-    commit: str = "18f6524829d8ac6399374f9ecbd21b959f75424d"
+    commit: str = "5caa64dbd14c43057008cca17753e40a0efcfe1b"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure"
 
     @property
@@ -9767,10 +9767,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class MTranServer99b97d5e(CppProfile):
+class MTranServerf5672a98(CppProfile):
     owner: str = "xxnuo"
     repo: str = "MTranServer"
-    commit: str = "99b97d5ecae30424c39cb86813142e5a8e638e50"
+    commit: str = "f5672a986b5bb935064fc74d1a7074fde7469daf"
     test_cmd: str = "bun test"
 
     @property
@@ -9802,10 +9802,10 @@ CMD ["bun", "src/main.ts"]"""
 
 
 @dataclass
-class Cppjieba9408c1d0(CppProfile):
+class Cppjieba8fe7b930(CppProfile):
     owner: str = "yanyiwu"
     repo: str = "cppjieba"
-    commit: str = "9408c1d08facc6e324dc90260e8cb20ecceebf70"
+    commit: str = "8fe7b9304d2730320e2e275721b1b330056c581b"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -9830,10 +9830,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Cppzmq041f755b(CppProfile):
+class Cppzmqf82d357b(CppProfile):
     owner: str = "zeromq"
     repo: str = "cppzmq"
-    commit: str = "041f755b7980af4a8022f1adf511cc6bd6139e2b"
+    commit: str = "f82d357bd07b079c6a4d025ad6e4b00e3147ba9f"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -9868,10 +9868,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Pugixml71005206(CppProfile):
+class Pugixml9c1b438f(CppProfile):
     owner: str = "zeux"
     repo: str = "pugixml"
-    commit: str = "710052066cc0a7210d7f554196ae43bd1cd9da3e"
+    commit: str = "9c1b438fe1362ba9ad014c0f67fd552485d0bda5"
     test_cmd: str = "cd build && ./pugixml-check"
 
     @property
@@ -9965,10 +9965,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Zncad7bd6d7(CppProfile):
+class Znca80cf49f(CppProfile):
     owner: str = "znc"
     repo: str = "znc"
-    commit: str = "ad7bd6d7eed84648638e1b6fd69546b9fe496576"
+    commit: str = "a80cf49f5e17576db1327df205064301111999e3"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -10010,10 +10010,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Pycdca05ddec0(CppProfile):
+class Pycdcb4289760(CppProfile):
     owner: str = "zrax"
     repo: str = "pycdc"
-    commit: str = "a05ddec0d889efe3a9082790df4e2ed380d6a555"
+    commit: str = "b4289760970dbc399684f1e155ec6d1ea1cc787e"
     test_cmd: str = "cd build && python3 ../tests/run_tests.py"
 
     @property
@@ -10040,10 +10040,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Fastllmb5ff6009(CppProfile):
+class Fastllmeb2bc47b(CppProfile):
     owner: str = "ztxz16"
     repo: str = "fastllm"
-    commit: str = "b5ff6009a6739d4a967684fce9fc2280df8775bd"
+    commit: str = "eb2bc47bcf6f67b82d16884606568200e20570e0"
     test_cmd: str = "./build/testOps"
 
     @property

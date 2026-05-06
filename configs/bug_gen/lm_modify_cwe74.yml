@@ -1,0 +1,68 @@
+name: lm_modify_cwe74
+parameters:
+  cwe_id: "CWE-74"
+  cwe_name: "Improper Neutralization of Special Elements in Output Used by a Downstream Component ('Injection')"
+  bug_examples:
+    - "Remove LDAP query escaping before incorporating user input into an LDAP filter: delete `ldapEscape(username)` before `(&(uid=${username})(objectClass=person))`, so input like `*)(|(uid=*` modifies the filter logic to return all users."
+    - "Remove XML special character escaping before inserting user data into an XML document: delete `xmlEscape(value)` before building `<tag>${value}</tag>`, so input containing `</tag><injected>` can alter the document structure."
+    - "Remove header injection protection: delete the newline/CR check (`if (value.includes('\\r') || value.includes('\\n')) throw;`) before `res.setHeader(name, value)`, allowing HTTP header injection / response splitting via CRLF characters."
+    - "Remove CSV formula injection protection: delete the check for `=`, `+`, `-`, `@` prefixes before writing user data into a CSV cell, so values like `=cmd|'/C calc'!A0` execute commands when opened in spreadsheet software."
+    - "Remove XPath escaping: delete `xpathEscape(input)` before interpolating into `//user[@name='${input}']`, so input like `' or '1'='1` modifies the XPath query to return all nodes."
+    - "Remove log injection protection: delete the newline sanitization before `logger.info('User: ' + username)`, so input containing `\\nERROR: fake-critical-alert` can forge log entries or confuse log parsers."
+    - "Remove template injection protection: delete the check/escape before passing user input to a template engine's compilation step (not just rendering), so input like `{{7*7}}` or `${require('child_process').exec('id')}` triggers server-side template injection."
+    - "Remove regex escaping before incorporating user input into a dynamically-built regex: delete `escapeRegExp(userPattern)` before `new RegExp(userPattern)`, so input like `.*` or `(a+)+$` creates a ReDoS-vulnerable or logic-altering pattern."
+  tips:
+    - "The bug must be a realistic injection flaw (CWE-74) — user-controlled input is passed to a downstream interpreter/parser/renderer WITHOUT proper neutralization of special elements that the downstream component interprets as control syntax."
+    - "CWE-74 is the ROOT PARENT of all injection weaknesses. Use it ONLY when no more specific child CWE applies. If the target is SQL → CWE-89. If OS shell → CWE-78. If HTML/browser → CWE-79. If code interpreter → CWE-94. CWE-74 covers LDAP injection, XPath injection, header injection, log injection, CSV injection, template injection, and other targets without a more specific CWE."
+    - "CRITICAL: Do NOT use CWE-74 for SQL injection (CWE-89), XSS (CWE-79), OS command injection (CWE-78), or code injection (CWE-94). These have their own specific CWE IDs."
+    - "The fundamental pattern: user data crosses a TRUST BOUNDARY into a STRUCTURED LANGUAGE or PROTOCOL without escaping the characters that language treats as control syntax (delimiters, operators, terminators)."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors."
+    - "Do not add comments that hint at the flaw, injection, escaping, neutralization, or CWE."
+    - "The bug should be subtle: inputs without special characters for the target language still process correctly."
+    - "Prefer removing exactly ONE escaping/encoding/sanitization step before data crosses into the downstream interpreter."
+    - "High-value targets for CWE-74 in JS/Node.js: LDAP filter construction, XML/SOAP builders, HTTP header setting, CSV generation, log formatting, regex construction from user input, mail header fields (To/Subject with newlines), IRC/chat protocol messages."
+    - "If the function does not pass user input to any structured language, protocol, or downstream interpreter (pure in-memory computation, no output formatting), respond with `NO_GOOD_BUG_SITE`."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-74 flaw (Injection). The resulting function must still compile, keep its signature, and work on benign inputs — the flaw should allow attacker-crafted input containing special characters to alter the structure/logic of a downstream interpreter (LDAP, XML, HTTP headers, CSV, logs, XPath, regex, templates, etc.) because proper neutralization is missing.
+
+  CWE-74 is the ROOT PARENT of all injection flaws. Use it for injection targets that do NOT have a more specific child CWE:
+  - SQL injection → CWE-89 (not here)
+  - OS command injection → CWE-78 (not here)
+  - XSS / HTML injection → CWE-79 (not here)
+  - Code injection → CWE-94 (not here)
+
+  CWE-74 covers: LDAP injection, XPath injection, HTTP header injection (CRLF), CSV/formula injection, log injection/forging, template injection (SSTI), regex injection, XML injection, mail header injection, and other structured-language injection without a dedicated CWE child.
+
+  The core pattern: DATA flows into a STRUCTURED LANGUAGE without escaping the language's CONTROL CHARACTERS.
+
+  Concretely, some kinds of CWE-74 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-74 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-74 site (e.g., no data flowing into structured languages/protocols, no output formatting with user input — a pure computation or in-memory data structure operation), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

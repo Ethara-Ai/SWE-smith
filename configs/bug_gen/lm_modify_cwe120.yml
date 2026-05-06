@@ -1,0 +1,61 @@
+name: lm_modify_cwe120
+parameters:
+  cwe_id: "CWE-120"
+  cwe_name: "Buffer Copy without Checking Size of Input ('Classic Buffer Overflow')"
+  bug_examples:
+    - "Remove the source length check before a Buffer.copy(): delete `if (src.length > dest.length) throw RangeError('source too large')` before `src.copy(dest)`, so a longer-than-expected source overwrites memory past the destination buffer in native contexts."
+    - "Remove size validation before writing into a fixed-size Buffer: delete `if (data.length > MAX_BUF_SIZE) return error` before `fixedBuf.write(data)` or `data.copy(fixedBuf, 0)`, allowing user data exceeding the fixed buffer to be written."
+    - "Use strcpy/memcpy without length check in a native addon: in N-API C code, use `memcpy(dest, src, src_len)` where dest was allocated with a fixed size and `src_len` comes from JS without bounds validation."
+    - "Remove the length parameter from a Buffer.copy() call: change `src.copy(dest, 0, 0, Math.min(src.length, dest.length))` to `src.copy(dest)`, relying on Node.js to handle bounds but creating issues in native addon interop or older Node versions."
+    - "Remove the truncation in a string-to-fixed-buffer conversion: delete `input = input.slice(0, MAX_LEN)` before `Buffer.from(input).copy(fixedSizeBuffer)`, so an attacker can supply input longer than the destination buffer."
+    - "Remove size check before writing into a pre-allocated TypedArray: delete `if (sourceArray.length > destTypedArray.length) throw` before `destTypedArray.set(sourceArray)`, allowing TypedArray.set() to throw RangeError (JS) or overflow (native)."
+    - "Remove the content-length validation before buffering an HTTP body into a fixed buffer: delete `if (contentLength > bufferSize) return res.status(413)` so the full body is read into a fixed-size allocation."
+    - "Use `buffer.write(userString, 0, 'utf8')` without checking the byte length: rely on `buffer.write()` return value being ignored while the caller assumes the full string was written, leading to truncation bugs and overflow in subsequent fixed-offset writes."
+  tips:
+    - "The bug must be a realistic CWE-120 flaw — a COPY operation (Buffer.copy, memcpy, strcpy, TypedArray.set, buffer.write) writes data WITHOUT checking that the source fits within the destination, potentially overflowing the target buffer."
+    - "Do NOT introduce bugs better classified as CWE-119 (parent — general out-of-bounds). CWE-120 is SPECIFICALLY about a COPY operation that doesn't check source size. If the issue is a read beyond bounds or an offset calculation error without a copy, use CWE-119."
+    - "Do NOT introduce bugs better classified as CWE-122 (Heap-based Buffer Overflow). CWE-120 doesn't specify WHERE the overflow occurs (stack vs heap). CWE-122 specifically targets heap-allocated buffers (malloc, new, Buffer.alloc in native contexts)."
+    - "Do NOT introduce bugs better classified as CWE-131 (Incorrect Calculation of Buffer Size). CWE-120 is about the COPY not checking. CWE-131 is about the ALLOCATION being the wrong size. If the buffer was allocated too small due to a math error, that's CWE-131."
+    - "In JavaScript, Buffer.copy() and TypedArray.set() have built-in bounds checking in pure JS contexts. CWE-120 in JS applies to: (1) native addons where C memcpy/strcpy is used, (2) older Node versions with different Buffer behavior, (3) scenarios where the missing check leads to silent truncation causing logic bugs."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors or syntax errors."
+    - "Do not add comments that hint at the flaw, buffer overflow, copy, size check, or CWE."
+    - "The bug should be subtle: inputs that fit within the buffer work perfectly. Only oversized inputs trigger the overflow."
+    - "Prefer removing exactly ONE size/length check before a copy/write operation."
+    - "High-value targets: binary protocol parsers copying fields into fixed buffers, file format readers, native addon bindings, image/audio codec wrappers, any code that allocates a fixed buffer then copies user data into it."
+    - "If the function has no buffer copy operations, no fixed-size allocations receiving variable input, no native addon calls with memcpy/strcpy, respond with `NO_GOOD_BUG_SITE` instead of forcing a contrived change."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-120 flaw (Buffer Copy without Checking Size of Input). The resulting function must still compile, keep its signature, and work for normal-sized inputs — the flaw should allow a copy/write operation to overflow a destination buffer because the source size is not validated against the destination capacity.
+
+  CWE-120 is the classic buffer overflow — data is copied into a buffer without verifying that the source fits. This is a child of CWE-119 (general out-of-bounds). In native addon code (N-API, node-gyp), this manifests as unchecked memcpy/strcpy. In pure JS, it manifests as missing length checks before Buffer.copy()/TypedArray.set() that lead to silent truncation or, in native interop, actual memory corruption.
+
+  Concretely, some kinds of CWE-120 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-120 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-120 site (e.g., no buffer copy operations, no fixed-size allocations, no native addon code), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

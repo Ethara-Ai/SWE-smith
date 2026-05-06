@@ -208,10 +208,10 @@ def parse_log_gradle_junit_xml(log: str) -> dict[str, str]:
 
 
 @dataclass
-class Gsondd2fe59c(JavaProfile):
+class Gson8260eddf(JavaProfile):
     owner: str = "google"
     repo: str = "gson"
-    commit: str = "dd2fe59c0d3390b2ad3dd365ed6938a5c15844cb"
+    commit: str = "8260eddffe413c132b3a38e68446da6bd083220d"
     test_cmd: str = "mvn test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain"
     eval_sets: set[str] = field(
         default_factory=lambda: {"SWE-bench/SWE-bench_Multilingual"}
@@ -234,10 +234,10 @@ RUN mvn clean install -B -pl gson -DskipTests -am
 
 
 @dataclass
-class Mindustry2ad41a90(JavaProfile):
+class Mindustryf3ad7b85(JavaProfile):
     owner: str = "Anuken"
     repo: str = "Mindustry"
-    commit: str = "2ad41a904753a47f6fb1a7b64dbea46204ce207e"
+    commit: str = "f3ad7b85705d0a215f71f15c703bf8a72fcef5b1"
     test_cmd: str = "./gradlew test --rerun-tasks --continue --no-daemon --console=plain || true; find . -type f -name 'TEST-*.xml' -exec cat {} \\;"
     timeout: int = 300  # Gradle tests can be slow
 
@@ -259,10 +259,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Asynchttpclientae59f51f(JavaProfile):
+class Asynchttpclient1ab1ea31(JavaProfile):
     owner: str = "AsyncHttpClient"
     repo: str = "async-http-client"
-    commit: str = "ae59f51f70b2ad99601c0a0c23d8c6e9260a0400"
+    commit: str = "1ab1ea31fcaa0b016130d9f08cd5334feb2d1d93"
     test_cmd: str = "mvn test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain"
     timeout: int = 400  # Maven tests can be slow
 
@@ -287,10 +287,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Recaf2a93d630(JavaProfile):
+class Recaf34802966(JavaProfile):
     owner: str = "Col-E"
     repo: str = "Recaf"
-    commit: str = "2a93d6306f6809532cb7b50a5091f3599d3971cb"
+    commit: str = "34802966f991ec6082e4512770621f98cf97a262"
     test_cmd: str = "./gradlew :recaf-core:test --rerun-tasks --continue --no-daemon --console=plain || true; find . -type f -name 'TEST-*.xml' -exec cat {} +"
     timeout: int = 300  # Gradle tests can be slow
 
@@ -312,10 +312,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class HMCL79a1c3af(JavaProfile):
+class HMCLf146040f(JavaProfile):
     owner: str = "HMCL-dev"
     repo: str = "HMCL"
-    commit: str = "79a1c3af8aed91fc6298cd17aff2592cd9a3e0ee"
+    commit: str = "f146040ff33212979493a209a248724875e59b0f"
     test_cmd: str = "./gradlew test --rerun-tasks --continue --no-daemon --console=plain || true; find . -type f -name 'TEST-*.xml' -exec cat {} \\;"
     timeout: int = 300  # Gradle tests can be slow
 
@@ -338,10 +338,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Web3j37d9bc9b(JavaProfile):
+class Web3jbd6cc3b3(JavaProfile):
     owner: str = "LFDT-web3j"
     repo: str = "web3j"
-    commit: str = "37d9bc9bef85bd45c9b64cbf023eaf89df21f300"
+    commit: str = "bd6cc3b3d370717f3b6ce71385dc636924289b66"
     test_cmd: str = "./gradlew test --rerun-tasks --continue --no-daemon --console=plain || true; find . -type f -name 'TEST-*.xml' -exec cat {} \\;"
     timeout: int = 300  # Gradle tests can be slow
 
@@ -418,10 +418,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Eureka459fcf59(JavaProfile):
+class Eureka8227a727(JavaProfile):
     owner: str = "Netflix"
     repo: str = "eureka"
-    commit: str = "459fcf59866b1a950f6e88530a0b1b870fa5212f"
+    commit: str = "8227a727534338909ef8c3b5ee3dca7641921f62"
     test_cmd: str = "./gradlew test --rerun-tasks --continue --no-daemon --console=plain || true; find . -type f -name 'TEST-*.xml' -exec cat {} \\;"
     timeout: int = 300  # Gradle tests can be slow
 
@@ -443,10 +443,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Paper81b91224(JavaProfile):
+class Paperb4682bfe(JavaProfile):
     owner: str = "PaperMC"
     repo: str = "Paper"
-    commit: str = "81b9122470121035de76325592a9cf84208fac55"
+    commit: str = "b4682bfef616ac62e73cc96046dacdf4a6f53eeb"
     test_cmd: str = "./gradlew test --rerun-tasks --continue --no-daemon --console=plain || true; find . -type f -name 'TEST-*.xml' -exec cat {} +"
     timeout: int = 300  # Gradle tests can be slow
 
@@ -494,10 +494,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class RxAndroidd7bd9b74(JavaProfile):
+class RxAndroidd5e0e399(JavaProfile):
     owner: str = "ReactiveX"
     repo: str = "RxAndroid"
-    commit: str = "d7bd9b74f405f2030a086d754190db430087c24f"
+    commit: str = "d5e0e39926b71fe7646315c4e7974c8eced61f9c"
     test_cmd: str = "./gradlew :rxandroid:test --rerun-tasks --continue --no-daemon --console=plain || true; find . -type f -name 'TEST-*.xml' -exec cat {} \\;"
     timeout: int = 300  # Gradle tests can be slow
 
@@ -580,10 +580,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Austin4c921ea0(JavaProfile):
+class Austinf2d1fb28(JavaProfile):
     owner: str = "ZhongFuCheng3y"
     repo: str = "austin"
-    commit: str = "4c921ea047063c21bdec81f2c98c7d8f61d767af"
+    commit: str = "f2d1fb28315e868ecb6991e475ee0e41dc04a5a7"
     test_cmd: str = "mvn test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain -pl '!austin-data-house'"
     timeout: int = 400  # Maven tests can be slow
 
@@ -609,10 +609,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Mapper3aa82765(JavaProfile):
+class Mapper1978fac5(JavaProfile):
     owner: str = "abel533"
     repo: str = "Mapper"
-    commit: str = "3aa82765670d72627b56735256a5dd1c149b735b"
+    commit: str = "1978fac567760399eb5dbadd46291be920aa13eb"
     test_cmd: str = "mvn test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain"
     timeout: int = 400  # Maven tests can be slow
 
@@ -637,10 +637,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class QLExpressa632409f(JavaProfile):
+class QLExpressd5f60c4f(JavaProfile):
     owner: str = "alibaba"
     repo: str = "QLExpress"
-    commit: str = "a632409fe7e7b16421a7ea01d4d83060c82158a1"
+    commit: str = "d5f60c4f77973a05959dd41fc3a47efd953f1dd4"
     test_cmd: str = "mvn test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain"
     timeout: int = 400  # Maven tests can be slow
 
@@ -666,10 +666,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Druid933dee04(JavaProfile):
+class Druid2790bd78(JavaProfile):
     owner: str = "alibaba"
     repo: str = "druid"
-    commit: str = "933dee04e7681c42327b440300ed852c905899ff"
+    commit: str = "2790bd782191a4824e1deea418ff92ecdcef41e9"
     test_cmd: str = "mvn test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain"
     timeout: int = 400  # Maven tests can be slow
 
@@ -723,10 +723,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Hbase30c42a87(JavaProfile):
+class Hbaseb61d47f1(JavaProfile):
     owner: str = "apache"
     repo: str = "hbase"
-    commit: str = "30c42a874855b5b012cdaaa15efdff8fa1846bdd"
+    commit: str = "b61d47f1654e9f0f5796d650b5d5c1dbaf7905cd"
     test_cmd: str = "mvn test -B -pl hbase-common -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain"
     timeout: int = 400  # Maven tests can be slow
 
@@ -755,10 +755,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Jmeterb1843c2a(JavaProfile):
+class Jmeter170647bd(JavaProfile):
     owner: str = "apache"
     repo: str = "jmeter"
-    commit: str = "b1843c2a0aa0bc8292cc504e2a0cea53ca373234"
+    commit: str = "170647bdeadfec6a903b7ac653a5bd4480989d9d"
     test_cmd: str = "./gradlew test --rerun-tasks --continue --no-daemon --console=plain || true; find . -type f -name 'TEST-*.xml' -exec cat {} \\;"
     timeout: int = 300  # Gradle tests can be slow
 
@@ -783,10 +783,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Pulsarc51346fa(JavaProfile):
+class Pulsar64e0e0f1(JavaProfile):
     owner: str = "apache"
     repo: str = "pulsar"
-    commit: str = "c51346fa3f5ec9cdd04ad03ba5d6b05b6c9a4f35"
+    commit: str = "64e0e0f15992323df0405d215a18739c38b8f7d1"
     test_cmd: str = "mvn test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain -pl pulsar-common"
     timeout: int = 400  # Maven tests can be slow
 
@@ -813,10 +813,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Rocketmq9ad4a1b9(JavaProfile):
+class Rocketmqc6fc39ab(JavaProfile):
     owner: str = "apache"
     repo: str = "rocketmq"
-    commit: str = "9ad4a1b94719aa39fd1f1569d739f9978885dc63"
+    commit: str = "c6fc39ab5f1661cab5e2d6ff0c215c0add9c6d1d"
     test_cmd: str = "mvn test -B -pl common,namesrv,srvutil -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain"
     timeout: int = 400  # Maven tests can be slow
 
@@ -844,10 +844,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Seatunneled021460(JavaProfile):
+class Seatunnel646eabde(JavaProfile):
     owner: str = "apache"
     repo: str = "seatunnel"
-    commit: str = "ed021460f76b570538685af908f358f09a4be9e9"
+    commit: str = "646eabde3c9b98ff6947903c58d197632ad5f40d"
     test_cmd: str = "mvn test -B -pl seatunnel-common,seatunnel-api -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain"
     timeout: int = 400  # Maven tests can be slow
 
@@ -872,10 +872,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Shardingsphereecf76ffc(JavaProfile):
+class Shardingsphere968719af(JavaProfile):
     owner: str = "apache"
     repo: str = "shardingsphere"
-    commit: str = "ecf76ffc4f090c3ca89a6f581de65c5e9320f338"
+    commit: str = "968719afe4198d009ed8527faa93e2a3370483ae"
     test_cmd: str = "mvn test -B -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain -pl infra/common"
     timeout: int = 400  # Maven tests can be slow
 
@@ -902,10 +902,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Shenyu74954fa2(JavaProfile):
+class Shenyu73b580d3(JavaProfile):
     owner: str = "apache"
     repo: str = "shenyu"
-    commit: str = "74954fa2b9e5a8d0426929ad754a78048be32c9f"
+    commit: str = "73b580d3c07c74904d2d72ce3dc2b3a3aee44d2a"
     test_cmd: str = "mvn test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain"
     timeout: int = 400  # Maven tests can be slow
 
@@ -930,10 +930,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Mybatisplus9c06ccaf(JavaProfile):
+class Mybatisplus856acc1b(JavaProfile):
     owner: str = "baomidou"
     repo: str = "mybatis-plus"
-    commit: str = "9c06ccaf4a42ec4d96d8494d145be74e3261d700"
+    commit: str = "856acc1b0f28588dde87279f416221e0fb0aba92"
     test_cmd: str = "./gradlew test --rerun-tasks --continue --no-daemon --console=plain || true; find . -type f -name 'TEST-*.xml' -exec cat {} \\;"
     timeout: int = 300  # Gradle tests can be slow
 
@@ -954,10 +954,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Bazel08e077e7(JavaProfile):
+class Bazel8cb7f793(JavaProfile):
     owner: str = "bazelbuild"
     repo: str = "bazel"
-    commit: str = "08e077e7a46b5f2137cf3335104219133f8d997f"
+    commit: str = "8cb7f793027aad0f31777ad55085b496b17c1c69"
     test_cmd: str = 'bazel test //src/test/java/com/google/devtools/build/lib/util:UtilTests --test_output=all --noshow_progress --show_result=10 --test_summary=detailed || true; find bazel-testlogs -name "test.xml" -exec cat {} +'
     timeout: int = 300
 
@@ -1026,10 +1026,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class YCSB6d0fbba2(JavaProfile):
+class YCSBd9faaac8(JavaProfile):
     owner: str = "brianfrankcooper"
     repo: str = "YCSB"
-    commit: str = "6d0fbba2de8284db47e943ebcb110ef8dbe3f6bf"
+    commit: str = "d9faaac85a95acd4c650a3436ac41eeaeb49c365"
     test_cmd: str = "mvn test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain -pl core"
     timeout: int = 400  # Maven tests can be slow
 
@@ -1056,10 +1056,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Btrace3ba0198d(JavaProfile):
+class Btracea837fe6f(JavaProfile):
     owner: str = "btraceio"
     repo: str = "btrace"
-    commit: str = "3ba0198d94d38907cf7e2370bcc1538c8f1227cd"
+    commit: str = "a837fe6f80792f954fbff2bdd6575a6ee5d66fe8"
     test_cmd: str = "./gradlew test --rerun-tasks --continue --no-daemon --console=plain || true; find . -type f -name 'TEST-*.xml' -exec cat {} \\;"
     timeout: int = 300  # Gradle tests can be slow
 
@@ -1080,10 +1080,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Hutool44836454(JavaProfile):
+class Hutool34bebfd6(JavaProfile):
     owner: str = "chinabugotech"
     repo: str = "hutool"
-    commit: str = "448364545257cd1f2df400053f176be7090619bc"
+    commit: str = "34bebfd6f32cdc5eaf223327a3f9751360907923"
     test_cmd: str = "mvn test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain"
     timeout: int = 400  # Maven tests can be slow
 
@@ -1107,10 +1107,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Thumbnailator068d36e3(JavaProfile):
+class Thumbnailatore31168ca(JavaProfile):
     owner: str = "coobird"
     repo: str = "thumbnailator"
-    commit: str = "068d36e3a1214d0900e50ffc31a18879d01385ce"
+    commit: str = "e31168ca792b549966db090c51d4d671e393b2ab"
     test_cmd: str = "mvn test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain"
     timeout: int = 400  # Maven tests can be slow
 
@@ -1135,10 +1135,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Spotless8e776ec8(JavaProfile):
+class Spotless9aeda7bb(JavaProfile):
     owner: str = "diffplug"
     repo: str = "spotless"
-    commit: str = "8e776ec835b443b2c7d7e9e662aac268fa270050"
+    commit: str = "9aeda7bb219c408cfdc76ed66d1776576b686102"
     test_cmd: str = "./gradlew :lib:test :testlib:test --rerun-tasks --continue --no-daemon --console=plain || true; find . -type f -name 'TEST-*.xml' -exec cat {} \\;"
     timeout: int = 300  # Gradle tests can be slow
 
@@ -1159,10 +1159,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Dropwizarde01f4694(JavaProfile):
+class Dropwizard9df28807(JavaProfile):
     owner: str = "dropwizard"
     repo: str = "dropwizard"
-    commit: str = "e01f4694724c3fd0be8d62bb2ca22313d2331c89"
+    commit: str = "9df28807a868c59493eb7055961a74f7fb44af1e"
     test_cmd: str = "./mvnw test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain"
     timeout: int = 400  # Maven tests can be slow
 
@@ -1189,10 +1189,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Metrics968f367a(JavaProfile):
+class Metrics53740cd3(JavaProfile):
     owner: str = "dropwizard"
     repo: str = "metrics"
-    commit: str = "968f367aa42b33e6b704ebf8d477e385a1d6acbc"
+    commit: str = "53740cd3348d4926d3f4ca495c6c37c5b8526e90"
     test_cmd: str = "./mvnw test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain"
     timeout: int = 400  # Maven tests can be slow
 
@@ -1217,10 +1217,10 @@ RUN ./mvnw clean install -B -q -DskipTests"""
 
 
 @dataclass
-class Flowableengine1d9f04bc(JavaProfile):
+class Flowableengine0b6067fc(JavaProfile):
     owner: str = "flowable"
     repo: str = "flowable-engine"
-    commit: str = "1d9f04bcce9dbc786977f2fb311c72aaab5ad080"
+    commit: str = "0b6067fc6ee2123e5143400d453b01769fce907e"
     test_cmd: str = "mvn test -B -pl modules/flowable-bpmn-model -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain"
     timeout: int = 400  # Maven tests can be slow
 
@@ -1245,10 +1245,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Gephi8f9b9faa(JavaProfile):
+class Gephi53c9936d(JavaProfile):
     owner: str = "gephi"
     repo: str = "gephi"
-    commit: str = "8f9b9faa378ae6ed7231c7a406a2ec0ef29b6d4e"
+    commit: str = "53c9936dda37218d5a192f1561f7685de559449d"
     test_cmd: str = "mvn test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain -PenableTests"
     timeout: int = 400  # Maven tests can be slow
 
@@ -1273,10 +1273,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Googlejavaformat737b0032(JavaProfile):
+class Googlejavaformat35ed64a0(JavaProfile):
     owner: str = "google"
     repo: str = "google-java-format"
-    commit: str = "737b0032b3a18eb6e458271ea440098c166f6c2d"
+    commit: str = "35ed64a039a1a1a8683c962bfb320bf25d647cba"
     test_cmd: str = "mvn test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain"
     timeout: int = 400  # Maven tests can be slow
 
@@ -1302,10 +1302,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Guice6682b69d(JavaProfile):
+class Guice55a2b68e(JavaProfile):
     owner: str = "google"
     repo: str = "guice"
-    commit: str = "6682b69d081371cceff2a100075a74f41b819a87"
+    commit: str = "55a2b68ebe445b8dca3795bd3cdfc5c09d566e74"
     test_cmd: str = "mvn test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain"
     timeout: int = 400  # Maven tests can be slow
 
@@ -1330,10 +1330,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Hibernateorm8cc56928(JavaProfile):
+class Hibernateorm21d67589(JavaProfile):
     owner: str = "hibernate"
     repo: str = "hibernate-orm"
-    commit: str = "8cc569286809a2a50930eb5c71e3e4b9f9f9f963"
+    commit: str = "21d6758921b748aa9f8a1b267e652d7face0d18f"
     test_cmd: str = "./gradlew :hibernate-core:test --rerun-tasks --continue --no-daemon --console=plain || true; find . -type f -path '*/test-results/*/TEST-*.xml' -exec cat {} \\;"
     timeout: int = 300  # Gradle tests can be slow
 
@@ -1356,10 +1356,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Apktool1981d35b(JavaProfile):
+class Apktool02a9d202(JavaProfile):
     owner: str = "iBotPeaches"
     repo: str = "Apktool"
-    commit: str = "1981d35b832f7e5c94947af6d1f99de336ca8be9"
+    commit: str = "02a9d202f3252eb01c372196b3952e495f750d22"
     test_cmd: str = './gradlew test --rerun-tasks --continue --no-daemon --console=plain || true; find . -type f -name "TEST-*.xml" -exec cat {} +'
     timeout: int = 300  # Gradle tests can be slow
 
@@ -1381,10 +1381,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Jetlinkscommunity858dab55(JavaProfile):
+class Jetlinkscommunitya8141080(JavaProfile):
     owner: str = "jetlinks"
     repo: str = "jetlinks-community"
-    commit: str = "858dab5529a35de9cea2261629f5d03e083b320b"
+    commit: str = "a814108090884501758737a41c3bf3b9d0f00c23"
     test_cmd: str = "./mvnw test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain"
     timeout: int = 400  # Maven tests can be slow
 
@@ -1410,10 +1410,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Jsonschema2pojo8c90ed48(JavaProfile):
+class Jsonschema2pojo1c6b7664(JavaProfile):
     owner: str = "joelittlejohn"
     repo: str = "jsonschema2pojo"
-    commit: str = "8c90ed48d3c494bcb6cbc5b02a244ccb9169c80d"
+    commit: str = "1c6b7664e453c62265c5e60a630f52f1fd47452a"
     test_cmd: str = "mvn test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain"
     timeout: int = 400  # Maven tests can be slow
 
@@ -1475,10 +1475,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class JsonPathb6c60b3d(JavaProfile):
+class JsonPath62a4c9f0(JavaProfile):
     owner: str = "json-path"
     repo: str = "JsonPath"
-    commit: str = "b6c60b3deef74a83eaa92c8dca7d0bc097e957cd"
+    commit: str = "62a4c9f0f65ba3f625aa0867d64c528ba72d09ec"
     test_cmd: str = "./gradlew test --rerun-tasks --continue --no-daemon --console=plain || true; find . -type f -name 'TEST-*.xml' -exec cat {} \\;"
     timeout: int = 300  # Gradle tests can be slow
 
@@ -1529,10 +1529,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Aviatorscript231198d3(JavaProfile):
+class Aviatorscript2cdc53dc(JavaProfile):
     owner: str = "killme2008"
     repo: str = "aviatorscript"
-    commit: str = "231198d3a8f732ef362841a476f5119df17da83e"
+    commit: str = "2cdc53dcbb5f3d1d72f4838197004dd0a85a29e1"
     test_cmd: str = "mvn test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain"
     timeout: int = 400  # Maven tests can be slow
 
@@ -1557,10 +1557,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Langchain4j82b882d8(JavaProfile):
+class Langchain4j7ef2747c(JavaProfile):
     owner: str = "langchain4j"
     repo: str = "langchain4j"
-    commit: str = "82b882d885ac87920a2228f9c8b488ea97afa4a0"
+    commit: str = "7ef2747cb1237047977d342ec55d03974d3dce01"
     test_cmd: str = "./mvnw test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain -pl langchain4j-core,langchain4j-open-ai,langchain4j"
     timeout: int = 400  # Maven tests can be slow
 
@@ -1588,10 +1588,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Usbserialforandroida8b9ecc7(JavaProfile):
+class Usbserialforandroid32c2905e(JavaProfile):
     owner: str = "mik3y"
     repo: str = "usb-serial-for-android"
-    commit: str = "a8b9ecc7d32ce6df749c44a2b9e8cb208ac30609"
+    commit: str = "32c2905e444266a9bcdc92df8dc3d7092c81ed01"
     test_cmd: str = "./gradlew test --rerun-tasks --continue --no-daemon --console=plain || true; find . -type f -name 'TEST-*.xml' -exec cat {} \\;"
     timeout: int = 300  # Gradle tests can be slow
 
@@ -1613,10 +1613,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class OsmAnd14a13bbc(JavaProfile):
+class OsmAnd2ddccee7(JavaProfile):
     owner: str = "osmandapp"
     repo: str = "OsmAnd"
-    commit: str = "14a13bbc06ab4a60924ed09a66845edbcc2ca317"
+    commit: str = "2ddccee792ad6c5fe8eb75f191d8730107d8a9a2"
     test_cmd: str = "./gradlew :OsmAnd-java:test --rerun-tasks --continue --no-daemon --console=plain --tests 'net.osmand.ReShaperTest' --tests 'net.osmand.util.GeoPointParserUtilTest' --tests 'net.osmand.util.GeoPolylineParserUtilTest' --tests 'net.osmand.util.ParseLengthTest' || true; find OsmAnd-java/build/test-results -type f -name 'TEST-*.xml' -exec cat {} \\;"
     timeout: int = 300  # Gradle tests can be slow
 
@@ -1671,10 +1671,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Quarkus4015e1e4(JavaProfile):
+class Quarkus7dc1708c(JavaProfile):
     owner: str = "quarkusio"
     repo: str = "quarkus"
-    commit: str = "4015e1e42c70950f2102b758c155521ebec2c491"
+    commit: str = "7dc1708c7e5f48943eb29acdfba7c00ba306c828"
     test_cmd: str = "mvn test -B -pl independent-projects/arc/runtime -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain"
     timeout: int = 400  # Maven tests can be slow
 
@@ -1703,10 +1703,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Questdb773dd8bf(JavaProfile):
+class Questdb87355210(JavaProfile):
     owner: str = "questdb"
     repo: str = "questdb"
-    commit: str = "773dd8bf916b739f6284ea4155821ba713504b61"
+    commit: str = "873552107838f6d2d7fe1fbfd73bba58dbb0e012"
     test_cmd: str = "mvn test -B -pl core -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain -Dtest=io.questdb.test.std.FilesTest,io.questdb.test.std.IntHashSetTest"
     timeout: int = 400  # Maven tests can be slow
 
@@ -1747,10 +1747,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Bytebuddy9689261b(JavaProfile):
+class Bytebuddy81c8c56f(JavaProfile):
     owner: str = "raphw"
     repo: str = "byte-buddy"
-    commit: str = "9689261b67934371b8f3860a055153e944ea6491"
+    commit: str = "81c8c56ff78dd8437d63a706feb17a5680f66b07"
     test_cmd: str = "./mvnw test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain"
     timeout: int = 400  # Maven tests can be slow
 
@@ -1775,10 +1775,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Reactorcore2198701c(JavaProfile):
+class Reactorcore83ce2fa7(JavaProfile):
     owner: str = "reactor"
     repo: str = "reactor-core"
-    commit: str = "2198701c5b88c76080f681741402270305a5c607"
+    commit: str = "83ce2fa72ba27152d540e201d9ec595292c5f689"
     test_cmd: str = "./gradlew test --rerun-tasks --continue --no-daemon --console=plain || true; find . -type f -name 'TEST-*.xml' -exec cat {} \\;"
     timeout: int = 300  # Gradle tests can be slow
 
@@ -1800,10 +1800,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Jedis52483b82(JavaProfile):
+class Jedise1412f1e(JavaProfile):
     owner: str = "redis"
     repo: str = "jedis"
-    commit: str = "52483b82738d49d4d0341b30e1901fd9c1d1d414"
+    commit: str = "e1412f1e38f28a81847303e78b56a5613696e8d0"
     test_cmd: str = "mvn test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain"
     timeout: int = 400  # Maven tests can be slow
 
@@ -1829,10 +1829,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Restassureda67ed7ac(JavaProfile):
+class Restassured2cdc2587(JavaProfile):
     owner: str = "rest-assured"
     repo: str = "rest-assured"
-    commit: str = "a67ed7ac9d45e1954b151a0e6b87929442cabc54"
+    commit: str = "2cdc25872f945f7d3978f73f2c4fb679302ac593"
     test_cmd: str = "mvn test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain"
     timeout: int = 400  # Maven tests can be slow
 
@@ -1857,10 +1857,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class TelegramBots082d9846(JavaProfile):
+class TelegramBotsad003baa(JavaProfile):
     owner: str = "rubenlagus"
     repo: str = "TelegramBots"
-    commit: str = "082d984628f3d99c63df595786befac4502d86b5"
+    commit: str = "ad003baae370529e2f99c72236ff52ba4382c0c2"
     test_cmd: str = "./mvnw test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain -Dgpg.skip"
     timeout: int = 400  # Maven tests can be slow
 
@@ -1926,10 +1926,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class SignalServer065e7302(JavaProfile):
+class SignalServer9c6ec78a(JavaProfile):
     owner: str = "signalapp"
     repo: str = "Signal-Server"
-    commit: str = "065e730200804c7899ac4458e3dbff82ef678c5c"
+    commit: str = "9c6ec78a4e3d9424a90bd1f65d6bb70d0e0a1ace"
     test_cmd: str = "./mvnw test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain"
     timeout: int = 400  # Maven tests can be slow
 
@@ -1954,10 +1954,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Jadx331c4aaa(JavaProfile):
+class Jadxbce6611a(JavaProfile):
     owner: str = "skylot"
     repo: str = "jadx"
-    commit: str = "331c4aaa5ef0c6aa97fefafd1a818d5467040bd2"
+    commit: str = "bce6611aaf32ac16b8ef27bccd7a8646a368a0bd"
     test_cmd: str = "./gradlew :jadx-core:test --tests jadx.core.utils.TypeUtilsTest --rerun-tasks --continue -Dorg.gradle.jvmargs=\"-Xmx1024m\" --no-daemon --console=plain || true; find jadx-core/build/test-results/test -type f -name 'TEST-*.xml' -exec cat {} +"
     timeout: int = 300  # Gradle tests can be slow
 
@@ -2012,10 +2012,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Strimzikafkaoperator2d31a2b6(JavaProfile):
+class Strimzikafkaoperator2208be4e(JavaProfile):
     owner: str = "strimzi"
     repo: str = "strimzi-kafka-operator"
-    commit: str = "2d31a2b6e7d7c8d333ad14e45ceeab2d52e61525"
+    commit: str = "2208be4e2284e69be49f1e50ccc9e492a68d2ae0"
     test_cmd: str = "mvn test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain"
     timeout: int = 400  # Maven tests can be slow
 
@@ -2044,10 +2044,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Traccardc1dfe15(JavaProfile):
+class Traccar9484ae82(JavaProfile):
     owner: str = "traccar"
     repo: str = "traccar"
-    commit: str = "dc1dfe15ebc4e75f5855bd21eaba6052cf751624"
+    commit: str = "9484ae82151e2771b4f0b55695b6d7cbe8b724e7"
     test_cmd: str = "./gradlew test --rerun-tasks --continue --no-daemon --console=plain || true; find . -type f -name 'TEST-*.xml' -exec cat {} \\;"
     timeout: int = 300  # Gradle tests can be slow
 
@@ -2098,10 +2098,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Zxing50799640(JavaProfile):
+class Zxing62a33ca7(JavaProfile):
     owner: str = "zxing"
     repo: str = "zxing"
-    commit: str = "50799640d5c4d6cd85f75f047a3055d05485fae5"
+    commit: str = "62a33ca7a328907dee602798043692ff1f83b0c0"
     test_cmd: str = "mvn test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain"
     timeout: int = 400  # Maven tests can be slow
 
@@ -2168,10 +2168,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Sentinel222670e6(JavaProfile):
+class Sentinel38b4619a(JavaProfile):
     owner: str = "alibaba"
     repo: str = "Sentinel"
-    commit: str = "222670e6c38420b15b75527a3120d01afa121be7"
+    commit: str = "38b4619a8c4aa4b170d97b9ff6bb83dd58b3ca16"
     test_cmd: str = "mvn test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain"
     timeout: int = 400  # Maven tests can be slow
 
@@ -2197,10 +2197,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Canalc0619c42(JavaProfile):
+class Canalcf97b2ae(JavaProfile):
     owner: str = "alibaba"
     repo: str = "canal"
-    commit: str = "c0619c421723be4b2b4cb61c95cbeb3a2ade5c10"
+    commit: str = "cf97b2ae3189a8d0d88bfcf151a8181dc2c40deb"
     test_cmd: str = "mvn test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain -Dgpg.skip"
     timeout: int = 400  # Maven tests can be slow
 
@@ -2282,10 +2282,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Nacosf39ce37f(JavaProfile):
+class Nacos67885da8(JavaProfile):
     owner: str = "alibaba"
     repo: str = "nacos"
-    commit: str = "f39ce37f56b6a19df4c6550c89f9d502cbeedb33"
+    commit: str = "67885da801c4e094d9489a41a5cda9ff557f69a4"
     test_cmd: str = "mvn test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain"
     timeout: int = 400  # Maven tests can be slow
 
@@ -2310,10 +2310,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Calcite84e35baf(JavaProfile):
+class Calcitecf4ffc1f(JavaProfile):
     owner: str = "apache"
     repo: str = "calcite"
-    commit: str = "84e35bafd42784138a2c63cf0c70e1f9744d34d7"
+    commit: str = "cf4ffc1fdf9b6d971bc703fb31ec97be9b2f42de"
     test_cmd: str = "./gradlew test --rerun-tasks --continue --no-daemon --console=plain || true; find . -type f -name 'TEST-*.xml' -exec cat {} \\;"
     timeout: int = 300  # Gradle tests can be slow
 
@@ -2338,10 +2338,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Cassandrafe9f6c16(JavaProfile):
+class Cassandra93949918(JavaProfile):
     owner: str = "apache"
     repo: str = "cassandra"
-    commit: str = "fe9f6c1630511890cfe0a8c8311f3141ebde17e0"
+    commit: str = "939499185382af3e8a0143ebb772ea5d7173714d"
     test_cmd: str = "ant test -Dtest.name=StorageServiceTest -Dtest.methods=testBinaryArchive || true; find build/test/output -type f -name 'TEST-*.xml' -exec cat {} \\;"
     timeout: int = 300
 
@@ -2394,10 +2394,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Flinkcdc7d9e1c62(JavaProfile):
+class Flinkcdc24ab5486(JavaProfile):
     owner: str = "apache"
     repo: str = "flink-cdc"
-    commit: str = "7d9e1c627a1e9c85642bba6e8f6fd2d3b2473aa2"
+    commit: str = "24ab54868d6915cd93fca81957d71bd6c2665cf1"
     test_cmd: str = "mvn test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain -pl flink-cdc-common,flink-cdc-pipeline-model,flink-cdc-runtime"
     timeout: int = 400  # Maven tests can be slow
 
@@ -2470,10 +2470,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Iceberg15485f55(JavaProfile):
+class Iceberg0bae0503(JavaProfile):
     owner: str = "apache"
     repo: str = "iceberg"
-    commit: str = "15485f5523d08aae2a503c143c51b6df2debb655"
+    commit: str = "0bae0503bcec99e5b725da18430458f38749888c"
     test_cmd: str = "./gradlew test --rerun-tasks --continue --no-daemon --console=plain || true; find . -type f -name 'TEST-*.xml' -exec cat {} \\;"
     timeout: int = 300  # Gradle tests can be slow
 
@@ -2496,10 +2496,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Incubatorkiedroolsfe6decc7(JavaProfile):
+class Incubatorkiedrools34a5f65b(JavaProfile):
     owner: str = "apache"
     repo: str = "incubator-kie-drools"
-    commit: str = "fe6decc777e02e22a40e822dd56738c553396f5a"
+    commit: str = "34a5f65be26bbaacbf28285cdcf8242b7de754ee"
     test_cmd: str = "mvn test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain -Denforcer.skip=true -pl drools-core,drools-compiler"
     timeout: int = 400  # Maven tests can be slow
 
@@ -2530,10 +2530,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Iotdb36dadf5d(JavaProfile):
+class Iotdbcee5fbb9(JavaProfile):
     owner: str = "apache"
     repo: str = "iotdb"
-    commit: str = "36dadf5d965edcb2b36e62ef28ff914a5327997e"
+    commit: str = "cee5fbb958feaab8c4a6e6ccaa1321094992801a"
     test_cmd: str = "mvn test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain -pl iotdb-core/node-commons"
     timeout: int = 400  # Maven tests can be slow
 
@@ -2588,10 +2588,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Storm435bb02f(JavaProfile):
+class Stormff68a422(JavaProfile):
     owner: str = "apache"
     repo: str = "storm"
-    commit: str = "435bb02f8778572b4a064d2c4fecad2b1b166910"
+    commit: str = "ff68a4228f28dd6bd9eb97b8b83c950d1cc6bffd"
     test_cmd: str = "mvn test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain -pl storm-client -Dlicense.skip=true -Dcheckstyle.skip -Drat.skip=true"
     timeout: int = 400  # Maven tests can be slow
 
@@ -2622,10 +2622,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Dynamicdatasource1d7f40ec(JavaProfile):
+class Dynamicdatasourcebd423122(JavaProfile):
     owner: str = "baomidou"
     repo: str = "dynamic-datasource"
-    commit: str = "1d7f40ecb4d038392b42f6ca051d039e097318d2"
+    commit: str = "bd423122ce07048ad3db7212eb88e571805e8202"
     test_cmd: str = "./gradlew test --rerun-tasks --continue --no-daemon --console=plain || true; find . -type f -name 'TEST-*.xml' -exec cat {} \\;"
     timeout: int = 300  # Gradle tests can be slow
 
@@ -2647,10 +2647,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Bisqf2fe13d0(JavaProfile):
+class Bisq32c825a3(JavaProfile):
     owner: str = "bisq-network"
     repo: str = "bisq"
-    commit: str = "f2fe13d07def5cf7c57f15d0365c2052d3b9f88d"
+    commit: str = "32c825a393de64a1f34ecffd5bfcdb69398bfa12"
     test_cmd: str = "./gradlew test --rerun-tasks --continue --no-daemon --console=plain -Dorg.gradle.dependency.verification=off || true; find . -type f -name 'TEST-*.xml' -exec cat {} \\;"
     timeout: int = 300  # Gradle tests can be slow
 
@@ -2730,10 +2730,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Guava0bf87046(JavaProfile):
+class Guava5f7d0c2a(JavaProfile):
     owner: str = "google"
     repo: str = "guava"
-    commit: str = "0bf87046267ce281b6335430679fbd59135a1303"
+    commit: str = "5f7d0c2ad63a110ce940c777077a0f37dfe6712a"
     test_cmd: str = "./mvnw test -B -pl guava-tests -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain"
     timeout: int = 400  # Maven tests can be slow
 
@@ -2758,10 +2758,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Tsunamisecurityscannercf018549(JavaProfile):
+class Tsunamisecurityscannerf29c42aa(JavaProfile):
     owner: str = "google"
     repo: str = "tsunami-security-scanner"
-    commit: str = "cf018549b5e75e5c1a5236b40119424532b06162"
+    commit: str = "f29c42aa5bc0c865d5aa15cb55c7c11072af641c"
     test_cmd: str = "gradle test --continue --no-daemon --console=plain || true; find . -type f -name 'TEST-*.xml' -exec cat {} \\;"
     timeout: int = 300  # Gradle tests can be slow
 
@@ -2784,10 +2784,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Hswebframework8c23cc95(JavaProfile):
+class Hswebframework5e8f7358(JavaProfile):
     owner: str = "hs-web"
     repo: str = "hsweb-framework"
-    commit: str = "8c23cc9502e764a04f3cfd83a8a7a49d557a3bfe"
+    commit: str = "5e8f7358954d5d9606e553c0ccc194532fa4cc1c"
     test_cmd: str = "./mvnw test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain"
     timeout: int = 400  # Maven tests can be slow
 
@@ -2878,10 +2878,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Analysisik9b820257(JavaProfile):
+class Analysisikb72b9d4a(JavaProfile):
     owner: str = "infinilabs"
     repo: str = "analysis-ik"
-    commit: str = "9b820257e288fac34f0d53a7e4439bd21e13600e"
+    commit: str = "b72b9d4ac20f4fc2bd05786c452d4cd6b4e66796"
     test_cmd: str = "mvn test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain"
     timeout: int = 400  # Maven tests can be slow
 
@@ -2932,10 +2932,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Keycloak18fec3ee(JavaProfile):
+class Keycloakc5eacd47(JavaProfile):
     owner: str = "keycloak"
     repo: str = "keycloak"
-    commit: str = "18fec3ee48c0c67f4b443b17b672409618a95fd0"
+    commit: str = "c5eacd473ed392691a2e07d92d94c610e7082d78"
     test_cmd: str = "./mvnw test -B -pl core -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain"
     timeout: int = 400  # Maven tests can be slow
 
@@ -2962,10 +2962,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Killbillf7d48b59(JavaProfile):
+class Killbill5d5ccbb5(JavaProfile):
     owner: str = "killbill"
     repo: str = "killbill"
-    commit: str = "f7d48b5965cbc1d98805fea499f2e848bd021400"
+    commit: str = "5d5ccbb50202b2001f2897e78e780324c4ed97c4"
     test_cmd: str = "mvn test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain"
     timeout: int = 400  # Maven tests can be slow
 
@@ -2992,10 +2992,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Generatorc8cd0c8e(JavaProfile):
+class Generatora3a976b1(JavaProfile):
     owner: str = "mybatis"
     repo: str = "generator"
-    commit: str = "c8cd0c8e3cf387f0d0f357c1151f21f3f3cf8782"
+    commit: str = "a3a976b1caced7bac15f8c49c6f8d25a69117cb7"
     test_cmd: str = "./mvnw test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain"
     timeout: int = 400  # Maven tests can be slow
 
@@ -3048,10 +3048,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class MybatisPageHelperb4212c4d(JavaProfile):
+class MybatisPageHelper1399246d(JavaProfile):
     owner: str = "pagehelper-org"
     repo: str = "Mybatis-PageHelper"
-    commit: str = "b4212c4dbd0fa86e4e27cf7a7f6fb9981af305fe"
+    commit: str = "1399246da98c7b6d027c4f25e8ebdd8e503cf609"
     test_cmd: str = "mvn test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain"
     timeout: int = 400  # Maven tests can be slow
 
@@ -3076,10 +3076,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Plantuml783ae241(JavaProfile):
+class Plantumlacc489b9(JavaProfile):
     owner: str = "plantuml"
     repo: str = "plantuml"
-    commit: str = "783ae241f1b33d0e83af89d7e98ca412204803e9"
+    commit: str = "acc489b9b908197237187d4f60616090d6b4c367"
     test_cmd: str = "./gradlew test --rerun-tasks --continue --no-daemon --console=plain || true; find . -type f -name 'TEST-*.xml' -exec cat {} \\;"
     timeout: int = 300  # Gradle tests can be slow
 
@@ -3100,10 +3100,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Lettucefa5433c2(JavaProfile):
+class Lettucea464c7e3(JavaProfile):
     owner: str = "redis"
     repo: str = "lettuce"
-    commit: str = "fa5433c2750cb6007b07480401a7653b16b013a7"
+    commit: str = "a464c7e3b203c04b6e8799125a74b00820702976"
     test_cmd: str = "mvn test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain"
     timeout: int = 400  # Maven tests can be slow
 
@@ -3129,10 +3129,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Picocli121646e4(JavaProfile):
+class Picocli2bcadb5d(JavaProfile):
     owner: str = "remkop"
     repo: str = "picocli"
-    commit: str = "121646e408bfee65f70875a6ddb94e16e83d958c"
+    commit: str = "2bcadb5d0ff466b7ca6321de10e6f97f55fa6619"
     test_cmd: str = "./gradlew test --rerun-tasks --continue --no-daemon --console=plain || true; find . -type f -name 'TEST-*.xml' -exec cat {} +"
     timeout: int = 300  # Gradle tests can be slow
 
@@ -3153,10 +3153,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Runelite6e2d0b20(JavaProfile):
+class Runelite8b312880(JavaProfile):
     owner: str = "runelite"
     repo: str = "runelite"
-    commit: str = "6e2d0b20caaf9d2195fbd3d02ebde3ab9c3ec246"
+    commit: str = "8b312880e5c58937381074efd05f8601fe145ff0"
     test_cmd: str = "./gradlew test --rerun-tasks --continue --no-daemon --console=plain || true; find . -type f -name 'TEST-*.xml' -exec cat {} \\;"
     timeout: int = 300  # Gradle tests can be slow
 
@@ -3205,10 +3205,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Springbootf73a809c(JavaProfile):
+class Springboot5d4848cf(JavaProfile):
     owner: str = "spring-projects"
     repo: str = "spring-boot"
-    commit: str = "f73a809c8c871ed0cf346f4b1a06c0ede4470cc9"
+    commit: str = "5d4848cf7509730938f545a15b9c4f7588d2892b"
     test_cmd: str = "./gradlew :core:spring-boot:test --rerun-tasks --continue --no-daemon --console=plain || true; find . -type f -name 'TEST-*.xml' -exec cat {} +"
     timeout: int = 300  # Gradle tests can be slow
 
@@ -3290,10 +3290,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class CloudReaderf5b9e67e(JavaProfile):
+class CloudReader10640f28(JavaProfile):
     owner: str = "youlookwhat"
     repo: str = "CloudReader"
-    commit: str = "f5b9e67eef10225d15d3f256da23719b769a8c34"
+    commit: str = "10640f2870fd3ff8c04a33b369c113b7a8b5d5fe"
     test_cmd: str = "./gradlew test --rerun-tasks --continue --no-daemon --console=plain || true; find . -type f -name 'TEST-*.xml' -exec cat {} \\;"
     timeout: int = 300  # Gradle tests can be slow
 
@@ -3332,10 +3332,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Nettyb3844c81(JavaProfile):
+class Netty93c5a40d(JavaProfile):
     owner: str = "netty"
     repo: str = "netty"
-    commit: str = "b3844c8108b42f68d56144b36d4d1ed96078a688"
+    commit: str = "93c5a40d393e5c11e7d2637e319ca36587ee1a95"
     test_cmd: str = "mvn test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain -pl transport,codec,common"
     timeout: int = 400
 

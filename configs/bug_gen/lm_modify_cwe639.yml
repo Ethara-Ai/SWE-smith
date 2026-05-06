@@ -1,0 +1,61 @@
+name: lm_modify_cwe639
+parameters:
+  cwe_id: "CWE-639"
+  cwe_name: "Authorization Bypass Through User-Controlled Key"
+  bug_examples:
+    - "Remove an ownership check on a user-supplied resource ID: delete `if (record.ownerId !== req.user.id) return res.status(403).end();` after fetching a record by `req.params.id`, so any user can access any record by guessing/iterating IDs."
+    - "Remove a tenant-scoping filter from a database query: delete `.where('tenantId', req.user.tenantId)` from a query that looks up a resource by a user-supplied key, allowing cross-tenant data access by manipulating the resource ID."
+    - "Replace an indirect reference with a direct one: change `const file = userFiles.get(req.params.fileToken)` (where fileToken maps to the user's own files) to `const file = allFiles.get(req.params.fileId)` (where fileId is a global identifier), removing the indirection layer that confined access."
+    - "Remove a user-context filter on a file path lookup: delete the check `if (!filePath.startsWith(userHomeDir))` so a user-supplied file identifier can reference any file in the system."
+    - "Remove the signed-token validation on a resource URL: delete `if (!verifySignature(req.query.token, resourceId)) return 403;` so the resource ID in the URL path alone is sufficient to access the resource (predictable/enumerable IDs)."
+    - "Remove a scope constraint from a GraphQL resolver: delete `{ where: { userId: ctx.user.id } }` from a Prisma/Sequelize query inside a resolver that receives an `id` argument from the client, allowing any user's data to be fetched."
+    - "Remove indirect reference mapping: delete the lookup `const internalId = userResourceMap[req.user.id][req.params.ref]` and use `req.params.ref` directly as the database key, exposing internal IDs as direct references."
+    - "Remove a document-level access filter: delete `query.filter('readers', 'array-contains', userId)` from a Firestore/Mongo query that fetches by document ID, so any supplied document ID returns the document regardless of read permissions."
+  tips:
+    - "The bug must be a realistic IDOR flaw (CWE-639) — the system uses a user-supplied key (ID, filename, token) to access a resource without verifying the requesting user is authorized to access that specific resource."
+    - "CWE-639 is about DIRECT OBJECT REFERENCES — the attacker controls a key/identifier that directly selects which resource to access, and the system does not verify the requester's relationship to that resource."
+    - "CRITICAL DISTINCTION from CWE-862 (Missing Authorization): CWE-862 is about missing authorization on an ACTION. CWE-639 is specifically about missing authorization on a USER-CONTROLLED KEY that indexes a SPECIFIC RESOURCE. The user can manipulate the identifier to access others' resources."
+    - "CRITICAL DISTINCTION from CWE-284 (Improper Access Control): CWE-284 is the abstract parent. CWE-639 is a specific, concrete pattern: user controls resource identifier → system fetches resource → no ownership/relationship validation."
+    - "CRITICAL DISTINCTION from CWE-863 (Incorrect Authorization): CWE-863 is about wrong authorization logic. CWE-639 is about the ABSENCE of resource-level ownership binding when a user-controlled key is used for lookup."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors."
+    - "Do not add comments that hint at the flaw, IDOR, or CWE."
+    - "The bug should be subtle: the function still works correctly when a user accesses their own resources. The flaw only manifests when a user supplies someone else's resource ID."
+    - "Prefer removing exactly ONE ownership/scoping check or indirect-reference layer rather than restructuring the function."
+    - "High-value targets: REST endpoints with `:id` params, GraphQL resolvers with `id` arguments, file download handlers with user-supplied paths, API endpoints that fetch by document ID, any function that takes a user-supplied key and returns a resource."
+    - "If the function does not look up resources by user-supplied keys (no params.id, no query keys, no user-controlled identifiers), respond with `NO_GOOD_BUG_SITE`."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-639 flaw (Authorization Bypass Through User-Controlled Key / IDOR). The resulting function must still compile, keep its signature, and work correctly on normal inputs — the flaw should allow an attacker to access another user's resources by manipulating a user-controlled identifier (ID, filename, token, path).
+
+  CWE-639 (Insecure Direct Object Reference) is a specific pattern: (1) user supplies a resource key/identifier, (2) system uses it to fetch a resource, (3) system does NOT verify the requesting user's relationship to that resource. This is distinct from CWE-862 (missing authorization on an action), CWE-863 (wrong authorization logic), and CWE-284 (the abstract parent). CWE-639 is about the ABSENCE of ownership binding when a user-controlled key drives resource selection.
+
+  Concretely, some kinds of CWE-639 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-639 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-639 site (e.g., no user-controlled resource identifiers, no database lookups by external key, no file access by user-supplied path — a pure computation helper or trivial getter), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

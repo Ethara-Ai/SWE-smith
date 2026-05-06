@@ -1,0 +1,61 @@
+name: lm_modify_cwe285
+parameters:
+  cwe_id: "CWE-285"
+  cwe_name: "Improper Authorization"
+  bug_examples:
+    - "Weaken an authorization comparison to always pass: change `if (user.role === 'admin')` to `if (user.role)` (any truthy role grants access) or change `requiredPermissions.every(p => user.perms.includes(p))` to `requiredPermissions.some(...)` (any single permission suffices)."
+    - "Remove a secondary authorization factor: delete `&& user.emailVerified` or `&& user.mfaComplete` from a compound authorization condition, so unverified or partially-authenticated users pass the check."
+    - "Invert an authorization deny-list to allow-list logic error: change `if (BLOCKED_ROLES.includes(user.role)) deny()` to `if (!BLOCKED_ROLES.includes(user.role)) deny()`, denying legitimate users while allowing blocked ones."
+    - "Remove scope narrowing in an authorization decision: delete `&& action.scope === user.allowedScope` from a policy check, so users authorized for one scope can act in any scope."
+    - "Weaken a hierarchical role check: change `if (user.roleLevel >= REQUIRED_LEVEL)` to `if (user.roleLevel > 0)` so any non-zero role level passes regardless of the minimum required."
+    - "Remove a contextual authorization constraint: delete `&& req.ip === user.lastKnownIp` or `&& withinBusinessHours()` from an authorization condition, removing situational access restrictions."
+    - "Short-circuit a policy evaluation chain: add `return true;` at the top of a `canAccess(user, resource, action)` function, or change `policies.every(p => p.evaluate(ctx))` to `policies.some(...)` so a single passing policy overrides all denying ones."
+    - "Remove a delegation depth check: delete `if (delegationChain.length > MAX_DEPTH) throw;` from a permission delegation function, allowing infinite re-delegation that may circumvent intended authorization boundaries."
+  tips:
+    - "The bug must be a realistic authorization logic flaw (CWE-285) — the authorization check EXISTS but its LOGIC is flawed, causing it to grant access when it should deny."
+    - "CWE-285 covers authorization decisions that ARE PERFORMED but reach the WRONG CONCLUSION due to logic errors, weakened comparisons, missing factors, or short-circuited evaluation. The mechanism is present but broken."
+    - "CRITICAL DISTINCTION from CWE-862 (Missing Authorization): CWE-862 is when NO authorization check exists at all. CWE-285 is when the check EXISTS but its logic is WRONG. If you delete the entire check, that's CWE-862. If you weaken/break the check, that's CWE-285."
+    - "CRITICAL DISTINCTION from CWE-863 (Incorrect Authorization): CWE-863 is a sibling that focuses on the authorization mechanism producing incorrect results for SPECIFIC actors (e.g., wrong user context). CWE-285 is broader — the authorization LOGIC itself is flawed for any actor that hits the broken path."
+    - "CRITICAL DISTINCTION from CWE-287 (Improper Authentication): Authentication verifies WHO you are. Authorization verifies WHAT you can do. If you're breaking identity verification, use CWE-287. If you're breaking permission decisions, use CWE-285."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors."
+    - "Do not add comments that hint at the flaw, authorization, or CWE."
+    - "The bug should be subtle: most authorization decisions still produce correct results. The flaw manifests in specific edge cases or boundary conditions."
+    - "Prefer weakening ONE comparison or removing ONE factor from a compound condition rather than restructuring the entire authorization flow."
+    - "High-value targets: policy evaluation functions, role-comparison logic, permission aggregation (every→some), compound authorization conditions, scope validation, delegation chains."
+    - "If the function has no authorization logic (no permission checks, no role comparisons, no policy evaluation), respond with `NO_GOOD_BUG_SITE`."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-285 flaw (Improper Authorization). The resulting function must still compile, keep its signature, and work correctly on normal inputs — the flaw should cause the authorization mechanism to reach incorrect access decisions, granting access that should be denied.
+
+  CWE-285 covers cases where authorization logic EXISTS but is LOGICALLY FLAWED — weakened comparisons, missing factors in compound conditions, inverted logic, or short-circuited policy chains. This is distinct from CWE-862 (no authorization check at all), CWE-863 (incorrect results for specific actors due to wrong context), and CWE-287 (authentication identity verification failures). CWE-285 means the DECISION ENGINE is broken.
+
+  Concretely, some kinds of CWE-285 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-285 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-285 site (e.g., no authorization logic, no permission checks, no policy evaluation — a pure computation helper or trivial getter), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

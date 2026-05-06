@@ -1,0 +1,61 @@
+name: lm_modify_cwe384
+parameters:
+  cwe_id: "CWE-384"
+  cwe_name: "Session Fixation"
+  bug_examples:
+    - "Remove session regeneration after successful login: delete `req.session.regenerate((err) => { ... })` or `req.session.id = crypto.randomUUID()` after authentication succeeds, so the pre-login session ID (which an attacker may have set) remains valid post-login."
+    - "Remove session ID rotation after privilege escalation: delete the `req.session.regenerate()` call after a user upgrades from anonymous to authenticated or from user to admin, so the old session ID retains the new privileges."
+    - "Accept session IDs from URL query parameters: add `const sid = req.query.sid || req.cookies.sessionId` so an attacker can craft a URL with a pre-set session ID (`?sid=attacker-known-value`) and send it to the victim."
+    - "Remove session invalidation on password change: delete `await SessionStore.destroyAll(userId)` after a password change, so old sessions (potentially fixated by an attacker) remain valid with the new credentials."
+    - "Accept session IDs from request headers without validation: use `const sessionId = req.headers['x-session-id'] || generateNew()` where the header value is not validated against the session store, allowing an attacker to inject a known session ID."
+    - "Remove the session cookie flags that prevent fixation: delete `{ httpOnly: true, secure: true, sameSite: 'strict' }` from the session cookie options, making it easier for an attacker to set the cookie via XSS or subdomain attacks."
+    - "Reuse the same session object after authentication state change: after login, set `req.session.authenticated = true` on the existing session without calling `regenerate()`, so the session ID an attacker planted before login now has authenticated access."
+    - "Remove session binding to client fingerprint: delete the check `if (session.fingerprint !== computeFingerprint(req)) { session.destroy(); }` that validates the session is used by the same client that created it."
+  tips:
+    - "The bug must be a realistic CWE-384 flaw — a session identifier is NOT regenerated/rotated after an authentication state change (login, privilege escalation, password change), allowing an attacker who knows or sets the pre-auth session ID to hijack the post-auth session."
+    - "Do NOT introduce bugs better classified as CWE-287 (Improper Authentication). CWE-384 assumes authentication WORKS correctly — the issue is that the SESSION ID doesn't change afterward. If authentication itself is broken, that's CWE-287."
+    - "Do NOT introduce bugs better classified as CWE-613 (Insufficient Session Expiration). CWE-384 is about FIXATION (ID not rotated). CWE-613 is about sessions not EXPIRING. Different issues."
+    - "Do NOT introduce bugs better classified as CWE-346 (Origin Validation Error). CWE-384 is about session IDs specifically. If the issue is CORS or origin not checked, that's CWE-346."
+    - "Session fixation attack flow: (1) Attacker obtains a valid session ID, (2) Attacker tricks victim into using that session ID (via URL, cookie setting, header injection), (3) Victim authenticates, (4) If session not regenerated, attacker's known ID now has victim's authenticated session."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors or syntax errors."
+    - "Do not add comments that hint at the flaw, session fixation, regenerate, or CWE."
+    - "The bug should be subtle: login works correctly, the user gets authenticated, sessions function normally — the vulnerability is only exploitable if an attacker can control the pre-login session ID."
+    - "Prefer removing exactly ONE session regeneration call after an authentication state change."
+    - "High-value targets: login handlers, OAuth callback handlers, password change handlers, privilege escalation endpoints, any code that transitions from anonymous→authenticated or user→admin."
+    - "If the function has no session management, no login/auth logic, no session ID handling, respond with `NO_GOOD_BUG_SITE` instead of forcing a contrived change."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-384 flaw (Session Fixation). The resulting function must still compile, keep its signature, and handle authentication correctly — the flaw should fail to regenerate/rotate the session identifier after an authentication state change, allowing session fixation attacks.
+
+  CWE-384 targets the session management layer specifically. After any authentication state change (login, logout, privilege escalation), the session ID MUST be regenerated to prevent an attacker who planted/predicted the pre-auth session ID from inheriting the post-auth session. This is distinct from CWE-287 (broken authentication mechanism) and CWE-613 (insufficient expiration).
+
+  Concretely, some kinds of CWE-384 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-384 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-384 site (e.g., no session management, no login/auth logic, no session ID handling), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

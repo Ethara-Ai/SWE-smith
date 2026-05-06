@@ -1,0 +1,61 @@
+name: lm_modify_cwe279
+parameters:
+  cwe_id: "CWE-279"
+  cwe_name: "Incorrect Execution-Assigned Permissions"
+  bug_examples:
+    - "Remove a umask or permission restriction before creating a file: delete `fs.chmodSync(filePath, 0o600)` after writing a secrets file, leaving it with default world-readable permissions (0o644 or 0o666)."
+    - "Remove the restrictive mode argument from file creation: change `fs.writeFileSync(path, data, { mode: 0o600 })` to `fs.writeFileSync(path, data)` so the file inherits overly permissive default permissions."
+    - "Remove permission restriction on a created directory: delete `{ mode: 0o700 }` from `fs.mkdirSync(secretDir, { mode: 0o700 })` so the directory is created with default permissions allowing other users to list/read contents."
+    - "Remove a setgid/setuid bit clearing operation: delete the code that strips the setuid bit from an executable file after installation, leaving it with elevated execution privileges."
+    - "Remove the ACL restriction after spawning a child process: delete `process.umask(0o077)` before file operations, so all files created by the service are world-readable."
+    - "Remove the permission inheritance override: delete the code that resets permissions on files extracted from an archive, so attacker-controlled archive entries retain their embedded (potentially setuid) permission bits."
+    - "Remove restrictive file descriptor flags: delete `O_NOFOLLOW | O_EXCL` or equivalent safe-open flags, so a file created at a path is more permissive than intended."
+    - "Remove the permission check after a copy operation: delete `fs.chmodSync(dest, srcStat.mode & 0o700)` after copying a sensitive file, so the copy inherits the destination directory's default (overly permissive) permissions."
+  tips:
+    - "The bug must be a realistic execution-assigned permission flaw (CWE-279) — the software sets overly permissive access rights on a resource during or after creation/execution."
+    - "CWE-279 is specifically about RUNTIME PERMISSION ASSIGNMENT — permissions set (or not set) by the running program on files, directories, IPC objects, or child processes. It is NOT about static configuration or deployment permissions."
+    - "CRITICAL DISTINCTION from CWE-732 (Incorrect Permission Assignment for Critical Resource): CWE-732 is the broader parent covering any incorrect permission assignment. CWE-279 specifically targets permissions assigned DURING EXECUTION (at runtime by the code), not those set during deployment or installation."
+    - "CRITICAL DISTINCTION from CWE-269 (Improper Privilege Management): CWE-269 is about the privilege level of an ACTOR (user/process). CWE-279 is about the access rights on a RESOURCE (file/socket/object) set by the executing program."
+    - "CRITICAL DISTINCTION from CWE-668 (Exposure of Resource to Wrong Sphere): CWE-668 is about making a resource accessible to an unintended actor. CWE-279 specifically targets the mechanism — the PERMISSION BITS or ACLs set during execution."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors."
+    - "Do not add comments that hint at the flaw, permissions, or CWE."
+    - "The bug should be subtle: the file/resource is still created correctly with proper content. The flaw is only in the access permissions assigned to it."
+    - "Prefer removing exactly ONE permission-setting operation (one chmod, one mode option, one umask) rather than restructuring the function."
+    - "High-value targets: file creation with sensitive data (keys, tokens, configs), temp file creation, log file setup, socket/pipe creation, archive extraction, child process spawning."
+    - "If the function does not create files/directories/sockets or set permissions on resources during execution, respond with `NO_GOOD_BUG_SITE`."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-279 flaw (Incorrect Execution-Assigned Permissions). The resulting function must still compile, keep its signature, and work correctly on normal inputs — the flaw should cause the program to assign overly permissive access rights to a resource (file, directory, socket, IPC object) during execution.
+
+  CWE-279 targets the permissions that RUNNING CODE assigns to resources it creates or modifies. This is distinct from CWE-732 (general incorrect permissions on critical resources — broader parent), CWE-269 (privilege level of actors, not resources), and CWE-668 (exposure to wrong sphere — focuses on who can access rather than the permission mechanism). CWE-279 focuses specifically on the mode bits, ACLs, or access control settings SET BY THE PROGRAM AT RUNTIME.
+
+  Concretely, some kinds of CWE-279 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-279 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-279 site (e.g., no file creation, no permission setting, no resource access control — a pure computation helper or trivial getter), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

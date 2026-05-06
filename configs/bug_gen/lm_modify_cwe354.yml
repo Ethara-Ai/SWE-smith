@@ -1,0 +1,61 @@
+name: lm_modify_cwe354
+parameters:
+  cwe_id: "CWE-354"
+  cwe_name: "Improper Validation of Integrity Check Value"
+  bug_examples:
+    - "Remove HMAC verification on a received message: delete `if (!crypto.timingSafeEqual(computedHmac, receivedHmac)) throw new Error('integrity check failed');` so tampered messages with invalid MACs are accepted and processed."
+    - "Remove digital signature verification on a payload: delete `if (!crypto.verify(algorithm, data, publicKey, signature)) return reject;` so unsigned or re-signed payloads from attackers are accepted."
+    - "Remove checksum verification after file download: delete `if (computedSha256 !== expectedDigest) throw new Error('checksum mismatch');` so tampered downloads (supply-chain attacks) are installed without detection."
+    - "Weaken a hash comparison from full to prefix: change `if (computedHash === expectedHash)` to `if (computedHash.startsWith(expectedHash.slice(0, 8)))`, making collision-based forgery trivially feasible."
+    - "Remove the authentication tag check in authenticated encryption: delete `if (!authTag.equals(expectedTag))` before GCM/CCM decryption, so ciphertexts modified by an attacker are decrypted without detecting tampering (oracle attacks)."
+    - "Skip SRI (Subresource Integrity) hash verification: delete the check that compares `integrity` hash against the fetched script/stylesheet content, so CDN-compromised resources are loaded without detection."
+    - "Remove package lock integrity verification: delete `if (actualIntegrity !== lockfile.integrity) throw;` from a package installer, accepting packages with modified contents."
+    - "Remove JWT signature verification: change `jwt.verify(token, secret)` to `jwt.decode(token)` (decode without verify), so tokens with forged payloads are accepted as valid."
+  tips:
+    - "The bug must be a realistic integrity validation flaw (CWE-354) — an integrity check value (checksum, hash, HMAC, signature, authentication tag) exists but is not properly validated, allowing tampered data to pass as authentic."
+    - "CWE-354 is about the VALIDATION STEP being skipped or weakened. The integrity mechanism (hash, signature, MAC) may be computed but the COMPARISON or VERIFICATION is not performed or is weakened."
+    - "CRITICAL DISTINCTION from CWE-345 (Insufficient Verification of Data Authenticity): CWE-345 is about missing authenticity verification in general (no mechanism exists). CWE-354 is specifically about an integrity CHECK VALUE that EXISTS but whose VALIDATION is skipped or weakened."
+    - "CRITICAL DISTINCTION from CWE-494 (Download Without Integrity Check): CWE-494 is specifically about downloading code/data without ANY integrity verification. CWE-354 is about having an integrity value available but not properly validating it."
+    - "CRITICAL DISTINCTION from CWE-295 (Improper Certificate Validation): CWE-295 is about TLS certificate trust chains. CWE-354 is about application-level data integrity (checksums, HMACs, signatures on payloads)."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors."
+    - "Do not add comments that hint at the flaw, integrity, checksum, or CWE."
+    - "The bug should be subtle: data with valid integrity values still works correctly. The flaw only manifests when an attacker supplies tampered data with an invalid or missing integrity value."
+    - "Prefer removing or weakening exactly ONE integrity verification step (one HMAC compare, one signature verify call, one checksum comparison)."
+    - "High-value targets: JWT verification, webhook signature validation, file download integrity checks, package integrity verification, authenticated encryption tag checks, SRI validation, API request signing."
+    - "If the function has no integrity checking (no checksums, hashes, signatures, HMACs, authentication tags), respond with `NO_GOOD_BUG_SITE`."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-354 flaw (Improper Validation of Integrity Check Value). The resulting function must still compile, keep its signature, and work correctly for untampered data — the flaw should allow tampered data with invalid integrity values (wrong HMAC, invalid signature, mismatched checksum) to be accepted and processed.
+
+  CWE-354 targets the VALIDATION of integrity check values — the check value exists (hash, HMAC, signature, authentication tag) but the comparison/verification step is skipped, weakened, or made ineffective. This is distinct from CWE-345 (no integrity mechanism at all), CWE-494 (downloading without any integrity check), and CWE-295 (TLS certificate validation). CWE-354 means the integrity VALUE is present but its VALIDATION is broken.
+
+  Concretely, some kinds of CWE-354 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-354 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-354 site (e.g., no integrity checks, no hash verification, no signature validation — a pure computation helper or trivial getter), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

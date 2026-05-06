@@ -1,0 +1,61 @@
+name: lm_modify_cwe113
+parameters:
+  cwe_id: "CWE-113"
+  cwe_name: "Improper Neutralization of CRLF Sequences in HTTP Headers ('HTTP Request/Response Splitting')"
+  bug_examples:
+    - "Remove CRLF sanitization from a header value setter: delete `value = value.replace(/[\\r\\n]/g, '')` or `if (value.includes('\\r') || value.includes('\\n')) throw` before `res.setHeader(name, value)`, so user input containing `\\r\\n` can inject additional HTTP headers."
+    - "Pass user input directly into a Set-Cookie header: change `res.setHeader('Set-Cookie', 'session=' + encodeURIComponent(sessionId))` to `res.setHeader('Set-Cookie', 'session=' + sessionId)` where sessionId comes from user input and may contain CRLF sequences."
+    - "Remove header value validation in a redirect response: delete the CRLF check before `res.writeHead(302, { Location: userUrl })`, so an attacker can inject `\\r\\nX-Injected: malicious` in the redirect URL to add arbitrary response headers."
+    - "Pass unsanitized user input into a custom response header: use `res.setHeader('X-Request-Id', req.query.requestId)` without stripping `\\r\\n`, allowing response splitting where the attacker injects a full HTTP response body."
+    - "Remove the header-safe encoding in a logging/tracing header: delete `traceparent = traceparent.replace(/[^a-f0-9-]/g, '')` before setting `res.setHeader('traceparent', traceparent)` where traceparent comes from the incoming request."
+    - "Bypass Node.js header validation by using raw socket writes: replace `res.setHeader('X-Forwarded-For', clientIp)` with `socket.write('X-Forwarded-For: ' + clientIp + '\\r\\n')` where clientIp is unvalidated, circumventing Node's built-in CRLF rejection."
+    - "Remove URL encoding of user data embedded in Link or Content-Disposition headers: delete `encodeURIComponent()` wrapper around a filename in `res.setHeader('Content-Disposition', 'attachment; filename=\"' + filename + '\"')` so CRLF in the filename splits the response."
+    - "Pass raw user agent or referer into a response header for analytics: add `res.setHeader('X-Original-UA', req.headers['user-agent'])` without sanitization, where a crafted User-Agent with `\\r\\n` injects headers into the response."
+  tips:
+    - "The bug must be a realistic CWE-113 flaw — user-controlled data containing CRLF (\\r\\n) sequences is included in HTTP headers WITHOUT proper neutralization, enabling response splitting, header injection, or cache poisoning."
+    - "Do NOT introduce bugs better classified as CWE-79 (Cross-Site Scripting). CWE-113 is about injecting into HTTP HEADERS via CRLF. If the injection point is in the HTTP BODY (HTML content), that is CWE-79. Response splitting CAN lead to XSS (by injecting a body after headers), but the root cause is the CRLF in the header."
+    - "Do NOT introduce bugs better classified as CWE-74 (Injection — parent). CWE-113 is specifically about CRLF in HTTP headers. Other injection types (SQL, command, LDAP) are different CWEs."
+    - "Do NOT introduce bugs better classified as CWE-93 (CRLF Injection — general). CWE-113 is SPECIFICALLY about HTTP request/response splitting. CWE-93 covers CRLF injection in other protocols (SMTP, logs)."
+    - "Modern Node.js (v14+) rejects CRLF in `res.setHeader()` by default. Bugs in this space often involve: (1) older Node versions, (2) raw socket writes bypassing validation, (3) frameworks that don't use Node's built-in validation, (4) removing explicit sanitization before the framework check."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors or syntax errors."
+    - "Do not add comments that hint at the flaw, CRLF, header injection, response splitting, or CWE."
+    - "The bug should be subtle: normal inputs (without \\r\\n) work identically. The flaw only manifests when attacker-crafted input contains CRLF sequences."
+    - "Prefer removing exactly ONE CRLF sanitization step or encoding function from a header-value assignment."
+    - "High-value targets: redirect handlers setting Location headers, cookie setters, Content-Disposition for downloads, custom tracing/analytics headers, proxy headers (X-Forwarded-For), any `res.setHeader()` or `res.writeHead()` with user-derived values."
+    - "If the function has no HTTP header manipulation, no response construction, no `setHeader`/`writeHead`/socket writes, respond with `NO_GOOD_BUG_SITE` instead of forcing a contrived change."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-113 flaw (HTTP Request/Response Splitting via CRLF Injection). The resulting function must still compile, keep its signature, and work for normal inputs — the flaw should allow user-controlled CRLF sequences (\\r\\n) to be injected into HTTP headers, enabling response splitting, header injection, or cache poisoning.
+
+  CWE-113 is a child of CWE-93 (Improper Neutralization of CRLF Sequences) specialized for HTTP. In HTTP, \\r\\n delimits headers — injecting it into a header value allows an attacker to add arbitrary headers or even inject a complete response body. This is distinct from CWE-79 (injection into HTML body/XSS) and CWE-74 (general injection parent).
+
+  Concretely, some kinds of CWE-113 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-113 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-113 site (e.g., no HTTP header manipulation, no response construction), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

@@ -1,0 +1,61 @@
+name: lm_modify_cwe346
+parameters:
+  cwe_id: "CWE-346"
+  cwe_name: "Origin Validation Error"
+  bug_examples:
+    - "Set CORS to allow all origins: change `res.setHeader('Access-Control-Allow-Origin', allowedOrigin)` to `res.setHeader('Access-Control-Allow-Origin', '*')` or reflect `req.headers.origin` without validation, allowing any website to make authenticated cross-origin requests."
+    - "Remove origin validation on a WebSocket upgrade: delete `if (!allowedOrigins.includes(req.headers.origin)) { socket.destroy(); return; }` from the WebSocket server's upgrade handler, allowing any webpage to establish WebSocket connections."
+    - "Remove origin check on window.postMessage handler: delete `if (event.origin !== 'https://trusted.com') return;` from a `window.addEventListener('message', handler)`, accepting messages from any origin."
+    - "Reflect the Origin header without allowlist validation: change `if (allowedOrigins.includes(origin)) { res.setHeader('Access-Control-Allow-Origin', origin); }` to `res.setHeader('Access-Control-Allow-Origin', req.headers.origin)`, trusting any origin the client claims."
+    - "Use a substring match instead of exact origin match: change `if (origin === 'https://trusted.com')` to `if (origin.includes('trusted.com'))`, so `https://evil-trusted.com` or `https://trusted.com.evil.com` passes the check."
+    - "Allow credentials with wildcard origin: add both `Access-Control-Allow-Origin: *` AND `Access-Control-Allow-Credentials: true` (browsers block this, but misconfigured proxies may not), or reflect origin + credentials without validation."
+    - "Remove the origin check on a CORS preflight handler: delete the origin validation from the OPTIONS handler so that preflight requests from any origin get approved, then the actual request carries cookies/auth."
+    - "Use regex that fails to anchor the origin: change `if (/trusted\\.com$/.test(origin))` to `if (/trusted\\.com/.test(origin))`, so `https://evil.com/path?x=trusted.com` passes the check."
+  tips:
+    - "The bug must be a realistic CWE-346 flaw — the application fails to properly validate the ORIGIN of a cross-origin request (CORS, WebSocket, postMessage), allowing unauthorized websites to interact with the application on behalf of authenticated users."
+    - "Do NOT introduce bugs better classified as CWE-352 (Cross-Site Request Forgery). CWE-346 is about ORIGIN validation (CORS headers, WebSocket origin, postMessage origin). CWE-352 is about CSRF TOKEN validation. If the issue is a missing CSRF token, use CWE-352. If the issue is CORS misconfiguration, use CWE-346."
+    - "Do NOT introduce bugs better classified as CWE-290 (Authentication Bypass by Spoofing). CWE-346 is about cross-ORIGIN validation (which websites can access the API). CWE-290 is about user IDENTITY spoofing. Different layers."
+    - "Do NOT introduce bugs better classified as CWE-942 (Permissive Cross-domain Policy). CWE-942 is broader (any cross-domain policy: crossdomain.xml, CORS, CSP). CWE-346 specifically targets ORIGIN VALIDATION logic."
+    - "In browsers, CORS protects against cross-origin data theft. Without proper origin validation + credentials, an attacker's website can: read authenticated API responses, exfiltrate sensitive data, perform actions as the user. The Same-Origin Policy is the browser's defense; CORS is the controlled relaxation."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors or syntax errors."
+    - "Do not add comments that hint at the flaw, CORS, origin, cross-origin, or CWE."
+    - "The bug should be subtle: CORS headers are present (the developer is aware of cross-origin), but the origin validation is too permissive or contains a logic flaw."
+    - "Prefer weakening exactly ONE origin validation check (removing allowlist, changing exact match to substring, reflecting origin without check)."
+    - "High-value targets: CORS middleware configuration, WebSocket upgrade handlers, postMessage event listeners, API endpoints that return sensitive data with credentials, GraphQL endpoints, any handler that sets Access-Control-Allow-Origin."
+    - "If the function has no CORS handling, no origin checking, no cross-origin communication, respond with `NO_GOOD_BUG_SITE` instead of forcing a contrived change."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-346 flaw (Origin Validation Error). The resulting function must still compile, keep its signature, and handle cross-origin requests — the flaw should fail to properly validate the request origin, allowing unauthorized websites to access the application's resources on behalf of authenticated users.
+
+  CWE-346 targets origin validation in cross-origin communication. Browsers enforce the Same-Origin Policy, but applications relax it via CORS headers, WebSocket origin checks, and postMessage origin validation. When this relaxation is too permissive (wildcard, reflected origin, substring match), any website can make authenticated requests. This is distinct from CWE-352 (CSRF token missing) and CWE-942 (broader cross-domain policy issues).
+
+  Concretely, some kinds of CWE-346 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-346 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-346 site (e.g., no CORS handling, no origin checking, no cross-origin communication), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

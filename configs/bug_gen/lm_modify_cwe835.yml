@@ -1,0 +1,66 @@
+name: lm_modify_cwe835
+parameters:
+  cwe_id: "CWE-835"
+  cwe_name: "Loop with Unreachable Exit Condition ('Infinite Loop')"
+  bug_examples:
+    - "Change a loop's exit condition so it can never be true for certain inputs: change `while (i < length)` to `while (i !== length)` where `i` can skip past `length` due to stepping by more than 1 (e.g., `i += stride`), creating an infinite loop when `length % stride !== 0`."
+    - "Remove the loop exit on a sentinel value: delete `if (buf[i] === 0x00 || buf[i] === '\\n') break;` from a parsing loop, so input without the sentinel causes the loop to spin indefinitely reading past intended bounds."
+    - "Remove the error/timeout exit from a retry loop: delete `if (retries >= MAX_RETRIES) break;` or `if (Date.now() - start > timeout) break;` so a permanently-failing operation (network down, resource locked) retries forever, hanging the process."
+    - "Remove the loop variable update on one code path: in a `while (i < n)` loop with conditional `i++` inside an `if` branch, ensure the else-branch does NOT increment `i`, causing an infinite loop when that branch is taken repeatedly."
+    - "Change a `for...of` or iterator-based loop to a manual `while (iterator.next())` loop that fails to check the `done` flag: change `while (!result.done)` to `while (result.value !== undefined)`, so an iterator that yields `undefined` values loops forever."
+    - "Swap a decrementing loop bound: change `while (remaining > 0) { remaining -= consume(chunk); }` to `while (remaining > 0) { remaining -= consume(chunk); if (remaining < 0) remaining = 0; }` where `consume()` can return 0 on certain input, making the loop spin without progress."
+    - "Remove the progress-check bailout from a convergence loop: delete `if (prevState === currentState) break;` (or `if (!changed) break;`) from an iterative algorithm, so non-converging input causes the loop to run forever."
+    - "Change a `do...while` exit to depend on a condition the attacker controls: change `do { ... } while (hasMore && count < MAX)` to `do { ... } while (hasMore)` where `hasMore` comes from parsing user input that never signals end-of-data."
+  tips:
+    - "The bug must be a realistic infinite loop (CWE-835) — a LOOP (for/while/do-while) has an exit condition that becomes UNREACHABLE for specific attacker-crafted inputs, causing the program to hang indefinitely."
+    - "CWE-835 is specifically about ITERATIVE LOOPS that never terminate. This is distinct from CWE-674 (Uncontrolled Recursion — recursive calls, not loops) and CWE-400 (general resource consumption — covers timeouts and rate limits)."
+    - "Do NOT introduce bugs that are CWE-674 territory (unbounded recursive calls). CWE-835 requires an iterative loop construct (for/while/do-while) whose exit condition is unreachable."
+    - "Do NOT introduce bugs that are CWE-400 territory (removing a timeout or rate limit around otherwise-terminating code). CWE-835 requires the loop itself to never exit, not just to take too long."
+    - "Do NOT remove bounds checks or input validators that are CWE-20 territory. The loop must STRUCTURALLY never exit, not just process bad data."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors."
+    - "Do not add comments that hint at the flaw, infinite loop, hang, or CWE."
+    - "The bug should be subtle: common inputs still terminate the loop normally. Only specific crafted inputs (missing sentinels, zero-progress data, non-converging sequences) trigger the infinite loop. The function should appear to work correctly in unit tests with typical data."
+    - "Prefer modifying exactly ONE loop exit condition, removing ONE break/termination check, or removing ONE loop-variable update on a specific branch."
+    - "High-value targets in JS/Node.js: parsers that scan for delimiters, retry loops in network code, iterators over streams that depend on end-of-stream signals, convergence loops in algorithms, tokenizers that advance a cursor."
+    - "If the function has no loops, or all loops have trivially correct bounds (e.g., `for (let i = 0; i < arr.length; i++)` with no conditional exits to remove), respond with `NO_GOOD_BUG_SITE` instead of forcing a contrived change."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-835 flaw (Loop with Unreachable Exit Condition / Infinite Loop). The resulting function must still compile, keep its signature, and terminate on common inputs — the flaw should cause an iterative loop (for/while/do-while) to never exit for specific attacker-crafted inputs, resulting in denial of service.
+
+  CWE-835 is specifically about ITERATIVE LOOPS whose exit condition becomes UNREACHABLE. This is distinct from:
+  - CWE-674 (Uncontrolled Recursion — recursive function calls, not loops)
+  - CWE-400 (Uncontrolled Resource Consumption — general DoS via timeouts/rates; the code eventually finishes but takes too long)
+  - CWE-20 (Improper Input Validation — the loop terminates but processes bad data)
+
+  The bar is high: the infinite loop should only trigger on SPECIFIC crafted inputs. The function should pass typical unit tests. Avoid trivially-obvious `while (true)` patterns — the exit condition should APPEAR correct but be unreachable for certain input shapes.
+
+  Concretely, some kinds of CWE-835 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-835 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-835 site (e.g., no loops, or all loops have trivially-correct bounds with no conditional exits), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

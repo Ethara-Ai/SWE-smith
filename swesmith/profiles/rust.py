@@ -158,62 +158,62 @@ RUN {self.test_cmd} || true
 
 
 @dataclass
-class Base64cac5ff84(RustProfile):
+class Rustbase6413f4fe86(RustProfile):
     owner: str = "marshallpierce"
     repo: str = "rust-base64"
-    commit: str = "cac5ff84cd771b1a9f52da020b053b35f0ff3ede"
+    commit: str = "13f4fe86e565b3a8ed9402d3b8b1bcf83ab9817c"
 
 
 @dataclass
-class Clap3716f9f4(RustProfile):
+class Clapd142d8f9(RustProfile):
     owner: str = "clap-rs"
     repo: str = "clap"
-    commit: str = "3716f9f4289594b43abec42b2538efd1a90ff897"
+    commit: str = "d142d8f96650c49302aeab87814d5bf352dbf4db"
     test_cmd: str = "make test-full ARGS=--verbose"
 
 
 @dataclass
-class Hyperc88df788(RustProfile):
+class Hyper99f24345(RustProfile):
     owner: str = "hyperium"
     repo: str = "hyper"
-    commit: str = "c88df7886c74a1ade69c0b4c68eaf570c8111622"
+    commit: str = "99f243450268cfc8125ff232e0b7de016a1dce5b"
     test_cmd: str = "cargo test --verbose --features full"
 
 
 @dataclass
-class Itertools041c733c(RustProfile):
+class Itertools5707384b(RustProfile):
     owner: str = "rust-itertools"
     repo: str = "itertools"
-    commit: str = "041c733cb6fbfe6aae5cce28766dc6020043a7f9"
+    commit: str = "5707384b6a3a675c65e12b96e71335e9ce857b16"
     test_cmd: str = "cargo test --verbose --all-features"
 
 
 @dataclass
-class Jsoncd55b5a0(RustProfile):
+class Jsondc8003a8(RustProfile):
     owner: str = "serde-rs"
     repo: str = "json"
-    commit: str = "cd55b5a0ff5f88f1aeb7a77c1befc9ddb3205201"
+    commit: str = "dc8003a88e7142529cf4a7429c4778af31dadf50"
 
 
 @dataclass
-class Log3aa1359e(RustProfile):
+class Log67bc7e32(RustProfile):
     owner: str = "rust-lang"
     repo: str = "log"
-    commit: str = "3aa1359e926a39f841791207d6e57e00da3e68e2"
+    commit: str = "67bc7e32c68a4a8908d1016693418f12b43bab90"
 
 
 @dataclass
-class Semver37bcbe69(RustProfile):
+class Semver7625c7aa(RustProfile):
     owner: str = "dtolnay"
     repo: str = "semver"
-    commit: str = "37bcbe69d9259e4770643b63104798f7cc5d653c"
+    commit: str = "7625c7aa3f0e8ba21e099d1765bcebcb72aa8816"
 
 
 @dataclass
-class Tokioab3ff69c(RustProfile):
+class Tokio02ff0833(RustProfile):
     owner: str = "tokio-rs"
     repo: str = "tokio"
-    commit: str = "ab3ff69cf2258a8c696b2dca89a2cef4ff114c1c"
+    commit: str = "02ff0833e00adeb8cd451420f586f968deb70f78"
     test_cmd: str = "cargo test --verbose --features full -- --skip try_exists"
     timeout: int = 180
     eval_sets: set[str] = field(
@@ -222,33 +222,33 @@ class Tokioab3ff69c(RustProfile):
 
 
 @dataclass
-class Uuid2fd9b614(RustProfile):
+class Uuidca0c85fe(RustProfile):
     owner: str = "uuid-rs"
     repo: str = "uuid"
-    commit: str = "2fd9b614c92e4e4b18928e2f539d82accf8eaeee"
+    commit: str = "ca0c85fe2172e82e9d0c76e659f5c57ceb86d9a4"
     test_cmd: str = "cargo test --verbose --all-features"
 
 
 @dataclass
-class MdBook37273ba8(RustProfile):
+class MdBook9190b5d0(RustProfile):
     owner: str = "rust-lang"
     repo: str = "mdBook"
-    commit: str = "37273ba8e0f86771b02f3a8a4bd3b0b3d388c573"
+    commit: str = "9190b5d0933188c6fae6e1962e70e941b014d814"
     test_cmd: str = "cargo test --workspace --verbose"
 
 
 @dataclass
-class RustCSVda000888(RustProfile):
+class Rustcsv4a3997e9(RustProfile):
     owner: str = "BurntSushi"
     repo: str = "rust-csv"
-    commit: str = "da0008884062cf222ceb9c05f006be4bb6ac38a7"
+    commit: str = "4a3997e91d668ea1d8595bdef15625a77cf2308a"
 
 
 @dataclass
-class Html5everb93afc94(RustProfile):
+class Html5ever201534ee(RustProfile):
     owner: str = "servo"
     repo: str = "html5ever"
-    commit: str = "b93afc9484cf5de40b422a44f9cea86ab371e3ee"
+    commit: str = "201534ee4f4c3db10dc558869555768d864278bf"
 
     @property
     def dockerfile(self):
@@ -272,24 +272,24 @@ class Byteorder5a82625f(RustProfile):
 
 
 @dataclass
-class Chronod43108cb(RustProfile):
+class Chronoc6063e6f(RustProfile):
     owner: str = "chronotope"
     repo: str = "chrono"
-    commit: str = "d43108cbfc884b0864d1cf2db7719aedf4adbf23"
+    commit: str = "c6063e6f5a03a48c6feeac3eb5b51ab4cb902759"
 
 
 @dataclass
-class Rpds3e7c8ae6(RustProfile):
+class Rpds348d7ab6(RustProfile):
     owner: str = "orium"
     repo: str = "rpds"
-    commit: str = "3e7c8ae693cdc6e1b255c87279b6ad8aded6401d"
+    commit: str = "348d7ab6851b74aeca3f9d8f4aa12df2ddbb0a1c"
 
 
 @dataclass
-class Ripgrep3b7fd442(RustProfile):
+class Ripgrep4519153e(RustProfile):
     owner: str = "BurntSushi"
     repo: str = "ripgrep"
-    commit: str = "3b7fd442a6f3aa73f650e763d7cbb902c03d700e"
+    commit: str = "4519153e5e461527f4bca45b042fff45c4ec6fb9"
     test_cmd: str = "cargo test --all --verbose"
     eval_sets: set[str] = field(
         default_factory=lambda: {"SWE-bench/SWE-bench_Multilingual"}
@@ -310,31 +310,31 @@ RUN cargo build --release
 
 
 @dataclass
-class RustClippyf4f579f4(RustProfile):
+class Rustclippy98098dfe(RustProfile):
     owner: str = "rust-lang"
     repo: str = "rust-clippy"
-    commit: str = "f4f579f4ac455b76ddadc85553ba19b115dd144e"
+    commit: str = "98098dfe6bb203425dece84610cbcff61771a9a6"
 
 
 @dataclass
-class Hexyl2e264378(RustProfile):
+class Hexyl6ecc29b9(RustProfile):
     owner: str = "sharkdp"
     repo: str = "hexyl"
-    commit: str = "2e2643782d6ced9b5ac75596169a79127d8e535a"
+    commit: str = "6ecc29b9c8c84d08a7e860f7f69c22b113b480ea"
 
 
 @dataclass
-class Oha8dc63499(RustProfile):
+class Ohad07ff6bc(RustProfile):
     owner: str = "hatoo"
     repo: str = "oha"
-    commit: str = "8dc63499f84b3116652987dac711eca687ccc2fd"
+    commit: str = "d07ff6bcde762d5cf6ef738509109824bce291af"
 
 
 @dataclass
-class Indicatifdbd26eb18(RustProfile):
+class Indicatifd65c4f06(RustProfile):
     owner: str = "console-rs"
     repo: str = "indicatif"
-    commit: str = "dbd26eb18157e5fad18c79e1933ad5f249165d6c"
+    commit: str = "d65c4f067464556ae0430d9903e6ff11174bb2b7"
 
 
 @dataclass
@@ -352,24 +352,24 @@ class RustOwl655bc5c3(RustProfile):
 
 
 @dataclass
-class Quinnbb359ccd(RustProfile):
+class Quinnc9b40f10(RustProfile):
     owner: str = "quinn-rs"
     repo: str = "quinn"
-    commit: str = "bb359ccd7dfbc18b472bcb61e6800be6dc886264"
+    commit: str = "c9b40f1096a3301d699a0118359f5b176dde38d1"
 
 
 @dataclass
-class Shellharden6a6ffd42(RustProfile):
+class Shellharden1e629728(RustProfile):
     owner: str = "anordal"
     repo: str = "shellharden"
-    commit: str = "6a6ffd42f6a9d8b558d479346d09233ae5e7a2ae"
+    commit: str = "1e629728e37d2e78dd3a06ed69cd54e2f66b87b0"
 
 
 @dataclass
-class Grexfa3e8ed7(RustProfile):
+class Grex99cc3477(RustProfile):
     owner: str = "pemistahl"
     repo: str = "grex"
-    commit: str = "fa3e8ed71c43ea92f9f0e43ab31e1c82d006d5dd"
+    commit: str = "99cc347707375e00514f938b76d885a201dfc110"
 
 
 @dataclass
@@ -380,24 +380,24 @@ class Htmlq6e31bc81(RustProfile):
 
 
 @dataclass
-class Xh4a6e44fc(RustProfile):
+class Xh54387b5c(RustProfile):
     owner: str = "ducaale"
     repo: str = "xh"
-    commit: str = "4a6e44fcb562126959c54ca33b673cf7d707a63e"
+    commit: str = "54387b5cfee5d7f97730d74230f311262527ba45"
 
 
 @dataclass
-class Lightningcss400f705e(RustProfile):
+class Lightningcssdf63db2c(RustProfile):
     owner: str = "parcel-bundler"
     repo: str = "lightningcss"
-    commit: str = "400f705e63e139c326f480aed11e1416f5a3a61f"
+    commit: str = "df63db2c51c49a6a82f795f3a8988a3cd08ea03a"
 
 
 @dataclass
-class Miniserve8449e8b1(RustProfile):
+class Miniserve02b3bbe7(RustProfile):
     owner: str = "svenstaro"
     repo: str = "miniserve"
-    commit: str = "8449e8b118ffd61de8df970b56b0796f891e3697"
+    commit: str = "02b3bbe738bb2ed029185ab5c0b70865a72da234"
 
 
 @dataclass
@@ -408,73 +408,73 @@ class Tailpsin6278437c(RustProfile):
 
 
 @dataclass
-class SccacheCd7dcd5f(RustProfile):
+class Sccachec0db872c(RustProfile):
     owner: str = "mozilla"
     repo: str = "sccache"
-    commit: str = "cd7dcd5f73b7c77b826ad5173b6af6642ad03a3e"
+    commit: str = "c0db872c953f20fde2d45ab68ddc74d5100febbc"
 
 
 @dataclass
-class Boa14e5c634(RustProfile):
+class Boacee71775(RustProfile):
     owner: str = "boa-dev"
     repo: str = "boa"
-    commit: str = "14e5c6342d72ef128ecad92f66f4c54641bd9561"
+    commit: str = "cee717758041349be02561a0676b78362aee69c7"
 
 
 @dataclass
-class Pastelb60e8993(RustProfile):
+class Pastel01d4252a(RustProfile):
     owner: str = "sharkdp"
     repo: str = "pastel"
-    commit: str = "b60e89932629b2d162e1ff9f3976a5a0ef1e5db9"
+    commit: str = "01d4252aa794f1331834948f133e75c64532be46"
 
 
 @dataclass
-class Anyhow2c0bda4c(RustProfile):
+class Anyhow841522b2(RustProfile):
     owner: str = "dtolnay"
     repo: str = "anyhow"
-    commit: str = "2c0bda4ce944d943e7141f0316b0ea996602238e"
+    commit: str = "841522b2aa09732fecee40804440d2c35c68c480"
 
 
 @dataclass
-class Cxx0d80b351(RustProfile):
+class Cxx0cbbf15e(RustProfile):
     owner: str = "dtolnay"
     repo: str = "cxx"
-    commit: str = "0d80b351886a00af9a7120369f22a0b7f0affd72"
+    commit: str = "0cbbf15ec43439e51b99d895e1f72162de81cd30"
 
 
 @dataclass
-class Rustfmt86261bfb(RustProfile):
+class Rustfmtef22670a(RustProfile):
     owner: str = "rust-lang"
     repo: str = "rustfmt"
-    commit: str = "86261bfb87a207030b1dfeef0f832ac13f369b1a"
+    commit: str = "ef22670aa4859d8dfd2d7a005bbf18450c9de798"
 
 
 @dataclass
-class TealdeerC5d62e59(RustProfile):
+class Tealdeer1252261d(RustProfile):
     owner: str = "tealdeer-rs"
     repo: str = "tealdeer"
-    commit: str = "c5d62e5987b38705814b72354373c50fe165dbb3"
+    commit: str = "1252261d662fcedecce229f08bf23277da8bf51e"
 
 
 @dataclass
-class Image26edc698(RustProfile):
+class Imagef12ba2bb(RustProfile):
     owner: str = "image-rs"
     repo: str = "image"
-    commit: str = "26edc698463cc2a0e7b9735ca41d375dce0449a2"
+    commit: str = "f12ba2bbd3f5988e7094d48bb4f69e2d6219316a"
 
 
 @dataclass
-class Duacli8570c154(RustProfile):
+class Duacli19df299c(RustProfile):
     owner: str = "Byron"
     repo: str = "dua-cli"
-    commit: str = "8570c1543e3cd0983725f6e1938bf3e73442678a"
+    commit: str = "19df299c07d83b6dbe48edd7e7cdf7e9d1afdc51"
 
 
 @dataclass
-class Serenityc6219206(RustProfile):
+class Serenityf84addf5(RustProfile):
     owner: str = "serenity-rs"
     repo: str = "serenity"
-    commit: str = "c6219206a38161a9e8d78660f19b44ba4dfb4ed9"
+    commit: str = "f84addf529bbaadf192c02041fedaf06ce16cf89"
 
 
 @dataclass
@@ -485,73 +485,73 @@ class Tideb32f680d(RustProfile):
 
 
 @dataclass
-class Rhai6b132e55(RustProfile):
+class Rhai43d2e69b(RustProfile):
     owner: str = "rhaiscript"
     repo: str = "rhai"
-    commit: str = "6b132e55167e6fc82a2348e90d507141e1204a12"
+    commit: str = "43d2e69b59f3ec4ca20919a3731a70d3c30cbd4d"
 
 
 @dataclass
-class Rayon5b4eb339(RustProfile):
+class Rayonc4dac9f8(RustProfile):
     owner: str = "rayon-rs"
     repo: str = "rayon"
-    commit: str = "5b4eb339c06943cbb71d8368e78343c049e6d71c"
+    commit: str = "c4dac9f82ee03f61e855075b668229a9e4d759ad"
 
 
 @dataclass
-class Brootd6c798ed(RustProfile):
+class Broot0cca9c16(RustProfile):
     owner: str = "Canop"
     repo: str = "broot"
-    commit: str = "d6c798edbd136dbe5b67566ad74a7daa97e8ae49"
+    commit: str = "0cca9c1687a7b2d44d07e8f670d3bca430b67635"
 
 
 @dataclass
-class OneFetchE5958cec(RustProfile):
+class Onefetch6d881792(RustProfile):
     owner: str = "o2sh"
     repo: str = "onefetch"
-    commit: str = "e5958cec1e5d17d72405f1c96cf30ae1e2defa16"
+    commit: str = "6d8817928d8209f9f1d13462490307ff53bb2f6f"
 
 
 @dataclass
-class Reqwest01f03a4c(RustProfile):
+class Reqwest4b813a89(RustProfile):
     owner: str = "seanmonstar"
     repo: str = "reqwest"
-    commit: str = "01f03a4c01fb13e2262a513ed21e2b84b5186f46"
+    commit: str = "4b813a89dcd97a4b283fda02bd458d44339850c7"
 
 
 @dataclass
-class Dust62bf1e14(RustProfile):
+class Dust93fe6585(RustProfile):
     owner: str = "bootandy"
     repo: str = "dust"
-    commit: str = "62bf1e14de73b14bdf5c691be29e6dcc4de352aa"
+    commit: str = "93fe658574b1677052fba8b042283174b0fdef49"
 
 
 @dataclass
-class Bore8e059cda(RustProfile):
+class Bore00a735a8(RustProfile):
     owner: str = "ekzhang"
     repo: str = "bore"
-    commit: str = "8e059cdaf993d25d92080a2b28a71949a4545d03"
+    commit: str = "00a735a89917642df62d84336a90d9476fa175b5"
 
 
 @dataclass
-class Warp3449d3d9(RustProfile):
+class Warp707866ca(RustProfile):
     owner: str = "seanmonstar"
     repo: str = "warp"
-    commit: str = "3449d3d9816ea3898059e62b5325716c1cc27c8b"
+    commit: str = "707866ca367dd7e40082c31fbce88624f7059df0"
 
 
 @dataclass
-class Gping26eb5b91(RustProfile):
+class Gpingd9a4e49f(RustProfile):
     owner: str = "orf"
     repo: str = "gping"
-    commit: str = "26eb5b914b1d90d75ebf23c3a9ae8ee3ebd6f217"
+    commit: str = "d9a4e49fb3a7ed1667838d07687a701841bcca81"
 
 
 @dataclass
-class TokenizersEcad3f18(RustProfile):
+class Tokenizers22d54d37(RustProfile):
     owner: str = "huggingface"
     repo: str = "tokenizers"
-    commit: str = "ecad3f18a3e340635f5393cfb22cf70d3502f64a"
+    commit: str = "22d54d37621f2d9f35cf9420d6ed8658372a6c5d"
     test_cmd: str = f"cd ~/{ENV_NAME}/tokenizers && cargo test --verbose"
 
     @property

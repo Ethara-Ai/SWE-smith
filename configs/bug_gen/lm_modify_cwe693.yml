@@ -1,0 +1,61 @@
+name: lm_modify_cwe693
+parameters:
+  cwe_id: "CWE-693"
+  cwe_name: "Protection Mechanism Failure"
+  bug_examples:
+    - "Disable Content-Security-Policy: delete `res.setHeader('Content-Security-Policy', \"default-src 'self'; script-src 'self'\")` or set it to `default-src *` / `unsafe-inline unsafe-eval`, defeating XSS mitigations."
+    - "Disable HSTS: remove `res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains')` or set `max-age=0`, allowing SSL stripping attacks."
+    - "Remove anti-clickjacking protection: delete `res.setHeader('X-Frame-Options', 'DENY')` and the `frame-ancestors 'none'` CSP directive, allowing the page to be embedded in attacker iframes."
+    - "Disable rate limiting/account lockout: delete `if (failedAttempts >= MAX_ATTEMPTS) { lockAccount(userId); return 423; }` from the login handler, so brute-force credential attacks are unrestricted."
+    - "Disable TLS certificate validation: add `process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'` or pass `{ rejectUnauthorized: false }` to HTTPS requests, defeating the entire PKI trust model."
+    - "Remove the helmet/security middleware: delete `app.use(helmet())` or equivalent security middleware registration that sets multiple protective headers at once."
+    - "Disable CORS protection: change `cors({ origin: 'https://app.example.com' })` to `cors({ origin: true, credentials: true })`, defeating same-origin policy for credential-bearing requests."
+    - "Remove the output encoding/sanitization layer: delete the `sanitizeHtml()` or `escapeHtml()` call from a template helper, defeating the output encoding protection against stored XSS."
+  tips:
+    - "The bug must be a realistic protection mechanism failure (CWE-693) — a security MECHANISM (CSP, HSTS, rate limiting, TLS validation, CORS, helmet) is disabled, weakened, or misconfigured so that the protection it provides is nullified."
+    - "CWE-693 is about SECURITY MECHANISMS being disabled — defense-in-depth layers that protect against classes of attacks (XSS via CSP, MITM via HSTS, brute-force via rate limiting) being turned off or weakened."
+    - "CRITICAL DISTINCTION from CWE-284 (Improper Access Control): CWE-284 is about WHO can access WHAT. CWE-693 is about a DEFENSE LAYER being disabled — the mechanism that makes attacks harder regardless of access control (CSP doesn't control access, it prevents exploitation)."
+    - "CRITICAL DISTINCTION from CWE-1021 (Clickjacking): CWE-1021 is the specific ATTACK. CWE-693 covers DISABLING the protection mechanism (X-Frame-Options, frame-ancestors CSP) that prevents clickjacking. If you're removing the frame protection header, classify as CWE-693."
+    - "CRITICAL DISTINCTION from specific vulnerability CWEs (79, 352, etc.): The specific CWE (XSS, CSRF) describes the attack that becomes possible. CWE-693 describes the root cause: the PROTECTION MECHANISM that would have prevented it was disabled."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors."
+    - "Do not add comments that hint at the flaw, protection mechanism, security header, or CWE."
+    - "The bug should be subtle: the application still functions normally — users won't notice the missing protection until they're attacked."
+    - "Prefer disabling or weakening exactly ONE protection mechanism per change."
+    - "High-value targets: helmet/security middleware registration, CSP header setting, HSTS configuration, rate limiter middleware, TLS agent options, CORS configuration, session cookie security flags (httpOnly, secure, sameSite)."
+    - "If the function has no security mechanisms, no protection headers, no security middleware, respond with `NO_GOOD_BUG_SITE`."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-693 flaw (Protection Mechanism Failure). The resulting function must still compile, keep its signature, and work correctly for end users — the flaw should disable or weaken a security protection mechanism so the defense it provides is nullified, making the application vulnerable to the class of attacks the mechanism was designed to prevent.
+
+  CWE-693 is about SECURITY DEFENSE LAYERS being disabled — mechanisms like CSP (prevents XSS exploitation), HSTS (prevents SSL stripping), rate limiting (prevents brute force), TLS validation (prevents MITM), CORS (prevents cross-origin data theft), output encoding (prevents XSS). This is distinct from CWE-284 (access control logic) and from the specific attack CWEs (79, 352, etc.) that describe what becomes exploitable. CWE-693 is the ROOT CAUSE: the defense was turned off.
+
+  Concretely, some kinds of CWE-693 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-693 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-693 site (e.g., no security mechanisms, no protection headers, no security middleware — a pure computation helper or trivial getter), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

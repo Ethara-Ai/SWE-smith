@@ -1,0 +1,65 @@
+name: lm_modify_cwe862
+parameters:
+  cwe_id: "CWE-862"
+  cwe_name: "Missing Authorization"
+  bug_examples:
+    - "Remove the authorization check entirely from an admin endpoint: delete `if (!user.hasPermission('admin')) return res.status(403).json({ error: 'Forbidden' });` from an endpoint that manages users, configurations, or billing — making it accessible to any authenticated user regardless of role."
+    - "Skip role verification for a sensitive write operation: remove `if (user.role !== 'owner' && user.role !== 'admin') return forbidden;` before a delete/modify/transfer operation, so any authenticated user can perform privileged actions on any resource."
+    - "Remove route-level authorization middleware: delete `router.use('/admin', requireRole('admin'))` or `app.use('/api/internal', verifyServiceAccount)`, leaving an entire route subtree unprotected — any authenticated user can access admin/internal endpoints."
+    - "Remove the per-item ownership check in a resource endpoint: delete `if (resource.ownerId !== req.user.id) return 403;` before returning or modifying a resource, so any authenticated user can access/modify any other user's resources (IDOR without the 'I' — no direct reference manipulation needed, just no check)."
+    - "Remove the authorization check on one HTTP method while keeping others protected: keep the GET handler protected but remove the authorization check on POST/PUT/DELETE for the same resource, so authenticated users without write permission can mutate data."
+    - "Remove scope/permission validation for OAuth/API tokens: delete `if (!token.scopes.includes('write:users')) return res.status(403).end();` so any valid token — even read-only ones — can perform write operations."
+    - "Skip authorization for batch/bulk operations: remove the per-item authorization check in a batch endpoint (`items.forEach(item => { if (!canAccess(user, item)) throw 403; })`) so users can modify resources they don't own in a single batch call."
+    - "Remove the subscription/plan-tier check before a premium feature: delete `if (user.plan !== 'enterprise') return 402;` before an expensive operation, so free-tier users can access paid features."
+  tips:
+    - "The bug must be a realistic MISSING authorization flaw (CWE-862) — a security-sensitive operation has NO authorization check at all, allowing authenticated users to perform actions beyond their privilege level. The key word is MISSING — the check does not exist, not that it's wrong."
+    - "CRITICAL DISTINCTION from CWE-863 (Incorrect Authorization): CWE-862 means the authorization check is ABSENT. CWE-863 means the check EXISTS but evaluates INCORRECTLY. If you invert a condition or compare the wrong field, that's CWE-863. If you delete the check entirely, that's CWE-862."
+    - "CRITICAL DISTINCTION from CWE-287 (Improper Authentication): CWE-287 means the system can't verify WHO the user is. CWE-862 means the system knows WHO they are but doesn't check WHETHER they're ALLOWED to do the action. Authentication = identity. Authorization = permission."
+    - "CRITICAL DISTINCTION from CWE-306 (Missing Authentication for Critical Function): CWE-306 means NO authentication at all — completely unauthenticated access. CWE-862 means the user IS authenticated, they just lack the specific PERMISSION."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors."
+    - "Do not add comments that hint at the flaw, authorization, permission, role, or CWE."
+    - "The bug should be subtle: authorized users (admins, owners) see no difference in behavior. The flaw is only exploitable by authenticated users who lack the specific permission."
+    - "Prefer removing exactly ONE authorization check or middleware — one role check, one ownership verification, one scope validation, one permission guard."
+    - "High-value targets in JS/Node.js: Express middleware chains (removeble `requireRole()`), route guards, `req.user.role` checks, ownership comparisons (`resource.userId === req.user.id`), RBAC decorators, CASL/ability checks."
+    - "If the function has no authorization logic, no permission checks, no role-based guards, no ownership verification, respond with `NO_GOOD_BUG_SITE` instead of forcing a contrived change."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-862 flaw (Missing Authorization). The resulting function must still compile, keep its signature, and work for authorized users — the flaw should allow authenticated users WHO LACK the required PERMISSION to perform privileged operations because the authorization check has been REMOVED.
+
+  CWE-862 specifically means the authorization check is ABSENT. This is distinct from:
+  - CWE-863 (Incorrect Authorization) — the check EXISTS but evaluates WRONG (inverted condition, wrong field, wrong comparator)
+  - CWE-287 (Improper Authentication) — the system can't verify WHO the user is (broken login, forged token)
+  - CWE-306 (Missing Authentication for Critical Function) — NO identity verification at all (completely unauthenticated access)
+
+  The authorization hierarchy: Authentication (who are you?) → Authorization (what can you do?). CWE-862 assumes authentication works; it's the authorization layer that's missing.
+
+  Concretely, some kinds of CWE-862 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-862 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-862 site (e.g., no authorization checks, no role/permission/ownership guards — a utility function, parser, or pure computation), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

@@ -1,0 +1,61 @@
+name: lm_modify_cwe119
+parameters:
+  cwe_id: "CWE-119"
+  cwe_name: "Improper Restriction of Operations within the Bounds of a Memory Buffer"
+  bug_examples:
+    - "Remove a bounds check before Buffer.copy() or TypedArray access: delete `if (offset + length > buffer.length) throw RangeError()` before a `src.copy(dest, offset, 0, length)` call, allowing out-of-bounds read/write into adjacent memory."
+    - "Use Buffer.allocUnsafe() without zeroing or bounds validation: change `Buffer.alloc(size)` to `Buffer.allocUnsafe(size)` AND remove the subsequent fill/bounds check, so uninitialized heap memory (containing secrets from prior allocations) can be leaked to callers."
+    - "Remove a length check on a native addon's buffer argument: delete `if (buf.length < expectedSize) { Napi::TypeError::New(...); return; }` in a N-API binding, so a too-small JS Buffer causes the C/C++ code to read/write past its end."
+    - "Remove slice bounds validation: delete `if (start < 0 || end > arr.length) throw` before `buffer.slice(start, end)` where start/end come from parsed user input, allowing access to memory outside the intended range (in native contexts)."
+    - "Remove DataView bounds checking: delete `if (byteOffset + 4 > view.byteLength) throw` before `view.getUint32(byteOffset)` in a binary parser, where byteOffset is derived from untrusted input and can exceed the underlying ArrayBuffer."
+    - "Miscalculate a destination buffer size for a multi-byte encoding conversion: use `Buffer.alloc(str.length)` instead of `Buffer.alloc(str.length * 4)` for UTF-8 encoding of user input, causing `buffer.write(str)` to silently truncate or (in native addon paths) overflow."
+    - "Remove the array bounds check in a WebAssembly memory access wrapper: delete `if (ptr + size > wasmMemory.buffer.byteLength) throw` before creating a view into WASM linear memory, allowing out-of-bounds access via a crafted offset."
+    - "Pass user-controlled length to Buffer.from() without validation: use `Buffer.from(arrayBuffer, userOffset, userLength)` where userOffset + userLength can exceed arrayBuffer.byteLength, accessing memory outside the ArrayBuffer in older Node.js versions or native addons."
+  tips:
+    - "The bug must be a realistic CWE-119 flaw — an operation reads from or writes to a memory buffer (Buffer, TypedArray, ArrayBuffer, native memory) outside its intended bounds, potentially leaking sensitive data or corrupting adjacent memory."
+    - "CWE-119 is the PARENT weakness for all buffer-boundary violations. Use it when the violation doesn't fit a more specific child: CWE-120 (copy without size check), CWE-122 (heap-based overflow), CWE-125 (out-of-bounds read), CWE-787 (out-of-bounds write)."
+    - "Do NOT introduce bugs better classified as CWE-120 (Buffer Copy without Checking Size of Input). If the specific issue is a COPY/WRITE operation (memcpy, Buffer.copy, strcpy) without checking the source size fits the destination, that is CWE-120."
+    - "Do NOT introduce bugs better classified as CWE-131 (Incorrect Calculation of Buffer Size). If the root cause is the SIZE CALCULATION being wrong (not the bounds check being missing), that is CWE-131."
+    - "Do NOT introduce bugs better classified as CWE-129 (Improper Validation of Array Index). If the issue is specifically an array INDEX (integer subscript) not being validated, that is CWE-129. CWE-119 covers broader buffer pointer/offset arithmetic."
+    - "In JavaScript, pure-JS code cannot corrupt memory (V8 prevents it). CWE-119 in JS contexts applies to: (1) Native addons (N-API/node-gyp), (2) Buffer.allocUnsafe + missing bounds, (3) SharedArrayBuffer race conditions, (4) WebAssembly linear memory, (5) DataView/TypedArray offset miscalculations that leak data."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors or syntax errors."
+    - "Do not add comments that hint at the flaw, buffer overflow, bounds, or CWE."
+    - "The bug should be subtle: normal-sized inputs within expected ranges work correctly. The flaw only manifests with crafted offsets/lengths that exceed buffer boundaries."
+    - "Prefer removing exactly ONE bounds check or changing ONE size calculation in a buffer operation."
+    - "If the function has no Buffer/TypedArray/ArrayBuffer operations, no native addon calls, no binary parsing, no memory-mapped access, respond with `NO_GOOD_BUG_SITE` instead of forcing a contrived change."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-119 flaw (Improper Restriction of Operations within the Bounds of a Memory Buffer). The resulting function must still compile, keep its signature, and work for normal inputs — the flaw should allow out-of-bounds memory access (read or write) via crafted inputs that exceed buffer boundaries.
+
+  CWE-119 is the parent weakness for all buffer-boundary violations. In pure JavaScript, V8's memory safety prevents true buffer overflows, but the vulnerability manifests in: native addons (N-API), Buffer.allocUnsafe() leaking uninitialized heap data, DataView/TypedArray offset miscalculations, WebAssembly linear memory access, and SharedArrayBuffer race conditions. This is broader than CWE-120 (copy without size check), CWE-122 (heap overflow), or CWE-129 (array index validation).
+
+  Concretely, some kinds of CWE-119 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-119 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-119 site (e.g., no Buffer/TypedArray/ArrayBuffer operations, no native addon calls, no binary data handling), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

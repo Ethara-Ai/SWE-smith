@@ -1,0 +1,61 @@
+name: lm_modify_cwe178
+parameters:
+  cwe_id: "CWE-178"
+  cwe_name: "Improper Handling of Case Sensitivity"
+  bug_examples:
+    - "Use case-sensitive comparison for a security-critical file extension check: change `if (ext.toLowerCase() === '.exe') deny()` to `if (ext === '.exe') deny()`, so uploading `malware.EXE` or `malware.Exe` bypasses the filter."
+    - "Use case-sensitive string match for an authentication header: change `if (req.headers['authorization'])` to a case-sensitive property access that misses `Authorization` or `AUTHORIZATION` variants sent by different HTTP clients."
+    - "Use case-sensitive comparison for HTTP method validation: check `if (method === 'GET')` instead of `if (method.toUpperCase() === 'GET')`, so a request with method `get` or `Get` bypasses route-specific security middleware."
+    - "Use case-sensitive comparison for dangerous HTML tag detection in a sanitizer: check `if (tag === 'script')` instead of `if (tag.toLowerCase() === 'script')`, so `<SCRIPT>`, `<Script>`, or `<sCrIpT>` tags bypass XSS filtering."
+    - "Use case-sensitive path comparison for access control: check `if (path === '/admin')` instead of `if (path.toLowerCase() === '/admin')`, so accessing `/Admin` or `/ADMIN` bypasses the admin route guard."
+    - "Use case-sensitive comparison for MIME type validation: check `if (contentType === 'application/json')` instead of `if (contentType.toLowerCase().startsWith('application/json'))`, so `Application/JSON` bypasses the check."
+    - "Use case-sensitive comparison for protocol scheme validation: check `if (url.startsWith('javascript:'))` instead of `if (url.toLowerCase().startsWith('javascript:'))`, so `JavaScript:alert(1)` or `JAVASCRIPT:` bypasses the XSS filter."
+    - "Use case-sensitive domain comparison for CORS origin validation: check `if (origin === 'https://trusted.com')` instead of case-insensitive comparison, so `https://TRUSTED.COM` (which is the same domain per DNS) is rejected while `https://evil.com` with a redirect through the case variant might exploit inconsistencies."
+  tips:
+    - "The bug must be a realistic CWE-178 flaw — a security-relevant comparison fails to account for case sensitivity (or insensitivity), allowing an attacker to bypass the check using a different-case variant of a blocked/expected value."
+    - "Do NOT introduce bugs better classified as CWE-20 (Improper Input Validation). CWE-178 is SPECIFICALLY about CASE handling. If the validation is missing entirely or checks the wrong thing regardless of case, that's CWE-20."
+    - "Do NOT introduce bugs better classified as CWE-79 (XSS). CWE-178 is the ROOT CAUSE (case-sensitive tag/attribute check). The XSS is the CONSEQUENCE. Focus the bug on the case comparison, not on general sanitization bypass."
+    - "Do NOT introduce bugs better classified as CWE-22 (Path Traversal). If the path bypass uses `../` not case variation, that's CWE-22. CWE-178 applies when the bypass is purely through case differences (`/Admin` vs `/admin`)."
+    - "In HTTP, header names are case-insensitive (RFC 7230), domain names are case-insensitive (DNS), but paths are case-sensitive on Linux and case-insensitive on Windows/macOS. URL schemes are case-insensitive. MIME types are case-insensitive."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors or syntax errors."
+    - "Do not add comments that hint at the flaw, case sensitivity, toLowerCase, or CWE."
+    - "The bug should be subtle: the check works for the most common case (lowercase) but fails for mixed-case or uppercase variants that are semantically equivalent."
+    - "Prefer removing exactly ONE toLowerCase()/toUpperCase()/case-insensitive flag from a security-relevant comparison."
+    - "High-value targets: file extension blocklists/allowlists, HTTP header checks, URL scheme validation (javascript:), HTML tag/attribute sanitizers, MIME type validation, route path access control, CORS origin checks."
+    - "If the function has no string comparisons on security-relevant values, no filtering or validation that could be bypassed via case, respond with `NO_GOOD_BUG_SITE` instead of forcing a contrived change."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-178 flaw (Improper Handling of Case Sensitivity). The resulting function must still compile, keep its signature, and work for common inputs — the flaw should allow an attacker to bypass a security check by using a different-case variant of a blocked or expected value.
+
+  CWE-178 exploits the gap between case-sensitive comparisons and case-insensitive semantics. Many protocols and systems treat values as case-insensitive (HTTP headers, DNS, URL schemes, MIME types, HTML tags) but code may compare them case-sensitively, allowing bypass with mixed-case variants. This is distinct from general input validation failures (CWE-20) and is specifically about the CASE dimension of the comparison.
+
+  Concretely, some kinds of CWE-178 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-178 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-178 site (e.g., no string comparisons on security-relevant values, no filtering that could be case-bypassed), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

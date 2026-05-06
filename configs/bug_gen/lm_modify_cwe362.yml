@@ -1,0 +1,61 @@
+name: lm_modify_cwe362
+parameters:
+  cwe_id: "CWE-362"
+  cwe_name: "Concurrent Execution using Shared Resource with Improper Synchronization ('Race Condition')"
+  bug_examples:
+    - "Remove an await between a check and a subsequent action: change `const exists = await db.findOne({ id }); if (!exists) { await db.insert({ id, data }); }` by removing the atomicity guarantee (e.g., delete a transaction wrapper or mutex), so two concurrent requests both pass the check and insert duplicates."
+    - "Remove a file lock (flock/lockfile) around a read-modify-write on a shared file: delete `await lockfile.lock(path)` before a `readFile → modify → writeFile` sequence, so concurrent processes can overwrite each other's changes."
+    - "Remove a distributed lock (Redis/advisory lock) around a critical section: delete `const lock = await redlock.acquire(resource, ttl)` before a balance-check-then-debit sequence, so two concurrent requests can both read sufficient balance and double-spend."
+    - "Replace an atomic database operation with a non-atomic read-then-write: change `await db.update({ id }, { $inc: { counter: 1 } })` to `const doc = await db.findOne({ id }); doc.counter++; await db.save(doc);`, introducing a race window between read and write."
+    - "Remove the `SELECT ... FOR UPDATE` row lock in a SQL transaction: change `SELECT balance FROM accounts WHERE id=$1 FOR UPDATE` to `SELECT balance FROM accounts WHERE id=$1`, so concurrent transactions both read the same balance before deducting."
+    - "Remove a semaphore/mutex around a lazy initialization: delete the `once()` or mutex guard around `if (!instance) { instance = await createExpensiveResource(); }`, so concurrent callers create multiple instances or use partially-initialized state."
+    - "Remove the check-and-set (CAS) condition on a state update: change `await db.update({ id, version: currentVersion }, { $set: { data, version: currentVersion + 1 } })` to `await db.update({ id }, { $set: { data } })`, losing optimistic concurrency control."
+    - "Introduce an unguarded gap between authentication check and action: split `if (await isAuthorized(user, resource)) { await performAction(resource); }` across an async boundary (e.g., emit an event, defer to next tick) so the authorization can be revoked between check and action."
+  tips:
+    - "The bug must be a realistic CWE-362 flaw — a shared resource (database row, file, in-memory state, distributed counter) is accessed by concurrent executions (requests, workers, processes) without proper synchronization, enabling data corruption, double-spending, or security bypasses."
+    - "Do NOT introduce bugs better classified as CWE-367 (Time-of-Check Time-of-Use). CWE-362 is the GENERAL race condition (any shared resource, any sync failure). CWE-367 is SPECIFICALLY about a CHECK (permission, existence, state) followed by a USE with a gap between them. If the pattern is clearly check-then-use-with-gap, prefer CWE-367."
+    - "Do NOT introduce bugs better classified as CWE-384 (Session Fixation). CWE-362 is about concurrent ACCESS to shared resources. CWE-384 is about session IDs not being regenerated. Even if the issue is concurrent session handling, if the core flaw is fixation, use CWE-384."
+    - "In Node.js, race conditions are NOT about threads/mutexes (single-threaded event loop). They manifest as ASYNC GAPS — any `await`, callback, or event between a check and an action allows another concurrent request to interleave. This is equally exploitable as thread-based races."
+    - "Common Node.js race patterns: (1) read-modify-write without transactions, (2) check-existence-then-insert without unique constraints, (3) check-balance-then-debit without row locks, (4) file read-then-write without lockfiles, (5) lazy init without once() guards."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors or syntax errors."
+    - "Do not add comments that hint at the flaw, race condition, concurrency, TOCTOU, or CWE."
+    - "The bug should be subtle: single-request testing shows correct behavior. The flaw only manifests under CONCURRENT load when two requests hit the same resource simultaneously."
+    - "Prefer removing exactly ONE synchronization mechanism (one lock, one transaction, one atomic operation, one CAS condition)."
+    - "High-value targets: financial operations (balance checks, transfers), user registration (duplicate username), inventory management (stock checks), any read-then-write without atomic operations, distributed state updates."
+    - "If the function has no shared state, no database operations, no file I/O, no resources that could be accessed concurrently, respond with `NO_GOOD_BUG_SITE` instead of forcing a contrived change."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-362 flaw (Race Condition). The resulting function must still compile, keep its signature, and work correctly under single-request testing — the flaw should allow concurrent executions to corrupt shared state, bypass security checks, or cause double-spending due to improper synchronization.
+
+  CWE-362 is the parent weakness for all race conditions. In Node.js (single-threaded event loop), races manifest as ASYNC GAPS — any await/callback/event between a state check and a state modification allows another concurrent request to interleave. This is equally exploitable as thread-based races in other languages. The fix is atomic operations, database transactions, distributed locks, or optimistic concurrency control.
+
+  Concretely, some kinds of CWE-362 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-362 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-362 site (e.g., no shared state, no database operations, no concurrent access patterns), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

@@ -1,0 +1,61 @@
+name: lm_modify_cwe532
+parameters:
+  cwe_id: "CWE-532"
+  cwe_name: "Insertion of Sensitive Information into Log File"
+  bug_examples:
+    - "Log user credentials during authentication: add `logger.info('Login attempt', { username, password })` or `console.log('Auth:', email, plaintextPassword)` in the login handler, writing plaintext passwords to log files."
+    - "Log full credit card or payment details: include raw card numbers in a debug log like `logger.debug('Processing payment', { cardNumber, cvv, expiry })` instead of masking all but the last 4 digits."
+    - "Log complete HTTP request headers including Authorization tokens: add `logger.debug('Incoming request', { headers: req.headers })` which writes bearer tokens, API keys, session cookies, and Basic auth credentials to the log file."
+    - "Log personally identifiable information (PII) in full: add `logger.info('User registered', userProfile)` where userProfile contains SSN, full address, date of birth, and phone number without any redaction."
+    - "Log database connection strings containing embedded credentials: include `logger.info('Connecting to DB:', connectionString)` where the connection string is `postgres://admin:s3cr3t@db.internal:5432/prod`."
+    - "Remove a sensitive-field redaction function before logging: delete or bypass the `sanitizeForLogging(data)` call so that `logger.info('Request body:', req.body)` now logs raw passwords, tokens, and financial data."
+    - "Log the full decrypted payload of an encrypted message: add `logger.debug('Decrypted content:', decryptedData)` after decryption, writing sensitive plaintext (private keys, medical records, legal documents) to log files."
+    - "Log OAuth/SAML tokens or refresh tokens at info level: change `logger.debug('Token refreshed')` to `logger.info('Token refreshed', { accessToken, refreshToken, idToken })`, persisting long-lived secrets in log storage."
+  tips:
+    - "The bug must be a realistic CWE-532 flaw — sensitive data (credentials, tokens, PII, financial data, private keys, medical records) is written to LOG FILES where it persists and can be accessed by administrators, log aggregation systems, or attackers who compromise log storage."
+    - "Do NOT introduce bugs better classified as CWE-209 (Error Message Containing Sensitive Information). CWE-532 is about info written to SERVER-SIDE LOGS. If the sensitive info is returned to the CLIENT in an error response, that is CWE-209."
+    - "Do NOT introduce bugs better classified as CWE-497 (Exposure of System Information). CWE-532 is about sensitive APPLICATION DATA (credentials, PII, tokens) in logs. If it's system metadata (hostnames, versions) exposed to users, that is CWE-497."
+    - "Do NOT introduce bugs that are simply excessive logging without sensitive content. Logging `request received at /api/users` is not CWE-532. The logged data must be genuinely sensitive (would cause harm if disclosed)."
+    - "CWE-532 is dangerous because logs often have weaker access controls than primary databases, are retained longer, shipped to third-party aggregators (Datadog, Splunk, CloudWatch), and are rarely encrypted at rest."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors or syntax errors."
+    - "Do not add comments that hint at the flaw, sensitive data, logging concerns, or CWE."
+    - "The bug should be subtle: the log statement looks like normal operational logging or debugging, but includes data that should be redacted (passwords masked, tokens truncated, PII anonymized)."
+    - "Prefer adding or un-redacting exactly ONE log statement that includes sensitive data, or removing one call to a sanitization/masking function before a log."
+    - "High-value targets: authentication handlers logging credentials, payment processors logging card data, middleware logging full request/response bodies, token refresh handlers, user registration flows, any function that calls both a logger and handles secrets."
+    - "If the function has no logging statements, no access to sensitive data (passwords, tokens, PII, financial info), and no logger available in scope, respond with `NO_GOOD_BUG_SITE` instead of forcing a contrived change."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-532 flaw (Insertion of Sensitive Information into Log File). The resulting function must still compile, keep its signature, and work correctly — the flaw should write sensitive information (credentials, tokens, PII, financial data, private keys) to log files where it persists and can be accessed by unauthorized parties.
+
+  CWE-532 targets the LOG FILE channel specifically. Sensitive data written to logs persists in log storage, log aggregation services, backup systems, and monitoring dashboards — all of which typically have weaker access controls than the primary application database. This is distinct from CWE-209 (sensitive info sent to the client via error messages) and CWE-497 (system info exposed to users via normal responses).
+
+  Concretely, some kinds of CWE-532 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-532 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-532 site (e.g., no logging, no access to sensitive data like passwords/tokens/PII), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

@@ -1,0 +1,61 @@
+name: lm_modify_cwe441
+parameters:
+  cwe_id: "CWE-441"
+  cwe_name: "Unintended Proxy or Intermediary ('Confused Deputy')"
+  bug_examples:
+    - "Remove a URL allowlist on a server-side proxy endpoint: delete `if (!ALLOWED_HOSTS.includes(new URL(targetUrl).hostname)) return res.status(403).end();` so the proxy fetches from internal/restricted hosts on behalf of an attacker."
+    - "Forward the user's elevated credentials to a downstream service: change from using a scoped service-to-service token to forwarding the user's full session cookie or bearer token to an internal API, granting it the user's entire privilege set."
+    - "Remove the authority-check on a delegated operation: delete `if (!callerHasPermission(caller, action)) throw;` before a helper function uses its own elevated credentials to perform the action, so any caller can trigger privileged operations."
+    - "Forward unauthenticated user requests through an authenticated channel: remove the check `if (!req.isAuthenticated()) return 401;` before the system uses its own service account to perform the user's requested operation against an internal API."
+    - "Pass user-controlled parameters directly to a privileged system call: use `req.body.query` directly in a database admin API call without checking if the user is authorized to run that specific query, leveraging the service's admin credentials."
+    - "Remove sender validation in a message broker consumer: delete `if (!TRUSTED_SENDERS.includes(msg.headers.sender)) return nack;` so messages from any publisher are processed through a handler that has elevated filesystem/database access."
+    - "Remove request-scope isolation in a shared service: allow user A's request context (session, credentials) to leak into user B's concurrent request when the service makes downstream calls on behalf of both users."
+    - "Forward user-supplied headers to an internal service: pass `req.headers` (including `X-Forwarded-For`, `Authorization`, custom headers) directly to an internal API call, allowing header injection that the internal service trusts implicitly."
+  tips:
+    - "The bug must be a realistic confused deputy flaw (CWE-441) — a privileged component (proxy, service, middleware) is tricked into performing actions using its OWN elevated privileges on behalf of an unauthorized or under-privileged requestor."
+    - "CWE-441 is about PRIVILEGE CONFUSION in delegation — the deputy has more privilege than the requestor, and the deputy performs an action using ITS OWN credentials without validating that the requestor should be able to trigger that action."
+    - "CRITICAL DISTINCTION from CWE-918 (SSRF): CWE-918 is specifically about making the server fetch URLS from internal/restricted network locations. CWE-441 is broader — the confused deputy pattern applies to any privileged intermediary (database access, file system, message broker, downstream API) not just URL fetching."
+    - "CRITICAL DISTINCTION from CWE-269 (Improper Privilege Management): CWE-269 is about an actor having too much privilege itself. CWE-441 is about a correctly-privileged deputy being TRICKED into acting on behalf of an unauthorized requestor."
+    - "CRITICAL DISTINCTION from CWE-862 (Missing Authorization): CWE-862 is about missing access checks on the immediate operation. CWE-441 is about a CHAIN of delegation where the intermediary's own privileges are abused."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors."
+    - "Do not add comments that hint at the flaw, confused deputy, proxy abuse, or CWE."
+    - "The bug should be subtle: legitimate delegated operations (where the requestor IS authorized) still work correctly."
+    - "Prefer removing exactly ONE delegation authority check or scope restriction rather than restructuring the entire flow."
+    - "High-value targets: proxy/gateway endpoints, service-to-service call wrappers, message broker consumers with elevated access, admin tool APIs, any function that uses service credentials to perform user-requested operations."
+    - "If the function has no delegation, proxy, or intermediary behavior (no downstream calls using elevated credentials on behalf of a requestor), respond with `NO_GOOD_BUG_SITE`."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-441 flaw (Confused Deputy). The resulting function must still compile, keep its signature, and work for legitimate delegated requests — the flaw should allow an attacker to trick a privileged intermediary into performing actions using the intermediary's own elevated credentials without proper authority verification.
+
+  CWE-441 (Confused Deputy) is about PRIVILEGE CONFUSION in delegation chains. A component with elevated privileges (the "deputy") performs operations on behalf of requestors. The flaw occurs when the deputy uses its OWN credentials/access to perform an action WITHOUT verifying that the specific requestor is authorized for that specific action. This is broader than CWE-918 (SSRF — URL fetching only), distinct from CWE-269 (actor's own privilege level), and different from CWE-862 (direct missing authorization without a delegation chain).
+
+  Concretely, some kinds of CWE-441 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-441 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-441 site (e.g., no proxy/delegation/intermediary behavior, no downstream calls using service credentials on behalf of requestors — a pure computation helper or trivial getter), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

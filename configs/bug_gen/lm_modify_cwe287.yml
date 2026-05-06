@@ -1,0 +1,66 @@
+name: lm_modify_cwe287
+parameters:
+  cwe_id: "CWE-287"
+  cwe_name: "Improper Authentication"
+  bug_examples:
+    - "Short-circuit the authentication check to always succeed: change `if (await verifyPassword(inputPassword, storedHash)) return authenticated;` to `return authenticated;`, skipping credential verification entirely so any password is accepted."
+    - "Remove JWT signature verification: delete `jwt.verify(token, secret)` and replace with `jwt.decode(token)` (which does NOT verify the signature), so any crafted JWT with a valid structure — even self-signed ones — is accepted as authentic."
+    - "Accept a null/empty/undefined authentication credential as valid: remove `if (!token || token === '') return res.status(401).end();` so a missing Authorization header grants access instead of being rejected."
+    - "Weaken password comparison: change `crypto.timingSafeEqual(Buffer.from(hash1), Buffer.from(hash2))` to `hash1 === hash2` (timing side-channel) or worse, change to `hash1.startsWith(hash2.slice(0, 8))` (prefix-only comparison), accepting any password whose hash shares a prefix."
+    - "Remove the token expiration check: delete `if (decoded.exp < Date.now() / 1000) throw new TokenExpiredError();` so expired tokens (from compromised sessions, leaked logs) remain valid forever."
+    - "Accept authentication credentials from an untrusted source: change from reading the token from `req.headers.authorization` (server-controlled) to `req.query.token` or `req.body.token` (easily leaked in URLs/logs/referrers), enabling credential theft."
+    - "Remove MFA enforcement: delete `if (user.mfaEnabled && !req.body.mfaCode) return { requireMfa: true };` so users with MFA enabled can log in with password alone, defeating the second factor."
+    - "Disable certificate pinning or remove CA validation: change `rejectUnauthorized: true` to `rejectUnauthorized: false` in an HTTPS/TLS client, so a man-in-the-middle with any certificate is accepted as the authentic server."
+  tips:
+    - "The bug must be a realistic authentication flaw (CWE-287) — the system fails to properly verify the IDENTITY of an actor, allowing impersonation or unauthenticated access."
+    - "CRITICAL DISTINCTION from CWE-862 (Missing Authorization): CWE-287 is about IDENTITY verification (who are you?). CWE-862 is about PERMISSION checks (what can you do?). If the system knows who the user is but doesn't check their role, that's CWE-862. If the system can't verify who they are at all, that's CWE-287."
+    - "CRITICAL DISTINCTION from CWE-306 (Missing Authentication for Critical Function): CWE-306 means a specific critical endpoint has NO auth gate at all. CWE-287 means the auth MECHANISM itself is broken (weak verification, bypassed checks, accepted forgeries)."
+    - "CRITICAL DISTINCTION from CWE-290 (Authentication Bypass by Spoofing): CWE-290 specifically involves spoofing a trusted identity marker (IP, hostname, certificate). CWE-287 is broader — any flaw in the authentication mechanism."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors."
+    - "Do not add comments that hint at the flaw, authentication bypass, credential, or CWE."
+    - "The bug should be subtle: properly-authenticated requests still work identically. The flaw is exploitable by presenting invalid/forged/empty credentials that the broken mechanism accepts."
+    - "Prefer modifying exactly ONE authentication verification step — one signature check, one password comparison, one token validation, one expiry check."
+    - "High-value targets in JS/Node.js: `jwt.verify()` calls, `bcrypt.compare()` calls, session validation middleware, passport strategy `verify` callbacks, OAuth token introspection, cookie signature verification."
+    - "If the function has no authentication logic (no credential checking, no token verification, no identity assertion), respond with `NO_GOOD_BUG_SITE` instead of forcing a contrived change."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-287 flaw (Improper Authentication). The resulting function must still compile, keep its signature, and appear to work — the flaw should allow unauthenticated or improperly-authenticated actors to gain access by weakening or bypassing the identity verification mechanism.
+
+  CWE-287 is about broken IDENTITY VERIFICATION. The system cannot properly confirm WHO the actor is. This is distinct from:
+  - CWE-862 (Missing Authorization) — identity is verified but PERMISSIONS aren't checked
+  - CWE-306 (Missing Authentication for Critical Function) — a specific endpoint has no auth gate at all
+  - CWE-290 (Authentication Bypass by Spoofing) — specifically spoofing trusted markers (IP, cert)
+  - CWE-863 (Incorrect Authorization) — identity verified, but permission decision is wrong
+
+  Authentication mechanisms include: password hashing/comparison, JWT/token signing and verification, session validation, certificate validation, MFA enforcement, OAuth flows.
+
+  Concretely, some kinds of CWE-287 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-287 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-287 site (e.g., no authentication logic, no credential verification, no token checking — a utility function, parser, or data transformer), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

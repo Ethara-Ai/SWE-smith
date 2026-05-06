@@ -1,0 +1,61 @@
+name: lm_modify_cwe617
+parameters:
+  cwe_id: "CWE-617"
+  cwe_name: "Reachable Assertion"
+  bug_examples:
+    - "Add an assert() on user-controlled input that aborts on failure: insert `assert(input.length < 1000)` or `console.assert(typeof data === 'object', 'must be object') || process.exit(1)` in a request handler, so an attacker can send input that triggers the assertion and crashes the server."
+    - "Add an invariant check that throws on unexpected but valid input: insert `if (items.length === 0) { throw new Error('Invariant violation: empty array'); }` in a code path reachable with empty query results, causing a crash instead of graceful handling."
+    - "Convert a soft warning into a hard assertion: change `if (!valid) { logger.warn('unexpected state'); return fallback; }` to `assert(valid, 'unexpected state')`, so that previously-recoverable edge cases now crash the process."
+    - "Add a Node.js `assert.strictEqual()` on a value derived from external input: insert `assert.strictEqual(parsed.version, 2)` in a protocol handler, so a client sending version 1 or 3 crashes the server instead of getting a version-mismatch error."
+    - "Add a type assertion that crashes on valid polymorphic input: insert `assert(value instanceof ExpectedClass)` in a function that can legitimately receive subclass instances or duck-typed objects, causing abort on valid-but-unexpected types."
+    - "Replace a graceful error return with an assertion in a parser: change `if (token === null) return { error: 'unexpected end of input' }` to `assert(token !== null, 'unexpected end of input')`, so malformed input crashes the process instead of returning a parse error."
+    - "Add a debug assertion on array bounds that was meant for development only: insert `assert(index >= 0 && index < array.length)` without a `NODE_ENV` guard, so production traffic with out-of-bounds indices (from pagination, query params) triggers process abort."
+    - "Insert a precondition assert on a header value: add `assert(req.headers['content-type']?.includes('json'))` before body parsing, so requests with missing or non-JSON content types crash the server instead of returning 415."
+  tips:
+    - "The bug must be a realistic CWE-617 flaw — a DELIBERATE assertion (assert(), invariant(), console.assert + throw, or assert-like throw with 'invariant'/'assertion' semantics) is placed in code reachable by attacker-controlled input, causing process abort/crash as a denial-of-service vector."
+    - "Do NOT introduce bugs better classified as CWE-248 (Uncaught Exception). CWE-617 is about a DELIBERATE CHECK that was intentionally placed (assert, invariant) but should not be reachable by external input. CWE-248 is about error handling MISSING entirely (no try-catch). If the fix is 'add a try-catch', it's CWE-248. If the fix is 'replace the assert with graceful error handling', it's CWE-617."
+    - "Do NOT introduce bugs better classified as CWE-476 (NULL Pointer Dereference). CWE-617 involves an EXPLICIT assertion check. CWE-476 is an implicit crash from accessing null/undefined without any deliberate check."
+    - "Do NOT introduce bugs better classified as CWE-400 (Resource Consumption). CWE-617 causes an IMMEDIATE crash via assertion failure, not gradual resource exhaustion."
+    - "Assertions are appropriate for catching PROGRAMMER ERRORS (impossible states, broken invariants in internal logic). They become CWE-617 when placed on code paths reachable by EXTERNAL INPUT, because an attacker can trigger the abort deliberately."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors or syntax errors."
+    - "Do not add comments that hint at the flaw, assertion, crash, abort, or CWE."
+    - "The bug should be subtle: the assertion looks like a reasonable sanity check (and would be, if only internal code reached it). The vulnerability is that EXTERNAL input can reach and trigger it."
+    - "Prefer adding exactly ONE assert/invariant statement in a path reachable by user input, or converting ONE graceful error return into an assertion."
+    - "High-value targets: request handlers that validate headers/body/params, parsers processing external data, protocol handlers with version/format checks, middleware that checks session state, any function receiving data from network/filesystem/user."
+    - "If the function is purely internal with no path from external input, no user-controlled data, and no I/O, respond with `NO_GOOD_BUG_SITE` instead of forcing a contrived change."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-617 flaw (Reachable Assertion). The resulting function must still compile and keep its signature — the flaw should place or expose an assertion (assert(), invariant(), or assert-like hard crash) on a code path reachable by attacker-controlled input, enabling denial of service via deliberate process abort.
+
+  CWE-617 covers assertions that are valid development-time checks but become vulnerabilities when reachable by external input in production. Unlike CWE-248 (missing error handling causing accidental crash), CWE-617 involves a DELIBERATE check that the developer placed intentionally — the problem is that it's too harsh (abort instead of graceful error) and too reachable (external input can trigger it). In Node.js, `assert()` throws AssertionError which, if uncaught in a request handler, kills the process.
+
+  Concretely, some kinds of CWE-617 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-617 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-617 site (e.g., purely internal logic with no external input path, no user-controlled data reaching this code), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

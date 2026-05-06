@@ -1,0 +1,61 @@
+name: lm_modify_cwe434
+parameters:
+  cwe_id: "CWE-434"
+  cwe_name: "Unrestricted Upload of File with Dangerous Type"
+  bug_examples:
+    - "Remove file extension whitelist validation: delete `if (!ALLOWED_EXTENSIONS.includes(path.extname(file.originalname).toLowerCase())) return res.status(400).end();` so files with executable extensions (.php, .jsp, .sh, .js) are accepted."
+    - "Remove MIME type verification: delete `if (!ALLOWED_MIMES.includes(file.mimetype)) return reject;` so a file claiming `image/png` but containing `<?php system($_GET['cmd']); ?>` is accepted."
+    - "Weaken extension validation from whitelist to incomplete blacklist: change `if (!['jpg','png','gif'].includes(ext)) reject;` to `if (['exe','bat'].includes(ext)) reject;`, missing .php, .jsp, .aspx, .py, .sh, .node."
+    - "Remove magic byte / file content verification: delete the check that reads the first N bytes and verifies they match expected file signatures (PNG header, JPEG SOI, etc.), so polyglot files pass."
+    - "Remove the storage location restriction: change the upload destination from a non-executable storage bucket (`/data/uploads/`) to a web-accessible directory (`/public/uploads/`) where uploaded scripts can be executed by the web server."
+    - "Remove filename sanitization: delete `const safeName = crypto.randomUUID() + path.extname(file.originalname);` and use `file.originalname` directly, allowing path traversal in filenames (`../../app/routes/evil.js`) or null-byte attacks."
+    - "Remove the Content-Type override on serving uploaded files: delete `res.setHeader('Content-Type', 'application/octet-stream')` so the browser interprets uploaded HTML/SVG/JS files as active content when accessed."
+    - "Remove the executable bit clearing after file write: delete `fs.chmodSync(uploadPath, 0o644)` or equivalent that ensures uploaded files cannot be executed directly on the server."
+  tips:
+    - "The bug must be a realistic unrestricted upload flaw (CWE-434) — dangerous file types (server-side scripts, executables, polyglots) can be uploaded and potentially executed, or active content (HTML/SVG) served to browsers."
+    - "CWE-434 covers the entire upload→storage→serve pipeline. The vulnerability can be in TYPE VALIDATION (missing/weak extension/MIME checks), STORAGE (placed in executable location), or SERVING (served with wrong Content-Type)."
+    - "CRITICAL DISTINCTION from CWE-22 (Path Traversal): If the core issue is that the filename contains `../` to escape the upload directory, that's CWE-22. CWE-434 is about the FILE TYPE being dangerous, not the PATH being traversed."
+    - "CRITICAL DISTINCTION from CWE-400 (Resource Consumption): If the core issue is upload SIZE causing DoS, that's CWE-400. CWE-434 is about the file TYPE enabling code execution or XSS."
+    - "CRITICAL DISTINCTION from CWE-79 (XSS): If the uploaded file is HTML/SVG that executes in the browser, it OVERLAPS with CWE-79 but CWE-434 is the correct classification when the root cause is unrestricted upload type acceptance."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors."
+    - "Do not add comments that hint at the flaw, upload restriction, file type, or CWE."
+    - "The bug should be subtle: legitimate file types (images, documents) still upload correctly."
+    - "Prefer removing exactly ONE upload restriction (one extension check, one MIME validation, one content verification, one storage restriction)."
+    - "High-value targets: multer/busboy upload handlers, S3/GCS upload functions, avatar/profile picture endpoints, document upload APIs, any route with `multipart/form-data` parsing."
+    - "If the function has no file upload handling (no multipart parsing, no file write from user input), respond with `NO_GOOD_BUG_SITE`."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-434 flaw (Unrestricted Upload of File with Dangerous Type). The resulting function must still compile, keep its signature, and handle legitimate uploads correctly — the flaw should allow uploading files with dangerous types that can lead to remote code execution, XSS via stored active content, or server compromise.
+
+  CWE-434 covers the entire upload pipeline: type validation (extension, MIME, magic bytes), storage location (executable vs. non-executable directory), and serving (Content-Type headers, Content-Disposition). The vulnerability exists when ANY of these layers fails to prevent dangerous file types from being uploaded and potentially activated. This is distinct from CWE-22 (path traversal in filenames), CWE-400 (size-based DoS), and CWE-79 (reflected XSS — though stored XSS via uploaded HTML overlaps).
+
+  Concretely, some kinds of CWE-434 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-434 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-434 site (e.g., no file upload handling, no multipart parsing, no file write from user input — a pure computation helper or trivial getter), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:

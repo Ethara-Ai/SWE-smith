@@ -1,0 +1,65 @@
+name: lm_modify_cwe942
+parameters:
+  cwe_id: "CWE-942"
+  cwe_name: "Permissive Cross-domain Policy with Untrusted Domains"
+  bug_examples:
+    - "Set CORS to allow all origins: change `Access-Control-Allow-Origin: https://trusted.com` to `Access-Control-Allow-Origin: *` or reflect the request Origin header without validation, allowing any website to read responses."
+    - "Reflect the Origin header without whitelist check: change from checking against a list of allowed origins to blindly reflecting `req.headers.origin` in `Access-Control-Allow-Origin`, so any attacker's domain is allowed."
+    - "Add `Access-Control-Allow-Credentials: true` with a wildcard or reflected origin: combine credentials allowance with permissive origin, enabling authenticated cross-domain requests from any site to steal session data."
+    - "Set an overly permissive crossdomain.xml or clientaccesspolicy.xml: change `<allow-access-from domain='trusted.com'/>` to `<allow-access-from domain='*'/>`, allowing Flash/Silverlight from any domain to read resources."
+    - "Remove domain validation in a postMessage handler: delete `if (event.origin !== 'https://trusted.com') return;` and accept messages from any origin, allowing cross-origin data exfiltration."
+    - "Weaken the CORS origin whitelist check: change exact match `allowedOrigins.includes(origin)` to substring check `allowedOrigins.some(o => origin.includes(o))`, so `evil-trusted.com` passes validation."
+    - "Add Access-Control-Allow-Headers with wildcard: change from listing specific allowed headers to `Access-Control-Allow-Headers: *` combined with permissive origin, enabling arbitrary custom headers from any domain."
+    - "Remove the Vary: Origin header when reflecting origins: delete the `Vary: Origin` response header so CDNs cache permissive CORS responses and serve them to all origins, amplifying the attack surface."
+  tips:
+    - "The bug must be a realistic permissive cross-domain policy (CWE-942) — a CORS or cross-domain policy allows untrusted domains to access protected resources or communicate cross-origin without restriction."
+    - "Preserve the function signature and documentation. Do not rename identifiers."
+    - "Do not introduce compilation errors or break middleware chains."
+    - "Do not add comments that hint at the flaw, CORS misconfiguration, or CWE."
+    - "The bug should be subtle: same-origin requests and legitimate cross-origin requests still work correctly."
+    - "Prefer modifying exactly ONE CORS header or cross-domain policy setting rather than removing the entire CORS configuration."
+    - "CRITICAL DISTINCTION from CWE-346 (Origin Validation Error): CWE-942 is specifically about overly PERMISSIVE policies (allowing too many origins). CWE-346 is about FAILING to validate origin in general request processing. If the code never checks origin for a non-CORS action, that's CWE-346."
+    - "CRITICAL DISTINCTION from CWE-1021 (Clickjacking): CWE-942 is about cross-origin READ access (fetching data). CWE-1021 is about framing/embedding for UI redress. If the issue is X-Frame-Options, that's CWE-1021."
+    - "CRITICAL DISTINCTION from CWE-352 (CSRF): CWE-942 enables reading cross-origin responses. CSRF enables triggering state-changing actions. A permissive CORS policy may enable data theft; CSRF tokens prevent unauthorized writes."
+    - "Focus on Express.js/Node.js CORS middleware patterns: `cors()` options, manual header setting, `res.setHeader('Access-Control-Allow-Origin', ...)`, and middleware configuration objects."
+    - "The most dangerous pattern is `Allow-Credentials: true` + reflected origin — this combination gives any website full authenticated access to the API."
+    - "If the function has no CORS handling, no cross-domain policy, no origin checks, no postMessage listeners, respond with `NO_GOOD_BUG_SITE` instead of forcing a contrived change."
+system: |-
+  You are a security researcher performing adversarial bug injection to build a training dataset for automated vulnerability-detection and -repair agents.
+
+  Your job is to rewrite the given function so it contains a realistic CWE-942 flaw (Permissive Cross-domain Policy with Untrusted Domains). This vulnerability occurs when an application configures cross-origin resource sharing (CORS), postMessage handlers, or cross-domain policy files to allow access from untrusted or overly broad sets of origins, enabling attackers' websites to read sensitive data or communicate with the application cross-origin.
+
+  CWE-942 is specifically about the POLICY being too permissive — the application explicitly ALLOWS cross-origin access when it should restrict it. This differs from CWE-346 (failing to validate origin in non-CORS contexts), CWE-1021 (failing to prevent framing), and CWE-352 (failing to prevent cross-origin writes). The impact of CWE-942 is unauthorized cross-origin READ access: an attacker's website can fetch API responses, read user data, or receive postMessages that should be restricted to trusted origins.
+
+  In Node.js/Express contexts, this commonly appears in: CORS middleware configuration, manual response header setting, WebSocket origin validation, postMessage handlers in server-rendered HTML, and API gateway configurations.
+
+  The resulting function must still compile, keep its signature, and serve legitimate requests — the flaw should allow untrusted domains to make cross-origin requests and read sensitive responses through an overly permissive CORS or cross-domain policy.
+
+  Concretely, some kinds of CWE-942 bugs you should consider introducing:
+  {% for bug in (bug_examples | shuffle)[:3] %}
+  - {{ bug -}}
+  {% endfor %}
+
+  Tips about the bug-introducing task:
+  {% for tip in tips | shuffle %}
+  - {{ tip -}}
+  {% endfor %}
+
+  Your answer should be formatted as follows:
+
+  Explanation:
+  <explanation of what you changed and why it is a CWE-942 flaw — this explanation is for dataset metadata and will not appear in code>
+
+  Bugged Code:
+  ```
+  <bugged_code>
+  ```
+demonstration: ""
+instance: |-
+  <INPUT>
+  {{src_code}}
+  </INPUT>
+
+  <IMPORTANT>As a reminder, Please DO NOT INCLUDE ANY COMMENTS IN THE CODE OR POINT OUT THE BUG IN ANY WAY. The bugged function must compile and preserve its signature. If the function genuinely has no good CWE-942 site (e.g., no CORS or cross-domain handling), then respond with ONLY the bare line `NO_GOOD_BUG_SITE` on its own — do NOT wrap it in a code block, do NOT include an Explanation section, do NOT include a Bugged Code section. Any response without a fenced ```code``` block will be treated as a decline and discarded.</IMPORTANT>
+
+  OUTPUT:
