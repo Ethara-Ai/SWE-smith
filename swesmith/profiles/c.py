@@ -15,6 +15,10 @@ class CProfile(RepoProfile):
 
     exts: list[str] = field(default_factory=lambda: [".c"])
 
+    @classmethod
+    def _dockerfile_env_groups(cls) -> list[str]:
+        return ["cpp"]
+
 
 @dataclass
 class Jq9761ceb7(CProfile):
@@ -36,8 +40,6 @@ RUN apt-get update \
 RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN git submodule update --init --recursive
-ENV CFLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer" \
-    LDFLAGS="-fsanitize=address,undefined"
 RUN autoreconf -i \
     && ./configure \
     --disable-docs \
@@ -127,8 +129,6 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
 WORKDIR /{ENV_NAME}
-ENV CFLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer" \
-    LDFLAGS="-fsanitize=address,undefined"
 RUN ./configure --disable-doc --disable-debug
 RUN make -j$(nproc)
 CMD ["/bin/bash"]
@@ -228,10 +228,11 @@ class Openssl5b9f03c0(CProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
+
 RUN apt-get update && apt-get install -y build-essential git perl && rm -rf /var/lib/apt/lists/*
 RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
 WORKDIR /{ENV_NAME}
-RUN ./Configure no-docs no-shared && make -j$(nproc)
+RUN ./Configure no-docs no-shared enable-asan enable-ubsan && make -j$(nproc)
 CMD ["/bin/bash"]
 """
 
