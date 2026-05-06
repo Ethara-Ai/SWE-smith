@@ -428,6 +428,10 @@ class CppProfile(RepoProfile):
         default_factory=lambda: list(DEFAULT_CPP_BUG_GEN_DIRS_EXCLUDE)
     )
 
+    @classmethod
+    def _dockerfile_env_groups(cls) -> list[str]:
+        return ["cpp"]
+
     def extract_entities(
         self,
         dirs_exclude: list[str] | None = None,
@@ -828,6 +832,7 @@ RUN apt-get update && apt-get install -y \
 RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN git submodule update --init --recursive
+
 
 RUN meson setup build -Dtests=enabled -Dman-pages=disabled && \
     meson compile -C build
@@ -1446,6 +1451,7 @@ RUN apt-get update && apt-get install -y \
 RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN git submodule update --init --recursive
+
 
 RUN autoreconf -i && \
     ./configure && \
@@ -2501,7 +2507,7 @@ WORKDIR /{ENV_NAME}
 RUN git submodule update --init --recursive
 
 RUN mkdir build && cd build && \
-    cmake -DCMAKE_BUILD_TYPE=Debug -DLEVELDB_BUILD_TESTS=ON -DLEVELDB_BUILD_BENCHMARKS=ON -DCMAKE_CXX_STANDARD=17 -DCMAKE_CXX_FLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer" -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address,undefined" .. && \
+    cmake -DCMAKE_BUILD_TYPE=Debug -DLEVELDB_BUILD_TESTS=ON -DLEVELDB_BUILD_BENCHMARKS=ON -DCMAKE_CXX_STANDARD=17 .. && \
     make -j$(nproc)
 
 CMD ["/bin/bash"]"""
@@ -3492,6 +3498,7 @@ RUN mkdir build && cd build && \
           -D BUILD_EXAMPLES=OFF \
           -D BUILD_TESTS=ON \
           -D BUILD_PERF_TESTS=OFF \
+          -D WITH_KLEIDICV=OFF \
           .. && \
     make -j$(nproc) && \
     make install
@@ -3534,6 +3541,7 @@ RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
 
 WORKDIR /{ENV_NAME}/trunk
 RUN git submodule update --init --recursive
+
 RUN ./configure --utest && make utest
 
 CMD ["./objs/srs"]"""
@@ -3699,6 +3707,7 @@ RUN apt-get update && apt-get install -y \
 RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN git submodule update --init --recursive
+
 
 RUN ./configure.py --mode=release --compiler=g++ && \
     ninja -C build/release
@@ -4485,6 +4494,7 @@ RUN git clone https://github.com/{self.mirror_name}.git /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN git submodule update --init --recursive
 
+
 RUN ./configure && make -j$(nproc)
 
 CMD ["/bin/bash"]"""
@@ -4960,6 +4970,7 @@ RUN git clone https://github.com/{self.mirror_name}.git /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN git submodule update --init --recursive
 
+
 RUN mkdir build && cd build && \
     cmake \
     -DCMAKE_INSTALL_PREFIX="/opt/ikos" \
@@ -5200,6 +5211,7 @@ RUN apt-get update && apt-get install -y \
 RUN git clone https://github.com/{self.mirror_name}.git /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN git submodule update --init --recursive
+
 
 RUN make libi2pd.a && cd tests && make
 CMD ["/bin/bash"]"""
@@ -5644,6 +5656,7 @@ RUN cd build && make install-tiledb && ldconfig
 
 USER tiledb
 WORKDIR /home/tiledb/TileDB
+
 CMD ["/bin/bash"]"""
 
     def log_parser(self, log: str) -> dict[str, str]:
@@ -6032,6 +6045,7 @@ RUN git clone https://github.com/{self.mirror_name}.git /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN git submodule update --init --recursive
 
+
 RUN make
 CMD ["/bin/bash"]"""
 
@@ -6319,6 +6333,7 @@ RUN apt-get install -y --no-install-recommends nasm || echo "Warning: nasm insta
 RUN git clone https://github.com/{self.mirror_name}.git /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN git submodule update --init --recursive
+
 
 # Bootstrap gtest as required by Makefile for unit tests
 RUN make gtest-bootstrap
@@ -6669,6 +6684,7 @@ RUN apt-get update && apt-get install -y \
 RUN git clone https://github.com/{self.mirror_name}.git /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN git submodule update --init --recursive
+
 
 # Build BearSSL using the host test makefile logic
 RUN cd tests/host && make FORCE32=0 ssl
@@ -7694,6 +7710,7 @@ RUN git clone https://github.com/{self.mirror_name}.git /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN git submodule update --init --recursive
 
+
 RUN mkdir build && cd build && \
     cmake \
     -DENABLE_SOLVER_Z3=ON \
@@ -7898,6 +7915,7 @@ RUN git clone https://github.com/{self.mirror_name}.git /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN git submodule update --init --recursive
 
+
 RUN make -j$(nproc)
 
 CMD ["/bin/bash"]"""
@@ -7928,6 +7946,7 @@ RUN apt-get update && apt-get install -y \
 RUN git clone https://github.com/{self.mirror_name}.git /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN git submodule update --init --recursive
+
 
 RUN make -j$(nproc)
 
@@ -8620,6 +8639,7 @@ RUN git clone https://github.com/{self.mirror_name}.git /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN git submodule update --init --recursive
 
+
 RUN meson setup build \
     -DPISTACHE_BUILD_TESTS=true \
     -DPISTACHE_USE_SSL=true \
@@ -9240,6 +9260,7 @@ RUN apt-get update && apt-get install -y git automake autoconf libtool make g++ 
 RUN git clone https://github.com/{self.mirror_name}.git /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN git submodule update --init --recursive
+
 
 RUN ./script/bootstrap
 RUN autoreconf --force --install

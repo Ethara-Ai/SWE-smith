@@ -51,6 +51,31 @@ logger = logging.getLogger(__name__)
 
 _DEFAULT_SSH_KEYS = ["id_rsa", "id_ecdsa", "id_ecdsa_sk", "id_ed25519", "id_ed25519_sk"]
 
+# Language-specific ENV vars injected into Dockerfiles by _prepare_dockerfile().
+# Each group is only injected when the profile's _dockerfile_env_groups() includes
+# that key. Universal ENVs (proxy, SSL_CERT_FILE, CURL_CA_BUNDLE) are always injected.
+_LANG_ENVS: dict[str, list[str]] = {
+    "go": [
+        'GONOSUMCHECK="*"',
+        'GOFLAGS="-insecure"',
+    ],
+    "java": [
+        'MAVEN_OPTS="-Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true"',
+        'JAVA_TOOL_OPTIONS="-Djavax.net.ssl.trustStoreType=PKCS12"',
+    ],
+    "node": [
+        "NODE_EXTRA_CA_CERTS=${CA_CERT_PATH}",
+    ],
+    "python": [
+        "REQUESTS_CA_BUNDLE=${CA_CERT_PATH}",
+    ],
+    "cpp": [
+        'CFLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer"',
+        'CXXFLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer"',
+        'LDFLAGS="-fsanitize=address,undefined"',
+    ],
+}
+
 
 def _detect_native_platform() -> str:
     """Detect the native platform string for the host machine.
@@ -258,6 +283,11 @@ class RepoProfile(ABC, metaclass=SingletonMeta):
         default=None, init=False, repr=False, compare=False
     )
 
+    @classmethod
+    def _dockerfile_env_groups(cls) -> list[str]:
+        """Language ENV group keys for Dockerfile injection (override in language base classes)."""
+        return []
+
     ### START: Properties, Methods that *do not* require (re-)implementation ###
 
     @property
@@ -442,19 +472,9 @@ class RepoProfile(ABC, metaclass=SingletonMeta):
         if not content.lstrip().startswith("# syntax=docker/dockerfile"):
             content = "# syntax=docker/dockerfile:1\n" + content
 
-        # Inject GIT_SSH_COMMAND variable to the dockerfile. This ssh usage
-        # accepts the unknown host key by default and save it to ~/.ssh/.known_hosts
-        # which removes the user interaction requirement.
-        content = re.sub(
-            r"^(FROM\s+.+)$",
-            r'\1\nENV GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=accept-new"',
-            content,
-            count=1,
-            flags=re.MULTILINE,
-        )
-
         proxy_block = (
             "\n"
+            "ARG TARGETARCH\n"
             'ARG http_proxy=""\n'
             'ARG https_proxy=""\n'
             'ARG HTTP_PROXY=""\n'
@@ -463,26 +483,46 @@ class RepoProfile(ABC, metaclass=SingletonMeta):
             'ARG NO_PROXY="localhost,127.0.0.1,::1"\n'
             'ARG CA_CERT_PATH="/etc/ssl/certs/ca-certificates.crt"\n'
             "\n"
-            "ENV http_proxy=${http_proxy} \\\n"
-            "    https_proxy=${https_proxy} \\\n"
-            "    HTTP_PROXY=${HTTP_PROXY} \\\n"
-            "    HTTPS_PROXY=${HTTPS_PROXY} \\\n"
-            "    no_proxy=${no_proxy} \\\n"
-            "    NO_PROXY=${NO_PROXY} \\\n"
-            "    SSL_CERT_FILE=${CA_CERT_PATH} \\\n"
-            "    REQUESTS_CA_BUNDLE=${CA_CERT_PATH} \\\n"
-            "    CURL_CA_BUNDLE=${CA_CERT_PATH} \\\n"
-            "    NODE_EXTRA_CA_CERTS=${CA_CERT_PATH} \\\n"
-            '    GONOSUMCHECK="*" \\\n'
-            '    GOFLAGS="-insecure" \\\n'
-            '    MAVEN_OPTS="-Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true" \\\n'
-            '    JAVA_TOOL_OPTIONS="-Djavax.net.ssl.trustStoreType=PKCS12"\n'
         )
+
+        # Universal ENVs (always injected)
+        env_vars = [
+            'GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=accept-new"',
+            "DEBIAN_FRONTEND=noninteractive",
+            "DEBCONF_NONINTERACTIVE_SEEN=true",
+            "LC_ALL=C.UTF-8",
+            "LANG=C.UTF-8",
+            "TZ=Etc/UTC",
+            "http_proxy=${http_proxy}",
+            "https_proxy=${https_proxy}",
+            "HTTP_PROXY=${HTTP_PROXY}",
+            "HTTPS_PROXY=${HTTPS_PROXY}",
+            "no_proxy=${no_proxy}",
+            "NO_PROXY=${NO_PROXY}",
+            "SSL_CERT_FILE=${CA_CERT_PATH}",
+            "CURL_CA_BUNDLE=${CA_CERT_PATH}",
+        ]
+
+        # Language-specific ENVs (only for matching profiles)
+        for group in self._dockerfile_env_groups():
+            env_vars.extend(_LANG_ENVS.get(group, []))
+
+        env_block = "ENV " + " \\\n    ".join(env_vars) + "\n"
+        proxy_block += env_block
+
+        label_block = (
+            f'\nLABEL org.opencontainers.image.title="{self.owner}/{self.repo}" \\\n'
+            f'      org.opencontainers.image.description="{self.owner}/{self.repo} Docker image" \\\n'
+            f'      org.opencontainers.image.source="https://github.com/{self.owner}/{self.repo}" \\\n'
+            f'      org.opencontainers.image.authors="https://www.ethara.ai/"\n'
+        )
+        proxy_block += label_block
         content = re.sub(
-            r'(ENV GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=accept-new")',
+            r"^(FROM\s+.+)$",
             r"\1" + proxy_block,
             content,
             count=1,
+            flags=re.MULTILINE,
         )
 
         ca_symlink_run = (

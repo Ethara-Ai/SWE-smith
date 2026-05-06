@@ -26,6 +26,10 @@ class JavaScriptProfile(RepoProfile):
         default=None, init=False, repr=False
     )
 
+    @classmethod
+    def _dockerfile_env_groups(cls) -> list[str]:
+        return ["node"]
+
     _JS_TEST_EXTS: tuple[str, ...] = (
         ".js",
         ".ts",

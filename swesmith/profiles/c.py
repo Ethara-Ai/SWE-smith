@@ -28,11 +28,6 @@ class Jqb9e19de76(CProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
-ENV DEBIAN_FRONTEND=noninteractive \
-    DEBCONF_NONINTERACTIVE_SEEN=true \
-    LC_ALL=C.UTF-8 \
-    LANG=C.UTF-8
-ENV TZ=Etc/UTC
 RUN apt-get update \
     && apt-get install -y build-essential autoconf libtool git \
     && apt-get clean \
@@ -52,6 +47,8 @@ RUN autoreconf -i \
 RUN make clean
 RUN touch src/parser.y src/lexer.l
 RUN make -j$(nproc)
+
+CMD ["/bin/bash"]
 """
 
     def log_parser(self, log: str) -> dict[str, str]:

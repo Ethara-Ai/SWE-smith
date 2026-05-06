@@ -20,6 +20,10 @@ class TypeScriptProfile(RepoProfile):
 
     exts: list[str] = field(default_factory=lambda: [".ts", ".tsx"])
 
+    @classmethod
+    def _dockerfile_env_groups(cls) -> list[str]:
+        return ["node"]
+
     def extract_entities(
         self,
         dirs_exclude: list[str] | None = None,

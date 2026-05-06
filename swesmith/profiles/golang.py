@@ -28,6 +28,10 @@ class GoProfile(RepoProfile):
         default=None, init=False, repr=False
     )
 
+    @classmethod
+    def _dockerfile_env_groups(cls) -> list[str]:
+        return ["go"]
+
     @property
     def dockerfile(self):
         return f"""FROM golang:1.24

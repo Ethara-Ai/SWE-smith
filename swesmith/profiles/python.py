@@ -41,6 +41,10 @@ class PythonProfile(RepoProfile):
     )
     exts: list[str] = field(default_factory=lambda: [".py"])
 
+    @classmethod
+    def _dockerfile_env_groups(cls) -> list[str]:
+        return ["python"]
+
     def get_test_files(self, instance: dict) -> tuple[list[str], list[str]]:
         assert FAIL_TO_PASS in instance and PASS_TO_PASS in instance, (
             f"Instance {instance[KEY_INSTANCE_ID]} missing required keys {FAIL_TO_PASS} or {PASS_TO_PASS}"

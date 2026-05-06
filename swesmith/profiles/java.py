@@ -25,6 +25,10 @@ class JavaProfile(RepoProfile):
         default=None, init=False, repr=False
     )
 
+    @classmethod
+    def _dockerfile_env_groups(cls) -> list[str]:
+        return ["java"]
+
     @staticmethod
     def _extract_test_class_name(test_name: str) -> str | None:
         """Extract the Java class name from a fully-qualified test name.
@@ -3326,6 +3330,31 @@ CMD ["/bin/bash"]"""
     def log_parser(self, log: str) -> dict[str, str]:
         """Parse JUnit XML test results from Gradle output."""
         return parse_log_gradle_junit_xml(log)
+
+
+@dataclass
+class Nettyb3844c81(JavaProfile):
+    owner: str = "netty"
+    repo: str = "netty"
+    commit: str = "b3844c8108b42f68d56144b36d4d1ed96078a688"
+    test_cmd: str = "mvn test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain -pl transport,codec,common"
+    timeout: int = 400
+
+    @property
+    def dockerfile(self):
+        return f"""FROM maven:3.9.6-eclipse-temurin-11
+
+RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
+
+RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+ENV JAVA_TOOL_OPTIONS=""
+RUN mvn clean install -B -q -DskipTests -pl transport,codec,common -am
+
+CMD ["/bin/bash"]"""
+
+    def log_parser(self, log: str) -> dict[str, str]:
+        return parse_log_maven_surefire(log)
 
 
 for name, obj in list(globals().items()):
