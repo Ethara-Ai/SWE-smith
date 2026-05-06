@@ -146,7 +146,6 @@ class RustProfile(RepoProfile):
     @property
     def dockerfile(self):
         return f"""FROM rust:{self.rust_version}
-ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=Etc/UTC
 
 RUN apt update && apt install -y wget git build-essential \
@@ -254,7 +253,6 @@ class Html5everb93afc94(RustProfile):
     @property
     def dockerfile(self):
         return f"""FROM rust:1.88
-ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=Etc/UTC
 
 RUN apt update && apt install -y wget git build-essential \
@@ -300,7 +298,6 @@ class Ripgrep3b7fd442(RustProfile):
     @property
     def dockerfile(self):
         return f"""FROM rust:1.88
-ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=Etc/UTC
 
 RUN apt update && apt install -y wget git build-essential \
@@ -560,7 +557,6 @@ class TokenizersEcad3f18(RustProfile):
     @property
     def dockerfile(self):
         return f"""FROM rust:{self.rust_version}
-ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=Etc/UTC
 
 RUN apt update && apt install -y wget git build-essential \

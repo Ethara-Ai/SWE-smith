@@ -795,8 +795,6 @@ class Waybard527ccd4(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     git \
     build-essential \
@@ -885,8 +883,6 @@ class LibreCAD7a288fff(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:24.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     git \
     build-essential \
@@ -930,8 +926,6 @@ class LibreSprite85ced3b6(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:24.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     ca-certificates \
@@ -1020,8 +1014,6 @@ class OpenRCT2f228d738(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:24.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     git \
     cmake \
@@ -1083,8 +1075,6 @@ class OpenTTDae80a47c(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:24.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     git \
     build-essential \
@@ -1127,8 +1117,6 @@ class Qv2rayd5c5aeb3(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     git \
@@ -1205,8 +1193,6 @@ class WasmEdgecb41f751(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     git \
     cmake \
@@ -1257,8 +1243,6 @@ class ImHexf4768420(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:24.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     git \
@@ -1321,8 +1305,7 @@ class Albert897c7797(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:24.04
 
-RUN export DEBIAN_FRONTEND=noninteractive \
- && apt-get -qq update \
+RUN apt-get -qq update \
  && apt-get install --no-install-recommends -y \
     git \
     ca-certificates \
@@ -1373,8 +1356,6 @@ class Brpcd22fa17f(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     git \
     g++ \
@@ -1424,8 +1405,6 @@ class Aria2b4fd7cb1(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     git \
@@ -1527,8 +1506,6 @@ class Libtorrenta711a4a3(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
@@ -1573,8 +1550,6 @@ class Asepriteda0d3228(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     git \
     build-essential \
@@ -1617,7 +1592,6 @@ class Retdec8be53bbd(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
@@ -1710,8 +1684,6 @@ class Azerothcorewotlk3ffbbe98(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     git \
     cmake \
@@ -1778,8 +1750,6 @@ class Conky4f829244(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     build-essential \
@@ -1876,8 +1846,6 @@ class Cppcheck67606e6e(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     git \
     build-essential \
@@ -1912,8 +1880,6 @@ class DevilutionXafdaa2ac(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     build-essential \
@@ -2032,8 +1998,6 @@ class Dragonfly14103bde(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     git \
     ninja-build \
@@ -2076,7 +2040,6 @@ class Drogon34955222(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=UTC
 
 RUN apt-get update && apt-get install -y \
@@ -2126,7 +2089,6 @@ class Duckdbb3ed0d51(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
@@ -2161,8 +2123,6 @@ class Endlesskyf1dba50f(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y     git     build-essential     cmake     pkg-config     libglew-dev     libsdl2-dev     libpng-dev     libjpeg-turbo8-dev     libmad0-dev     uuid-dev     libflac-dev     libflac++-dev     libminizip-dev     libopenal-dev     libavif-dev     && rm -rf /var/lib/apt/lists/*
 
 RUN git clone --branch v3.4.0 https://github.com/catchorg/Catch2.git /tmp/catch2 &&     cd /tmp/catch2 &&     mkdir build && cd build &&     cmake .. -DBUILD_TESTING=OFF &&     make -j$(nproc) &&     make install &&     rm -rf /tmp/catch2
@@ -2190,8 +2150,6 @@ class Falco43aaffc4(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 # We use USE_BUNDLED_DEPS=ON later to simplify and avoid missing system libs
 RUN apt-get update && apt-get install -y \
@@ -2595,8 +2553,6 @@ class Gperftoolsa4724315(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     git \
     build-essential \
@@ -2631,7 +2587,6 @@ class Grpc9d7a53ea(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
 ENV CC=/usr/bin/gcc
 ENV CXX=/usr/bin/g++
 
@@ -2679,8 +2634,6 @@ class Halidec2a6e34e(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     git \
@@ -2736,8 +2689,6 @@ class Inputleap34a34fb2(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     git \
     cmake \
@@ -2781,8 +2732,6 @@ class Yamlcpp2e6383d2(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
@@ -2815,8 +2764,6 @@ class Keepassxc5bd42c47(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     git \
@@ -2878,8 +2825,6 @@ class QuantLiba05b6ab3(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
@@ -2914,8 +2859,6 @@ class Ledger920059e6(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     build-essential \
@@ -3056,8 +2999,6 @@ class Luantifc363085(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     git \
     g++ \
@@ -3135,7 +3076,6 @@ class AirSim13448700(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:20.04
-ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y \
     git \
     sudo \
@@ -3210,7 +3150,6 @@ class Magnumf3a4ce7d(CppProfile):
     def dockerfile(self):
         return f"""FROM gcc:11
 
-ENV DEBIAN_FRONTEND=noninteractive
 ENV LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
 
 RUN wget -qO- https://github.com/Kitware/CMake/releases/download/v3.26.4/cmake-3.26.4-linux-$(uname -m).tar.gz | tar --strip-components=1 -xz -C /usr/local && \
@@ -3254,8 +3193,6 @@ class Mumble997ecba9(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y ca-certificates gpg wget && \
     wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor -o /usr/share/keyrings/kitware-archive-keyring.gpg && \
@@ -3408,8 +3345,6 @@ class OpenMVGc76d8724(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     cmake \
     build-essential \
@@ -3463,8 +3398,6 @@ class Opencv96d8a785(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     build-essential \
@@ -3520,8 +3453,6 @@ class Srs6e2392f3(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     git \
     build-essential \
@@ -3560,8 +3491,6 @@ class Polybarf99e0b1c(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     git \
@@ -3662,8 +3591,6 @@ class Seastar7e457cf7(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:24.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
@@ -3755,8 +3682,6 @@ class Snapcast439dc886(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
@@ -3802,8 +3727,6 @@ class Sqlitebrowser95f92180(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
@@ -3844,8 +3767,6 @@ class Supercollider438bf480(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     build-essential \
@@ -4083,7 +4004,6 @@ class OpenColorIOeaa02817(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y \
     git \
     build-essential \
@@ -4122,8 +4042,6 @@ class BehaviorTreeCPP3ff6a32b(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     build-essential \
@@ -4205,8 +4123,6 @@ class ChaiScript2eb3279c(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
@@ -4241,8 +4157,6 @@ class Crowb8c021a7(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     git \
@@ -4282,8 +4196,6 @@ class Cytopiab67e255d(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     build-essential \
@@ -4371,7 +4283,6 @@ class Descent3156cba8a(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
 ENV VCPKG_ROOT=/opt/vcpkg
 ENV VCPKG_FORCE_SYSTEM_BINARIES=1
 
@@ -4514,8 +4425,6 @@ class Srtce54b5ea(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
@@ -4550,8 +4459,6 @@ class Heaptrackf16e8d33(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     git \
@@ -4602,8 +4509,6 @@ class Kdenlivefba388ba(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:24.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     git \
@@ -4677,8 +4582,6 @@ class VulkanHpp39609625(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
@@ -4749,8 +4652,6 @@ class VTK28b49bee(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
@@ -4793,8 +4694,6 @@ class Server637f8c4d(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     git \
@@ -4842,8 +4741,6 @@ class EternalTerminal90b10d5f(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     build-essential \
@@ -4897,8 +4794,6 @@ class Launcher4aa2b3ce(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
@@ -4940,8 +4835,6 @@ class Ikosac7f7c17(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     git \
@@ -5072,8 +4965,6 @@ class Pikiwidb44848409(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     git \
     build-essential \
@@ -5111,8 +5002,6 @@ class CTranslate2226c95d9(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     git \
@@ -5153,8 +5042,6 @@ class Osrmbackend362b388d(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     build-essential \
@@ -5231,8 +5118,6 @@ class Jakt3c8d7508(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:24.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
@@ -5297,8 +5182,6 @@ class Supertux53884267(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     cmake \
@@ -5435,8 +5318,6 @@ class Ncnna64aa7ff(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
@@ -5471,8 +5352,6 @@ class Sol2c1f95a77(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     software-properties-common \
@@ -5511,8 +5390,6 @@ class Tigervncaf48f2c8(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     git \
@@ -5575,8 +5452,6 @@ class PowerInfer59df1750(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
@@ -5617,7 +5492,7 @@ ENV HOME /home/tiledb
 RUN useradd -m -d /home/tiledb tiledb
 
 # Install dependencies
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+RUN apt-get update && apt-get install -y \
     build-essential \
     wget \
     zip \
@@ -5765,8 +5640,6 @@ class Vowpalwabbit0d344494(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
@@ -5865,8 +5738,6 @@ class Singaa64d65fa(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     git \
     build-essential \
@@ -5918,8 +5789,6 @@ class Thrift32776c0f(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     git \
@@ -6064,8 +5933,6 @@ class Audiowaveform9edb233c(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     git \
     make \
@@ -6112,8 +5979,6 @@ class Bitcoinaa1d0d7c(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
@@ -6156,8 +6021,6 @@ class Backwardcpp0bfd0a07(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     git \
     build-essential \
@@ -6195,8 +6058,6 @@ class Beast9ad3b683(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     build-essential \
@@ -6237,8 +6098,6 @@ class Ccache85a885b2(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:24.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     git \
@@ -6286,8 +6145,6 @@ class Ceressolvera2bab5af(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     git \
@@ -6357,8 +6214,6 @@ class Clementinebb2f6378(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     git \
@@ -6430,8 +6285,6 @@ class Osiris482d672b(CppProfile):
         return f"""FROM --platform=linux/amd64 ubuntu:24.04
 
 # Avoid interactive prompts
-ENV DEBIAN_FRONTEND=noninteractive
-
 # Install dependencies
 RUN apt-get update && apt-get install -y \
     build-essential \
@@ -6467,8 +6320,6 @@ class Xgboostafdc0372(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     build-essential \
@@ -6512,8 +6363,6 @@ class NumCpp3bbce083(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
@@ -6546,8 +6395,6 @@ class FastDDSe516400f(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     build-essential \
@@ -6666,8 +6513,6 @@ class Arduino7b0ac416(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     git \
     build-essential \
@@ -6765,8 +6610,6 @@ class Faiss7cfb2500(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:24.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     git \
@@ -7001,8 +6844,6 @@ class Cherrytree6c42a114(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     git \
     cmake \
@@ -7079,8 +6920,6 @@ class Mujoco82e92cbc(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     git \
     build-essential \
@@ -7130,8 +6969,6 @@ class Filament770ce7f8(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     git \
@@ -7354,8 +7191,6 @@ class Iree3f630a72(CppProfile):
         return f"""FROM ubuntu:22.04
 
 # Prevent interactive prompts
-ENV DEBIAN_FRONTEND=noninteractive
-
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     git \
@@ -7439,8 +7274,6 @@ class Jellyfindesktop676758b6(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     git \
     build-essential \
@@ -7523,8 +7356,6 @@ class QView801b0738(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     git \
     build-essential \
@@ -7566,8 +7397,6 @@ class Sherpaonnxcb0828a0(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     git \
     cmake \
@@ -7608,8 +7437,6 @@ class Openalsoft32759d3c(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:24.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     git \
@@ -7681,8 +7508,6 @@ class Kleeefa1e052(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     git \
@@ -7778,8 +7603,6 @@ class Ksnipc0537020(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     git \
     build-essential \
@@ -7842,8 +7665,6 @@ class Libigl6000ccb7(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     build-essential \
@@ -7967,8 +7788,6 @@ class DirectXShaderCompiler6f759a31(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     git \
     cmake \
@@ -8011,8 +7830,6 @@ class LightGBMe3d52709(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:24.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     cmake \
@@ -8082,8 +7899,6 @@ class Veronabfca50d1(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     git \
@@ -8213,8 +8028,6 @@ class Mlx6304c285(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     git \
@@ -8475,8 +8288,6 @@ class Quill7c0ffa54(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
@@ -8507,8 +8318,6 @@ class Openthreadb81da07a(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     git \
@@ -8551,8 +8360,6 @@ class Panda3d2d2bdc9a(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:24.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     git \
@@ -8616,8 +8423,6 @@ class Pistache8a1ac905(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     git \
     build-essential \
@@ -8664,8 +8469,6 @@ class Projectmf67dac94(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     git \
@@ -8743,8 +8546,6 @@ class QTox2b9cbdca(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     build-essential \
@@ -8833,8 +8634,6 @@ class QBittorrentf68f332f(CppProfile):
     def dockerfile(self):
         return f"""FROM debian:trixie-slim
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     git \
     build-essential \
@@ -8881,8 +8680,6 @@ class Qpdf9352f6f8(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     git \
     build-essential \
@@ -8925,8 +8722,6 @@ class Qtcreatoree5a1883(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:24.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     git cmake build-essential libgl1-mesa-dev \
@@ -9069,8 +8864,6 @@ class Librealsense78cb605b(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
@@ -9142,8 +8935,6 @@ class Librimede4700e9(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
@@ -9200,8 +8991,6 @@ class Openrw5c5f266b(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     git \
@@ -9413,8 +9202,6 @@ class Strawberry5aabf649(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:24.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
@@ -9493,8 +9280,6 @@ class Subsurface59455fbf(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     autoconf \
@@ -9604,8 +9389,6 @@ class Taichiba0e81dc(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     build-essential \
@@ -9821,8 +9604,6 @@ class Nebula5d43e44b(CppProfile):
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     git \
     build-essential \
@@ -9871,8 +9652,6 @@ class Visualboyadvancemb58b2478(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     git build-essential cmake ninja-build nasm ccache gettext \
@@ -9951,8 +9730,6 @@ class Xtensor18f65248(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     build-essential \
@@ -10062,8 +9839,6 @@ class Cppzmq041f755b(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN echo 'Acquire::AllowInsecureRepositories "true";' > /etc/apt/apt.conf.d/99insecure && \
     echo 'Acquire::AllowDowngradeToInsecureRepositories "true";' >> /etc/apt/apt.conf.d/99insecure && \
@@ -10274,8 +10049,6 @@ class Fastllmb5ff6009(CppProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     build-essential \

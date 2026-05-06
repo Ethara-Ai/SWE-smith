@@ -145,7 +145,6 @@ class RubyProfile(RepoProfile):
     @property
     def dockerfile(self):
         return f"""FROM ruby:{self.ruby_version}
-ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=Etc/UTC
 
 RUN apt update && apt install -y wget git build-essential \
@@ -208,7 +207,6 @@ class Fluentd7906fda4(RubyProfile):
     @property
     def dockerfile(self):
         return f"""FROM ruby:{self.ruby_version}
-ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=Etc/UTC
 
 RUN apt update && apt install -y wget git build-essential \
@@ -247,7 +245,6 @@ class Fpm5b1fe9af(RubyProfile):
     @property
     def dockerfile(self):
         return f"""FROM ruby:{self.ruby_version}
-ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=Etc/UTC
 
 RUN apt update && apt install -y wget git build-essential \
@@ -299,7 +296,6 @@ class Devise5b008ed5(RubyProfile):
     @property
     def dockerfile(self):
         return f"""FROM ruby:{self.ruby_version}
-ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=Etc/UTC
 
 RUN apt update && apt install -y wget git build-essential \
@@ -331,7 +327,6 @@ class FactoryBot8a64d293(RubyProfile):
     @property
     def dockerfile(self):
         return f"""FROM ruby:{self.ruby_version}
-ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=Etc/UTC
 
 RUN apt update && apt install -y wget git build-essential \
@@ -422,7 +417,6 @@ class Sinatra9e5c4ec8(RubyProfile):
     @property
     def dockerfile(self):
         return f"""FROM ruby:{self.ruby_version}
-ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=Etc/UTC
 
 RUN apt update && apt install -y wget git build-essential \
@@ -446,7 +440,6 @@ class Vcr9a66a8a0(RubyProfile):
     @property
     def dockerfile(self):
         return f"""FROM ruby:{self.ruby_version}
-ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=Etc/UTC
 
 RUN apt update && apt install -y wget git build-essential \

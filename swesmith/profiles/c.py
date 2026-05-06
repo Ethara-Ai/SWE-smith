@@ -78,7 +78,6 @@ class Valkeyfea0b406(CProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
-ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=Etc/UTC
 RUN sed -i 's/^# deb-src/deb-src/' /etc/apt/sources.list
 RUN apt update && \
@@ -120,7 +119,6 @@ class FFmpega65b3bfe(CProfile):
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
-ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Etc/UTC
 RUN apt-get update && apt-get install -y \
     build-essential git nasm yasm pkg-config texinfo \
