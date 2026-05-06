@@ -773,6 +773,148 @@ class Httptreemux(GoProfile):
     commit: str = "53a6a09954e8593e66a0c372335c0e96b318b920"
 
 
+### Security repos (CWE-targeted) ###
+
+
+@dataclass
+class Etcdc867abd3(GoProfile):
+    owner: str = "etcd-io"
+    repo: str = "etcd"
+    commit: str = "c867abd3990892433a44ca2951922c1b1792e0e3"
+    timeout: int = 180
+    timeout_ref: int = 1800
+
+
+@dataclass
+class Mobyee3e21b7(GoProfile):
+    owner: str = "moby"
+    repo: str = "moby"
+    commit: str = "ee3e21b70457f90d537640613d59340db1f0178c"
+    timeout: int = 180
+    timeout_ref: int = 1800
+
+    @property
+    def dockerfile(self):
+        return f"""FROM golang:1.24
+RUN apt-get update && apt-get install -y libseccomp-dev libbtrfs-dev libdevmapper-dev
+RUN git clone {self.mirror_url} /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN go mod tidy
+RUN go test -v -count=1 ./... || true
+"""
+
+
+@dataclass
+class Runceb7eaf19(GoProfile):
+    owner: str = "opencontainers"
+    repo: str = "runc"
+    commit: str = "eb7eaf19b6eec5d1143b257057899e4a7b738c81"
+    timeout: int = 120
+
+    @property
+    def dockerfile(self):
+        return f"""FROM golang:1.24
+RUN apt-get update && apt-get install -y libseccomp-dev pkg-config
+RUN git clone {self.mirror_url} /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN go mod tidy
+RUN go test -v -count=1 ./... || true
+"""
+
+
+@dataclass
+class Vaultd8868300(GoProfile):
+    owner: str = "hashicorp"
+    repo: str = "vault"
+    commit: str = "d88683008114a35ec9fe6d6ed88838aae937531d"
+    timeout: int = 180
+    timeout_ref: int = 1800
+
+
+@dataclass
+class Consulb37270d7(GoProfile):
+    owner: str = "hashicorp"
+    repo: str = "consul"
+    commit: str = "b37270d7a35664fceeeda151074e2570714e6f83"
+    timeout: int = 180
+    timeout_ref: int = 1800
+
+
+@dataclass
+class Go07840cee(GoProfile):
+    owner: str = "golang"
+    repo: str = "go"
+    commit: str = "07840ceeed4afd10324a552e8c87a8ee363aa24a"
+    timeout: int = 300
+    timeout_ref: int = 3600
+
+    @property
+    def dockerfile(self):
+        return f"""FROM golang:1.24
+RUN git clone {self.mirror_url} /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN go test -v -count=1 ./... || true
+"""
+
+
+@dataclass
+class Cilium8281cdca(GoProfile):
+    owner: str = "cilium"
+    repo: str = "cilium"
+    commit: str = "8281cdca4905187a9fb8ba78135aa5d19acc36b4"
+    timeout: int = 180
+    timeout_ref: int = 1800
+
+
+@dataclass
+class CsiDriverNfsea222a77(GoProfile):
+    owner: str = "kubernetes-csi"
+    repo: str = "csi-driver-nfs"
+    commit: str = "ea222a77e900a367092d1b2f93df7731c7b3b4ec"
+
+
+@dataclass
+class GoGit46e1d8ed(GoProfile):
+    owner: str = "go-git"
+    repo: str = "go-git"
+    commit: str = "46e1d8ed462295cf94ed998ef307cf880b5284aa"
+    timeout: int = 120
+
+
+@dataclass
+class ArgoWorkflows80dc102f(GoProfile):
+    owner: str = "argoproj"
+    repo: str = "argo-workflows"
+    commit: str = "80dc102f42b0867019e3464e9a341bc3e6bfa310"
+    timeout: int = 180
+    timeout_ref: int = 1800
+
+
+@dataclass
+class Traefikedd7d2eb(GoProfile):
+    owner: str = "traefik"
+    repo: str = "traefik"
+    commit: str = "edd7d2eb333cb4aa25e525824f60968eba403d03"
+    timeout: int = 120
+
+
+@dataclass
+class Grafanabf80048f(GoProfile):
+    owner: str = "grafana"
+    repo: str = "grafana"
+    commit: str = "bf80048f188c52097fbfc603433a6baa8c64cbaa"
+    timeout: int = 180
+    timeout_ref: int = 1800
+
+
+@dataclass
+class Minio7aac2a2c(GoProfile):
+    owner: str = "minio"
+    repo: str = "minio"
+    commit: str = "7aac2a2c5b7c882e68c1ce017d8256be2feea27f"
+    timeout: int = 120
+
+
 # Register all Go profiles with the global registry
 for name, obj in list(globals().items()):
     if (

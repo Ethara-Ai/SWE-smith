@@ -1374,6 +1374,74 @@ class String2Stringc4a72f59(PythonProfile):
     )
 
 
+### Security repos (CWE-targeted) ###
+
+
+@dataclass
+class Glances82cd190c(PythonProfile):
+    owner: str = "nicolargo"
+    repo: str = "glances"
+    commit: str = "82cd190cf482f4a08aa5ddb291f54cc356c9276c"
+    install_cmds: list = field(
+        default_factory=lambda: ["pip install -e .[test]"]
+    )
+
+
+@dataclass
+class Raye39df0ac(PythonProfile):
+    owner: str = "ray-project"
+    repo: str = "ray"
+    commit: str = "e39df0ac50e0559fbe951a220205c81ad959db72"
+    python_version: str = "3.11"
+    timeout: int = 300
+    timeout_ref: int = 3600
+    install_cmds: list = field(
+        default_factory=lambda: [
+            "pip install -e '.[default]'",
+        ]
+    )
+
+
+@dataclass
+class GitPython5a294a6f(PythonProfile):
+    owner: str = "gitpython-developers"
+    repo: str = "GitPython"
+    commit: str = "5a294a6fc7ed5dc0946d4b576257bf926178f269"
+    install_cmds: list = field(
+        default_factory=lambda: [
+            "pip install -e .[test]",
+        ]
+    )
+
+
+@dataclass
+class Dagster3a8263af(PythonProfile):
+    owner: str = "dagster-io"
+    repo: str = "dagster"
+    commit: str = "3a8263af65dc1a2ce6bf24749adcbab463184072"
+    python_version: str = "3.11"
+    timeout: int = 180
+    timeout_ref: int = 1800
+    install_cmds: list = field(
+        default_factory=lambda: [
+            "pip install -e python_modules/dagster",
+            "pip install -e python_modules/dagster-pipes",
+        ]
+    )
+
+
+@dataclass
+class Ckan7e404924(PythonProfile):
+    owner: str = "ckan"
+    repo: str = "ckan"
+    commit: str = "7e4049242b2590c948e775b228302d2273841c09"
+    install_cmds: list = field(
+        default_factory=lambda: [
+            "pip install -e '.[requirements,dev]'",
+        ]
+    )
+
+
 # Register all Python profiles with the global registry
 for name, obj in list(globals().items()):
     if (

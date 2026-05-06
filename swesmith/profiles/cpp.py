@@ -1517,10 +1517,10 @@ CMD ["./build/btop"]"""
 
 
 @dataclass
-class Libtorrentf0f8a352(CppProfile):
+class Libtorrenta711a4a3(CppProfile):
     owner: str = "arvidn"
     repo: str = "libtorrent"
-    commit: str = "f0f8a352cc9eb1bb8936f0b985d20867580c6463"
+    commit: str = "a711a4a3233f81939263faa3830da7e3f7c428ec"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1 -j$(nproc)"
 
     @property
@@ -2116,10 +2116,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Duckdbcb9e7c21(CppProfile):
+class Duckdbb3ed0d51(CppProfile):
     owner: str = "duckdb"
     repo: str = "duckdb"
-    commit: str = "cb9e7c2193963670f358682fb369c17ead60e90c"
+    commit: str = "b3ed0d5191465b8e10fc1dc74fe1880e26e4ca45"
     test_cmd: str = './build/test/unittest "[common]" -s'
 
     @property
@@ -2482,10 +2482,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Leveldbac691084(CppProfile):
+class Leveldb7ee830d0(CppProfile):
     owner: str = "google"
     repo: str = "leveldb"
-    commit: str = "ac691084fdc5546421a55b25e7653d450e5a25fb"
+    commit: str = "7ee830d02b623e8ffe0b95d59a74db1e58da04c5"
     test_cmd: str = "cd build && make -j$(nproc) && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
     timeout: int = 300
     bug_gen_dirs_exclude: list[str] = field(
@@ -3452,10 +3452,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Opencvaea90a9e(CppProfile):
+class Opencv96d8a785(CppProfile):
     owner: str = "opencv"
     repo: str = "opencv"
-    commit: str = "aea90a9e314d220dcaa80a616808afc38e1c78b6"
+    commit: str = "96d8a78537725e149c3bd36c1992e83842849945"
     test_cmd: str = (
         "cd build && ./bin/opencv_test_core --gtest_color=no --gtest_filter=-*OCL*"
     )
@@ -6102,10 +6102,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Bitcoin76eb04b1(CppProfile):
+class Bitcoinaa1d0d7c(CppProfile):
     owner: str = "bitcoin"
     repo: str = "bitcoin"
-    commit: str = "76eb04b16f9432a2cca03b02f6afb065c914f3af"
+    commit: str = "aa1d0d7cd7355ab5154d44d831513f7fbc5028a2"
     test_cmd: str = "ctest --test-dir build --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property
@@ -8337,10 +8337,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Nghttp2cd3c0126(CppProfile):
+class Nghttp2710eb1ed(CppProfile):
     owner: str = "nghttp2"
     repo: str = "nghttp2"
-    commit: str = "cd3c01267d2f49a10aa92f59ada6efd8241f4275"
+    commit: str = "710eb1ed70fd976dc2741546eaffc1a14b8f9726"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
 
     @property

@@ -1672,10 +1672,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Quarkus99a220ef(JavaProfile):
+class Quarkus4015e1e4(JavaProfile):
     owner: str = "quarkusio"
     repo: str = "quarkus"
-    commit: str = "99a220efc4ca53cc5b9d4bb460bf8b97702891bd"
+    commit: str = "4015e1e42c70950f2102b758c155521ebec2c491"
     test_cmd: str = "mvn test -B -pl independent-projects/arc/runtime -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain"
     timeout: int = 400  # Maven tests can be slow
 
@@ -2339,10 +2339,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Cassandra7fe688b0(JavaProfile):
+class Cassandrafe9f6c16(JavaProfile):
     owner: str = "apache"
     repo: str = "cassandra"
-    commit: str = "7fe688b00096319453afcc5c3da3331816c64072"
+    commit: str = "fe9f6c1630511890cfe0a8c8311f3141ebde17e0"
     test_cmd: str = "ant test -Dtest.name=StorageServiceTest -Dtest.methods=testBinaryArchive || true; find build/test/output -type f -name 'TEST-*.xml' -exec cat {} \\;"
     timeout: int = 300
 
@@ -2365,10 +2365,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Dubboa92d5d08(JavaProfile):
+class Dubbo6916d1bb(JavaProfile):
     owner: str = "apache"
     repo: str = "dubbo"
-    commit: str = "a92d5d08d95b7c8fbcc36162f3e03920a519b6b7"
+    commit: str = "6916d1bb49823b15ff2f7443398d5663168bea64"
     test_cmd: str = "./mvnw test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain -pl dubbo-common,dubbo-remoting,dubbo-rpc,dubbo-cluster,dubbo-registry,dubbo-config"
     timeout: int = 400  # Maven tests can be slow
 
@@ -2426,10 +2426,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Hadoop7f2f7149(JavaProfile):
+class Hadoop3e657602(JavaProfile):
     owner: str = "apache"
     repo: str = "hadoop"
-    commit: str = "7f2f7149788005f1dd975ed427d5626abc5145e3"
+    commit: str = "3e657602a259ea62cf33b84120477c4cc9014e97"
     test_cmd: str = "mvn test -B -pl hadoop-common-project/hadoop-common -Dtest=TestConfiguration,TestCommonConfigurationKeys -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain"
     timeout: int = 400  # Maven tests can be slow
 
@@ -2560,10 +2560,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Nifiab050e0c(JavaProfile):
+class Nifi749b702d(JavaProfile):
     owner: str = "apache"
     repo: str = "nifi"
-    commit: str = "ab050e0c3c4f725a32c77d23830bceaaaf271869"
+    commit: str = "749b702dc69d5797ccbd0a52bb57ee68941affa1"
     test_cmd: str = "./mvnw test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain -pl nifi-commons/nifi-utils"
     timeout: int = 400  # Maven tests can be slow
 
@@ -2589,10 +2589,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Storm4bc158f0(JavaProfile):
+class Storm435bb02f(JavaProfile):
     owner: str = "apache"
     repo: str = "storm"
-    commit: str = "4bc158f0fc4053d82e1bcbfb511447a0ffbe6674"
+    commit: str = "435bb02f8778572b4a064d2c4fecad2b1b166910"
     test_cmd: str = "mvn test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain -pl storm-client -Dlicense.skip=true -Dcheckstyle.skip -Drat.skip=true"
     timeout: int = 400  # Maven tests can be slow
 
@@ -2933,10 +2933,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Keycloak051fcab5(JavaProfile):
+class Keycloak18fec3ee(JavaProfile):
     owner: str = "keycloak"
     repo: str = "keycloak"
-    commit: str = "051fcab5be4b02d47a86ff6e9678584d00e56c39"
+    commit: str = "18fec3ee48c0c67f4b443b17b672409618a95fd0"
     test_cmd: str = "./mvnw test -B -pl core -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain"
     timeout: int = 400  # Maven tests can be slow
 
@@ -3021,10 +3021,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Mybatis359a0bcab(JavaProfile):
+class Mybatis3159066860(JavaProfile):
     owner: str = "mybatis"
     repo: str = "mybatis-3"
-    commit: str = "59a0bcab2b3ebecb2569c1b33173d5ad9c6be152"
+    commit: str = "159066860c6773ce63662168d67c30a03bc25e04"
     test_cmd: str = "./mvnw test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain"
     timeout: int = 400  # Maven tests can be slow
 
@@ -3181,10 +3181,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Springauthorizationserver7d72f556(JavaProfile):
+class Springauthorizationserverb90fb093(JavaProfile):
     owner: str = "spring-projects"
     repo: str = "spring-authorization-server"
-    commit: str = "7d72f5565cf0c3152caf68e86eb9230d7c19c399"
+    commit: str = "b90fb09362aae9eb6ee64e536d0ad7d589af917f"
     test_cmd: str = "./gradlew test --rerun-tasks --continue --no-daemon --console=plain || true; find . -type f -name 'TEST-*.xml' -exec cat {} \\;"
     timeout: int = 300  # Gradle tests can be slow
 

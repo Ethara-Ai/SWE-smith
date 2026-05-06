@@ -66,10 +66,10 @@ CMD ["/bin/bash"]
 
 
 @dataclass
-class Valkeyfc7c04e4(CProfile):
+class Valkeyfea0b406(CProfile):
     owner: str = "valkey-io"
     repo: str = "valkey"
-    commit: str = "fc7c04e4f8ba86dfbac1ec059db457fb44ed0a2d"
+    commit: str = "fea0b4064cf612d1c365b032326832bff0946bd9"
     test_cmd: str = "TERM=dumb ./runtest --durable"
     eval_sets: set[str] = field(
         default_factory=lambda: {"SWE-bench/SWE-bench_Multilingual"}

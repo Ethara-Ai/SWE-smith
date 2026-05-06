@@ -359,10 +359,10 @@ RUN yarn install
 
 
 @dataclass
-class Markeddbf29d91(JavaScriptProfile):
+class Marked69257e45(JavaScriptProfile):
     owner: str = "markedjs"
     repo: str = "marked"
-    commit: str = "dbf29d9171a28da21f06122d643baf4e5d4266d4"
+    commit: str = "69257e455e599e9c9ddedcaf913569279b12c20c"
     test_cmd: str = "NO_COLOR=1 node --test"
 
     @property
@@ -457,10 +457,10 @@ class Mongoose5f57a5bb(JavaScriptProfile):
 
 
 @dataclass
-class Axiosef36347f(JavaScriptProfile):
+class Axios05436fd5(JavaScriptProfile):
     owner: str = "axios"
     repo: str = "axios"
-    commit: str = "ef36347fb559383b04c755b07f1a8d11897fab7f"
+    commit: str = "05436fd562027a9d10531d58d13dd33d7f222c0c"
     test_cmd: str = "npm run test:mocha -- --verbose"
     eval_sets: set[str] = field(
         default_factory=lambda: {"SWE-bench/SWE-bench_Multilingual"}
@@ -927,10 +927,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Jqueryc28c26ae(JavaScriptProfile):
+class Jqueryd31238e7(JavaScriptProfile):
     owner: str = "jquery"
     repo: str = "jquery"
-    commit: str = "c28c26aef0b3238f578690d73703382951cb355d"
+    commit: str = "d31238e7899d61b0777ecea93e97442e55ad278c"
     test_cmd: str = "npm run test:browserless -- --verbose"
 
     @property
@@ -2025,10 +2025,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Uptimekuma5d955f95(JavaScriptProfile):
+class Uptimekumaf43087ac(JavaScriptProfile):
     owner: str = "louislam"
     repo: str = "uptime-kuma"
-    commit: str = "5d955f954b60410cd2dc5370d429753de524a2ef"
+    commit: str = "f43087ac075387a29aa933881fdb2e7cb114d097"
     test_cmd: str = "npm run test-backend"
 
     @property
@@ -2516,10 +2516,10 @@ CMD ["npm", "start"]"""
 
 
 @dataclass
-class Webpack24e3c2d2(JavaScriptProfile):
+class Webpack2fd88ddd(JavaScriptProfile):
     owner: str = "webpack"
     repo: str = "webpack"
-    commit: str = "24e3c2d2c9f8c6d60810302b2ea70ed86e2863dc"
+    commit: str = "2fd88ddd44057a2ede9e9bddce820c712699374e"
     test_cmd: str = (
         "yarn test:base --verbose --testMatch '<rootDir>/test/*.basictest.js'"
     )
