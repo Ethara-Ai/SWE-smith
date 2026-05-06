@@ -8158,46 +8158,6 @@ CMD ["/bin/bash"]"""
         return parse_log_ctest(log)
 
 
-@dataclass
-class Nghttp2114581b3(CppProfile):
-    owner: str = "nghttp2"
-    repo: str = "nghttp2"
-    commit: str = "114581b3466b6eb0b6edd1ccee092cded1063cc1"
-    test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
-
-    @property
-    def dockerfile(self):
-        return f"""FROM ubuntu:24.04
-
-RUN apt-get update && apt-get install -y \
-    git \
-    build-essential \
-    cmake \
-    pkg-config \
-    libev-dev \
-    libssl-dev \
-    zlib1g-dev \
-    libxml2-dev \
-    libjansson-dev \
-    libc-ares-dev \
-    python3 \
-    python3-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN git clone https://github.com/{self.mirror_name}.git /{ENV_NAME}
-WORKDIR /{ENV_NAME}
-RUN git submodule update --init --recursive
-
-RUN mkdir build && cd build && \
-    cmake -DBUILD_TESTING=ON -DENABLE_PYTHON_BINDINGS=OFF .. && \
-    make -j$(nproc)
-
-CMD ["/bin/bash"]"""
-
-    def log_parser(self, log: str) -> dict[str, str]:
-        return parse_log_ctest(log)
-
-
 # @dataclass
 # class Miniob9f856a54(CppProfile):
 #     owner: str = "oceanbase"

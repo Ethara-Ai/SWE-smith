@@ -339,6 +339,7 @@ RUN apt update && apt install -y pkg-config build-essential libpixman-1-0 libpix
 RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN yarn install
+CMD ["/bin/bash"]
 """
 
     def log_parser(self, log: str) -> dict[str, str]:
@@ -373,6 +374,7 @@ RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN npm install
 RUN npm test
+CMD ["/bin/bash"]
 """
 
     def log_parser(self, log: str) -> dict[str, str]:
@@ -410,6 +412,7 @@ RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN make bootstrap
 RUN make build
+CMD ["/bin/bash"]
 """
 
     def log_parser(self, log: str) -> dict[str, str]:
@@ -536,6 +539,7 @@ WORKDIR /{ENV_NAME}
 RUN pnpm install
 RUN pnpm playwright install chromium
 RUN pnpm exec playwright install-deps
+CMD ["/bin/bash"]
 """
 
     def log_parser(self, log: str) -> dict[str, str]:
@@ -572,6 +576,7 @@ RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN npm install
 RUN npm run build
+CMD ["/bin/bash"]
 """
 
     def log_parser(self, log: str) -> dict[str, str]:
@@ -592,6 +597,7 @@ RUN apt update && apt install -y git
 RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN npm ci
+CMD ["/bin/bash"]
 """
 
     def log_parser(self, log: str) -> dict[str, str]:
@@ -616,6 +622,7 @@ RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN npm install
 RUN npm run build
+CMD ["/bin/bash"]
 """
 
     def log_parser(self, log: str) -> dict[str, str]:
@@ -640,6 +647,7 @@ RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN npm ci
 RUN npm run build
+CMD ["/bin/bash"]
 """
 
     def log_parser(self, log: str) -> dict[str, str]:
@@ -661,6 +669,7 @@ RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN npm install
 RUN npm run build
+CMD ["/bin/bash"]
 """
 
     def log_parser(self, log: str) -> dict[str, str]:

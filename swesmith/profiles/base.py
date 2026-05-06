@@ -548,6 +548,11 @@ class RepoProfile(ABC, metaclass=SingletonMeta):
             content,
             flags=re.MULTILINE,
         )
+
+        # Safety net: ensure CMD is always present (profiles can override with their own CMD)
+        if "CMD " not in content:
+            content += '\nCMD ["/bin/bash"]\n'
+
         return content
 
     def build_image(self, platform: str | None = None, output_tar: Path | None = None):

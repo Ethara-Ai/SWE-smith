@@ -154,6 +154,7 @@ RUN apt update && apt install -y wget git build-essential \
 RUN git clone {self.mirror_url} /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN {self.test_cmd} || true
+CMD ["/bin/bash"]
 """
 
 
@@ -261,6 +262,7 @@ RUN apt update && apt install -y wget git build-essential \
 RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN git submodule update --init
+CMD ["/bin/bash"]
 """
 
 
@@ -306,6 +308,7 @@ RUN apt update && apt install -y wget git build-essential \
 RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN cargo build --release
+CMD ["/bin/bash"]
 """
 
 
@@ -565,6 +568,7 @@ RUN apt update && apt install -y wget git build-essential \
 RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN {self.test_cmd} || true
+CMD ["/bin/bash"]
 """
 
 

@@ -154,6 +154,7 @@ RUN git clone {self.mirror_url} /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN bundle install || true
 RUN {self.test_cmd} || true
+CMD ["/bin/bash"]
 """
 
 
@@ -217,6 +218,7 @@ RUN git clone {self.mirror_url} /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN bundle install || true
 RUN {self.test_cmd} || true
+CMD ["/bin/bash"]
 """
 
 
@@ -255,6 +257,7 @@ RUN git clone {self.mirror_url} /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN bundle install || true
 RUN {self.test_cmd} || true
+CMD ["/bin/bash"]
 """
 
 
@@ -306,6 +309,7 @@ RUN git clone {self.mirror_url} /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN bundle install || true
 RUN {self.test_cmd} || true
+CMD ["/bin/bash"]
 """
 
 
@@ -337,6 +341,7 @@ RUN git clone {self.mirror_url} /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN bundle install || true
 RUN {self.test_cmd} || true
+CMD ["/bin/bash"]
 """
 
 
@@ -427,6 +432,7 @@ RUN git clone {self.mirror_url} /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN bundle install || true
 RUN {self.test_cmd} || true
+CMD ["/bin/bash"]
 """
 
 
@@ -450,6 +456,7 @@ RUN git clone {self.mirror_url} /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN bundle install || true
 RUN {self.test_cmd} || true
+CMD ["/bin/bash"]
 """
 
 

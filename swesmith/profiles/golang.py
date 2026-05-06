@@ -39,6 +39,7 @@ RUN git clone {self.mirror_url} /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN go mod tidy
 RUN go test -v -count=1 ./... || true
+CMD ["/bin/bash"]
 """
 
     def _build_test_name_to_files_map(self) -> dict[str, set[str]]:
@@ -351,6 +352,7 @@ RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN go mod init github.com/tylertreat/BoomFilters
 RUN go mod tidy
+CMD ["/bin/bash"]
 """
 
 
@@ -367,6 +369,7 @@ RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN go mod init github.com/go-ini/ini
 RUN go mod tidy
+CMD ["/bin/bash"]
 """
 
 
@@ -623,6 +626,7 @@ RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN go mod init github.com/lqs/sqlingo
 RUN go mod tidy
+CMD ["/bin/bash"]
 """
 
 
@@ -794,6 +798,7 @@ RUN git clone {self.mirror_url} /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN go mod tidy
 RUN go test -v -count=1 ./... || true
+CMD ["/bin/bash"]
 """
 
 
@@ -812,6 +817,7 @@ RUN git clone {self.mirror_url} /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN go mod tidy
 RUN go test -v -count=1 ./... || true
+CMD ["/bin/bash"]
 """
 
 
@@ -847,6 +853,7 @@ class God5ebe810(GoProfile):
 RUN git clone {self.mirror_url} /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN go test -v -count=1 ./... || true
+CMD ["/bin/bash"]
 """
 
 

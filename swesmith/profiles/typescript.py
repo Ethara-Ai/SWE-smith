@@ -91,6 +91,7 @@ RUN apt-get update && apt-get install -y git procps && rm -rf /var/lib/apt/lists
 RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN npm install
+CMD ["/bin/bash"]
 """
 
     def log_parser(self, log: str) -> dict[str, str]:

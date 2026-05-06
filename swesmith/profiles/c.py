@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 from swebench.harness.constants import TestStatus
 from swesmith.constants import ENV_NAME
 from swesmith.profiles.base import RepoProfile, registry
+from swesmith.profiles.cpp import parse_log_ctest
 
 
 @dataclass
@@ -89,6 +90,7 @@ WORKDIR /{ENV_NAME}
 RUN cd deps/jemalloc && ./autogen.sh
 RUN make distclean
 RUN make
+CMD ["/bin/bash"]
 """
 
     def log_parser(self, log: str) -> dict[str, str]:
@@ -129,6 +131,7 @@ ENV CFLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer" \
     LDFLAGS="-fsanitize=address,undefined"
 RUN ./configure --disable-doc --disable-debug
 RUN make -j$(nproc)
+CMD ["/bin/bash"]
 """
 
     def log_parser(self, log: str) -> dict[str, str]:
@@ -151,6 +154,155 @@ RUN make -j$(nproc)
         for name in failed:
             if name not in test_status_map:
                 test_status_map[name] = TestStatus.FAILED.value
+        return test_status_map
+
+
+@dataclass
+class Hdf586bdc783(CProfile):
+    owner: str = "HDFGroup"
+    repo: str = "hdf5"
+    commit: str = "86bdc78365c483b660dc0026f0288f200e555abf"
+    test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1 -j$(nproc)"
+    timeout: int = 900
+    bug_gen_dirs_exclude: list[str] = field(
+        default_factory=lambda: [
+            "c++",
+            "fortran",
+            "java",
+            "hl",
+            "tools",
+            "utils",
+            "HDF5Examples",
+            "config",
+            "bin",
+            "release_docs",
+            "testpar",
+        ]
+    )
+
+    @property
+    def dockerfile(self):
+        return f"""FROM ubuntu:24.04
+RUN apt-get update && apt-get install -y build-essential cmake git zlib1g-dev pkg-config && rm -rf /var/lib/apt/lists/*
+RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN mkdir build && cd build && cmake .. -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON -DHDF5_BUILD_CPP_LIB=OFF -DHDF5_BUILD_FORTRAN=OFF -DHDF5_BUILD_JAVA=OFF -DHDF5_BUILD_HL_LIB=ON -DHDF5_BUILD_TOOLS=OFF -DHDF5_BUILD_EXAMPLES=OFF -DHDF5_ENABLE_ZLIB_SUPPORT=ON && make -j$(nproc)
+CMD ["/bin/bash"]
+"""
+
+    def log_parser(self, log: str) -> dict[str, str]:
+        return parse_log_ctest(log)
+
+
+@dataclass
+class Openssl5b9f03c0(CProfile):
+    owner: str = "openssl"
+    repo: str = "openssl"
+    commit: str = "5b9f03c0f4a6121c64f3129ce20c171f0862dd09"
+    test_cmd: str = "make test HARNESS_JOBS=$(nproc)"
+    timeout: int = 1200
+    bug_gen_dirs_exclude: list[str] = field(
+        default_factory=lambda: [
+            "Configurations",
+            "apps",
+            "demos",
+            "doc",
+            "engines",
+            "fuzz",
+            "pyca-cryptography",
+            "krb5",
+            "gost-engine",
+            "wycheproof",
+            "tlsfuzzer",
+            "python-ecdsa",
+            "tlslite-ng",
+            "oqs-provider",
+            "cloudflare-quiche",
+            "pkcs11-provider",
+            "VMS",
+            "external",
+            "util",
+        ]
+    )
+
+    @property
+    def dockerfile(self):
+        return f"""FROM ubuntu:22.04
+RUN apt-get update && apt-get install -y build-essential git perl && rm -rf /var/lib/apt/lists/*
+RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN ./Configure no-docs no-shared && make -j$(nproc)
+CMD ["/bin/bash"]
+"""
+
+    def log_parser(self, log: str) -> dict[str, str]:
+        test_status_map = {}
+        for line in log.split("\n"):
+            # prove/Test::Harness format: "ok N - test_name" or "not ok N - test_name"
+            match = re.match(r"^(ok|not ok)\s+\d+\s+-\s+(.+)$", line.strip())
+            if match:
+                status, test_name = match.groups()
+                if status == "ok":
+                    test_status_map[test_name] = TestStatus.PASSED.value
+                else:
+                    test_status_map[test_name] = TestStatus.FAILED.value
+                continue
+            # .t file result lines: "ok 1 - some_test.t" at top-level prove output
+            match = re.match(r"^(.+\.t)\s+\.+\s+(ok|FAILED)", line.strip())
+            if match:
+                test_name, status = match.groups()
+                if status == "ok":
+                    test_status_map[test_name] = TestStatus.PASSED.value
+                else:
+                    test_status_map[test_name] = TestStatus.FAILED.value
+        return test_status_map
+
+
+@dataclass
+class Nghttp2c06ac6a0(CProfile):
+    owner: str = "nghttp2"
+    repo: str = "nghttp2"
+    commit: str = "c06ac6a0d2fd713f566f5c48e1ecf3a3ed3d899c"
+    test_cmd: str = "cd build && make main && ./tests/main"
+    timeout: int = 600
+    bug_gen_dirs_exclude: list[str] = field(
+        default_factory=lambda: [
+            "src",
+            "third-party",
+            "examples",
+            "contrib",
+            "doc",
+            "docker",
+            "bpf",
+            "integration-tests",
+            "fuzz",
+            "fedora",
+        ]
+    )
+
+    @property
+    def dockerfile(self):
+        return f"""FROM ubuntu:22.04
+RUN apt-get update && apt-get install -y build-essential cmake git && rm -rf /var/lib/apt/lists/*
+RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN git submodule update --init --recursive
+RUN mkdir build && cd build && cmake .. -DENABLE_LIB_ONLY=ON -DBUILD_STATIC_LIBS=ON -DBUILD_TESTING=ON && make -j$(nproc)
+CMD ["/bin/bash"]
+"""
+
+    def log_parser(self, log: str) -> dict[str, str]:
+        test_status_map = {}
+        for line in log.split("\n"):
+            match = re.match(r"^(\S+)\s+\[\s*(OK|FAIL|SKIP|ERROR)\s*\]", line.strip())
+            if match:
+                test_name, status = match.groups()
+                if status == "OK":
+                    test_status_map[test_name] = TestStatus.PASSED.value
+                elif status == "FAIL" or status == "ERROR":
+                    test_status_map[test_name] = TestStatus.FAILED.value
+                elif status == "SKIP":
+                    test_status_map[test_name] = TestStatus.SKIPPED.value
         return test_status_map
 
 

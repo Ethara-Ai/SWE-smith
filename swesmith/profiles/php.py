@@ -123,6 +123,7 @@ RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN composer update
 RUN composer install
+CMD ["/bin/bash"]
 """
 
     def log_parser(self, log: str) -> dict[str, str]:
@@ -180,6 +181,7 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN composer install
+CMD ["/bin/bash"]
 """
 
     def log_parser(self, log: str) -> dict[str, str]:
@@ -204,6 +206,7 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN composer install --ignore-platform-req=ext-mongodb
+CMD ["/bin/bash"]
 """
 
     def log_parser(self, log: str) -> dict[str, str]:

@@ -227,6 +227,7 @@ RUN apt-get install -y maven
 RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN mvn clean install -B -pl gson -DskipTests -am
+CMD ["/bin/bash"]
 """
 
     def log_parser(self, log: str) -> dict[str, str]:
@@ -1205,7 +1206,9 @@ RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
 
 RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
 WORKDIR /{ENV_NAME}
-RUN ./mvnw clean install -B -q -DskipTests"""
+RUN ./mvnw clean install -B -q -DskipTests
+CMD ["/bin/bash"]
+"""
 
     def log_parser(self, log: str) -> dict[str, str]:
         """Parse Maven Surefire text output with per-method granularity.
