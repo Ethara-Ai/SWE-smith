@@ -2458,7 +2458,10 @@ RUN apt-get update && apt-get install -y \
     cmake \
     git \
     build-essential \
+    python3-pip \
     && rm -rf /var/lib/apt/lists/*
+
+RUN pip install cmake --upgrade
 
 RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
 WORKDIR /{ENV_NAME}
