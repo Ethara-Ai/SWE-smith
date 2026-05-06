@@ -6319,6 +6319,21 @@ class Xgboost3284a0ff(CppProfile):
     repo: str = "xgboost"
     commit: str = "3284a0fff5f321beb29938a65e534bb487a8432e"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
+    timeout: int = 600
+    bug_gen_dirs_exclude: list[str] = field(
+        default_factory=lambda: [
+            "dmlc-core",
+            "gputreeshap",
+            "plugin",
+            "R-package",
+            "jvm-packages",
+            "python-package",
+            "demo",
+            "amalgamation",
+            "ops",
+            "dev",
+        ]
+    )
 
     @property
     def dockerfile(self):
@@ -6328,12 +6343,7 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
     git \
-    python3 \
-    python3-pip \
-    python3-dev \
-    libgtest-dev \
-    libgoogle-perftools-dev \
-    wget \
+    libomp-dev \
     && rm -rf /var/lib/apt/lists/*
 
 
@@ -6341,12 +6351,8 @@ RUN git clone https://github.com/{self.mirror_name}.git /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN git submodule update --init --recursive
 
-# Install Python dependencies
-RUN pip3 install --no-cache-dir numpy scipy pandas scikit-learn pytest
-
-# Build XGBoost with tests enabled and CUDA disabled
 RUN mkdir build && cd build && \
-    cmake .. -DBUILD_TESTS=ON -DUSE_CUDA=OFF -DUSE_NCCL=OFF && \
+    cmake .. -DGOOGLE_TEST=ON -DUSE_DMLC_GTEST=ON -DUSE_CUDA=OFF -DUSE_NCCL=OFF && \
     make -j$(nproc)
 
 CMD ["/bin/bash"]"""
