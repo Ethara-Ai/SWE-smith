@@ -154,6 +154,19 @@ class Frp8666e364(GoProfile):
     owner: str = "fatedier"
     repo: str = "frp"
     commit: str = "8666e3643f4e8cc3ec65780c48e20c8904b17856"
+    eval_sets: set[str] = field(
+        default_factory=lambda: {"SWE-bench/SWE-bench_Multilingual"}
+    )
+
+    @property
+    def dockerfile(self):
+        return f"""FROM golang:1.25
+RUN git clone {self.mirror_url} /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN go mod tidy
+RUN go test -v -count=1 ./... || true
+CMD ["/bin/bash"]
+"""
 
 
 @dataclass
