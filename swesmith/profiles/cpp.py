@@ -8639,16 +8639,26 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Qpdf40801e52(CppProfile):
+class Qpdf1db502a0(CppProfile):
     owner: str = "qpdf"
     repo: str = "qpdf"
-    commit: str = "40801e523e1fb0ccbc1a09c4d573a3e92d2b46c0"
+    commit: str = "1db502a0e7438cd7079e8aac1ce6be9fec517573"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
+    timeout: int = 600
+    bug_gen_dirs_exclude: list[str] = field(
+        default_factory=lambda: [
+            "fuzz",
+            "manual",
+            "examples",
+            "completions",
+            "zlib-flate",
+            "compare-for-test",
+        ]
+    )
 
     @property
     def dockerfile(self):
         return f"""FROM ubuntu:22.04
-
 RUN apt-get update && apt-get install -y \
     git \
     build-essential \
@@ -8661,20 +8671,12 @@ RUN apt-get update && apt-get install -y \
     libssl-dev \
     perl \
     && rm -rf /var/lib/apt/lists/*
-
-
 RUN git clone https://github.com/{self.mirror_name}.git /{ENV_NAME}
 WORKDIR /{ENV_NAME}
-RUN git submodule update --init --recursive
-
 RUN cmake -B build -G Ninja \
     -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-    -DBUILD_TESTING=ON \
-    -DREQUIRE_CRYPTO_OPENSSL=ON \
-    -DREQUIRE_CRYPTO_GNUTLS=ON
-
+    -DBUILD_TESTING=ON
 RUN cmake --build build
-
 CMD ["/bin/bash"]"""
 
     def log_parser(self, log: str) -> dict[str, str]:
