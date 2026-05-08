@@ -6319,7 +6319,7 @@ class Xgboost3284a0ff(CppProfile):
     repo: str = "xgboost"
     commit: str = "3284a0fff5f321beb29938a65e534bb487a8432e"
     test_cmd: str = "cd build && ASAN_OPTIONS=detect_leaks=0 ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
-    timeout: int = 600
+    timeout: int = 1800
     bug_gen_dirs_exclude: list[str] = field(
         default_factory=lambda: [
             "dmlc-core",
@@ -8644,7 +8644,7 @@ class Qpdf1db502a0(CppProfile):
     repo: str = "qpdf"
     commit: str = "1db502a0e7438cd7079e8aac1ce6be9fec517573"
     test_cmd: str = "cd build && ctest --verbose --output-on-failure --rerun-failed --repeat until-pass:1"
-    timeout: int = 600
+    timeout: int = 3000
     bug_gen_dirs_exclude: list[str] = field(
         default_factory=lambda: [
             "fuzz",

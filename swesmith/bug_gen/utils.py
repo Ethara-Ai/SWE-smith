@@ -216,10 +216,18 @@ def get_patch(repo: str, reset_changes: bool = False):
     ]:
         subprocess.run(cleanup_cmd.split(), check=True, **DEVNULL)
     patch_file = os.path.join(repo, TEMP_PATCH)
-    with open(patch_file, "w") as f:
-        f.write(patch)
-    subprocess.run(["git", "-C", repo, "apply", TEMP_PATCH], check=True)
-    if reset_changes:
-        subprocess.run(["git", "-C", repo, "reset", "--hard"], check=True, **DEVNULL)
-        subprocess.run(["git", "-C", repo, "clean", "-fdx"], check=True, **DEVNULL)
-    return patch
+    try:
+        if os.path.exists(patch_file):
+            os.remove(patch_file)
+        with open(patch_file, "w") as f:
+            f.write(patch)
+        subprocess.run(["git", "-C", repo, "apply", TEMP_PATCH], check=True)
+        if reset_changes:
+            subprocess.run(
+                ["git", "-C", repo, "reset", "--hard"], check=True, **DEVNULL
+            )
+            subprocess.run(["git", "-C", repo, "clean", "-fdx"], check=True, **DEVNULL)
+        return patch
+    finally:
+        if os.path.exists(patch_file):
+            os.remove(patch_file)

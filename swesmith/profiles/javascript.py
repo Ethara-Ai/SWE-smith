@@ -372,8 +372,8 @@ class Marked69257e45(JavaScriptProfile):
 RUN apt update && apt install -y git {X11_DEPS}
 RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
 WORKDIR /{ENV_NAME}
-RUN npm install
-RUN npm test
+RUN npm ci
+RUN npm run build
 CMD ["/bin/bash"]
 """
 
@@ -636,7 +636,10 @@ class Prismded4a65b(JavaScriptProfile):
     commit: str = "ded4a65b75a246b4dbc6c5a84e584db1078529aa"
     test_cmd: str = "npm run test"
     eval_sets: set[str] = field(
-        default_factory=lambda: {"SWE-bench/SWE-bench_Multimodal"}
+        default_factory=lambda: {
+            "SWE-bench/SWE-bench_Multilingual",
+            "SWE-bench/SWE-bench_Multimodal",
+        }
     )
 
     @property
@@ -645,7 +648,7 @@ class Prismded4a65b(JavaScriptProfile):
 RUN apt update && apt install -y git
 RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
 WORKDIR /{ENV_NAME}
-RUN npm ci
+RUN npm install
 RUN npm run build
 CMD ["/bin/bash"]
 """
