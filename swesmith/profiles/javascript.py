@@ -194,7 +194,7 @@ def parse_log_mocha(log: str) -> dict[str, str]:
     test_status_map = {}
     # Pattern for checkmark/x/dash style output
     # Note: Match both ✓ (U+2713) and ✔ (U+2714) checkmarks as different Mocha versions use different symbols
-    pattern = r"^\s*([✓✔]|✖|-)\s(.+?)(?:\s\((\d+\s*m?s)\))?$"
+    pattern = r"^\s*([✓✔]|[✖✘]|-)\s(.+?)(?:\s\((\d+\s*m?s)\))?$"
     # Pattern for numbered failures like "1) test name" or "1) should solve..."
     fail_pattern = r"^\s*\d+\)\s+(.+?)(?:\s\((\d+\s*m?s)\))?$"
     for line in log.split("\n"):
@@ -203,7 +203,7 @@ def parse_log_mocha(log: str) -> dict[str, str]:
             status_symbol, test_name, _duration = match.groups()
             if status_symbol in ("✓", "✔"):
                 test_status_map[test_name] = TestStatus.PASSED.value
-            elif status_symbol == "✖":
+            elif status_symbol in ("✖", "✘"):
                 test_status_map[test_name] = TestStatus.FAILED.value
             elif status_symbol == "-":
                 test_status_map[test_name] = TestStatus.SKIPPED.value
@@ -222,10 +222,10 @@ def parse_log_vitest(log: str) -> dict[str, str]:
         # Vitest uses ✓ for passing test files and ❯ for test files with failures
         (r"^✓\s+(.+?)(?:\s+\([\.\d]+ms\))?$", TestStatus.PASSED.value),
         (r"^❯\s+(.+?)(?:\s+\(.*?\))?$", TestStatus.FAILED.value),  # Failed test files
-        (r"^✗\s+(.+?)(?:\s+\([\.\d]+ms\))?$", TestStatus.FAILED.value),
+        (r"^[✗×]\s+(.+?)(?:\s+\([\.\d]+ms\))?$", TestStatus.FAILED.value),
         (r"^○\s+(.+?)(?:\s+\([\.\d]+ms\))?$", TestStatus.SKIPPED.value),
         (r"^✓\s+(.+?)$", TestStatus.PASSED.value),
-        (r"^✗\s+(.+?)$", TestStatus.FAILED.value),
+        (r"^[✗×]\s+(.+?)$", TestStatus.FAILED.value),
         (r"^○\s+(.+?)$", TestStatus.SKIPPED.value),
     ]
     for line in log.split("\n"):
@@ -321,6 +321,81 @@ def parse_log_jasmine(log: str) -> dict[str, str]:
                 )
 
             break  # Only process the first summary line
+
+    return test_status_map
+
+
+def parse_log_qunit(log: str) -> dict[str, str]:
+    """
+    Parser for QUnit test output. Supports two formats:
+    1. TAP format (QUnit CLI): "ok N test name" / "not ok N test name"
+    2. jtr format (jquery-test-runner): summary line "X failed. Y passed. Z skipped."
+    """
+    test_status_map = {}
+
+    # First try TAP format (QUnit CLI direct)
+    tap_pattern = r"^(ok|not ok)\s+(\d+)\s*(?:-\s+)?([^#]*?)?\s*(?:#\s*(SKIP|TODO).*?)?\s*$"
+    for line in log.split("\n"):
+        match = re.match(tap_pattern, line.strip())
+        if match:
+            status, _num, test_name, directive = match.groups()
+            test_name = (test_name or "").strip()
+            if not test_name:
+                test_name = f"test_{_num}"
+
+            if directive in ("SKIP", "TODO"):
+                test_status_map[test_name] = TestStatus.SKIPPED.value
+            elif status == "ok":
+                test_status_map[test_name] = TestStatus.PASSED.value
+            else:
+                test_status_map[test_name] = TestStatus.FAILED.value
+
+    if test_status_map:
+        return test_status_map
+
+    # Fallback: jtr summary format "X failed. Y passed. Z skipped."
+    summary_pattern = r"(\d+)\s+failed\.\s+(\d+)\s+passed\.\s+(\d+)\s+skipped\."
+    for line in log.split("\n"):
+        match = re.search(summary_pattern, line.strip())
+        if match:
+            failed = int(match.group(1))
+            passed = int(match.group(2))
+            skipped = int(match.group(3))
+
+            for i in range(passed):
+                test_status_map[f"qunit_test_{i + 1}"] = TestStatus.PASSED.value
+            for i in range(failed):
+                test_status_map[f"qunit_test_failed_{i + 1}"] = TestStatus.FAILED.value
+            for i in range(skipped):
+                test_status_map[f"qunit_test_skipped_{i + 1}"] = TestStatus.SKIPPED.value
+            return test_status_map
+
+    return test_status_map
+
+
+def parse_log_tap(log: str) -> dict[str, str]:
+    """
+    Parser for TAP (Test Anything Protocol) format output.
+    Used by tape, node-tap, and other TAP-compatible runners.
+    Format: "ok N test name" / "not ok N test name"
+    """
+    test_status_map = {}
+    pattern = r"^(ok|not ok)\s+(\d+)\s*(?:-\s+)?([^#]*?)?\s*(?:#\s*(SKIP|TODO).*?)?\s*$"
+
+    for line in log.split("\n"):
+        match = re.match(pattern, line.strip())
+        if match:
+            status, _num, test_name, directive = match.groups()
+            test_name = (test_name or "").strip()
+            if not test_name:
+                test_name = f"test_{_num}"
+
+            if directive in ("SKIP", "TODO"):
+                test_status_map[test_name] = TestStatus.SKIPPED.value
+            elif status == "ok":
+                test_status_map[test_name] = TestStatus.PASSED.value
+            else:
+                test_status_map[test_name] = TestStatus.FAILED.value
 
     return test_status_map
 
@@ -1276,7 +1351,7 @@ RUN npm install
 CMD ["/bin/bash"]"""
 
     def log_parser(self, log: str) -> dict[str, str]:
-        return parse_log_mocha(log)
+        return parse_log_tap(log)
 
 
 @dataclass
@@ -1689,7 +1764,7 @@ class Recoilc1b97f3a(JavaScriptProfile):
     owner: str = "facebookexperimental"
     repo: str = "Recoil"
     commit: str = "c1b97f3a0117cad76cbc6ab3cb06d89a9ce717af"
-    test_cmd: str = "yarn relay"
+    test_cmd: str = "yarn test"
 
     @property
     def dockerfile(self):
@@ -1986,7 +2061,7 @@ RUN npm run build-debug
 CMD ["/bin/bash"]"""
 
     def log_parser(self, log: str) -> dict[str, str]:
-        return parse_log_jasmine(log)
+        return parse_log_karma(log)
 
 
 @dataclass
@@ -2577,16 +2652,6 @@ CMD ["/bin/bash"]"""
 
     def log_parser(self, log: str) -> dict[str, str]:
         return parse_log_mocha(log)
-
-
-# Register all JavaScript profiles with the global registry
-for name, obj in list(globals().items()):
-    if (
-        isinstance(obj, type)
-        and issubclass(obj, JavaScriptProfile)
-        and obj.__name__ != "JavaScriptProfile"
-    ):
-        registry.register_profile(obj)
 
 
 # Register all JavaScript profiles with the global registry
