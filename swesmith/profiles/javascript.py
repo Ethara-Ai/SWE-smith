@@ -2654,6 +2654,27 @@ CMD ["/bin/bash"]"""
         return parse_log_mocha(log)
 
 
+@dataclass
+class Shieldse89cc5a5(JavaScriptProfile):
+    owner: str = "badges"
+    repo: str = "shields"
+    commit: str = "e89cc5a5f781be6686932f1438540cef842f051a"
+    test_cmd: str = "npm run test:core -- --reporter spec --ignore 'core/server/server.spec.js'"
+
+    @property
+    def dockerfile(self):
+        return f"""FROM node:22-bullseye
+RUN apt-get update && apt-get install -y git python3 build-essential && rm -rf /var/lib/apt/lists/*
+RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN CYPRESS_INSTALL_BINARY=0 npm ci
+RUN npm run defs
+CMD ["/bin/bash"]"""
+
+    def log_parser(self, log: str) -> dict[str, str]:
+        return parse_log_mocha(log)
+
+
 # Register all JavaScript profiles with the global registry
 for name, obj in list(globals().items()):
     if (
