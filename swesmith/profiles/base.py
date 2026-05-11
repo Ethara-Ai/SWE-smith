@@ -251,6 +251,8 @@ class RepoProfile(ABC, metaclass=SingletonMeta):
 
     exts: list[str] = field(default_factory=list)  # Must be set by subclass
     eval_sets: set[str] = field(default_factory=set)
+    bug_gen_dirs_exclude: list[str] = field(default_factory=list)
+    bug_gen_dirs_include: dict[str, list[str]] = field(default_factory=dict)
 
     # Install + Test specifications
     timeout: int = 90  # timeout (sec) for running test suite for a single instance
@@ -724,12 +726,19 @@ class RepoProfile(ABC, metaclass=SingletonMeta):
         dir_path, cloned = self.clone()
         entities = []
         for root, _, files in os.walk(dir_path):
+            rel_root = os.path.relpath(root, dir_path).replace(os.sep, "/")
             for file in files:
                 if exclude_tests and self._is_test_path(root, file):
                     continue
-                if dirs_exclude and any([x in root for x in dirs_exclude]):
+                if dirs_exclude and any(
+                    rel_root == x or rel_root.startswith(x + "/") or ("/" + x + "/") in ("/" + rel_root + "/")
+                    for x in dirs_exclude
+                ):
                     continue
-                if dirs_include and not any([x in root for x in dirs_include]):
+                if dirs_include and not any(
+                    rel_root == x or rel_root.startswith(x + "/") or ("/" + x + "/") in ("/" + rel_root + "/")
+                    for x in dirs_include
+                ):
                     continue
 
                 file_path = os.path.join(root, file)

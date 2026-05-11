@@ -2468,6 +2468,36 @@ class Nest3c6c2855(TypeScriptProfile):
     repo: str = "nest"
     commit: str = "3c6c285561f56c2f9e0301f0b8bbf7b2c1395806"
     test_cmd: str = "npm test"
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-20": [
+                "packages/common/pipes",
+                "packages/microservices/deserializers",
+                "packages/core/router",
+                "packages/platform-express/adapters",
+                "packages/platform-fastify/adapters",
+            ],
+            "CWE-754": [
+                "packages/core/injector",
+                "packages/core/router",
+                "packages/core/middleware",
+                "packages/core/exceptions",
+                "packages/microservices/server",
+                "packages/microservices/client",
+                "packages/microservices/helpers",
+            ],
+            "CWE-670": [
+                "packages/core/injector",
+                "packages/core/router",
+                "packages/core/middleware",
+                "packages/core/exceptions",
+                "packages/microservices/server",
+                "packages/microservices/client",
+                "packages/common/pipes",
+                "packages/platform-fastify/adapters",
+            ],
+        }
+    )
 
     @property
     def dockerfile(self):

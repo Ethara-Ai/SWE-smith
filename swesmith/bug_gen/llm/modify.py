@@ -136,8 +136,23 @@ def main(
     rp = registry.get(repo)
     rp.clone()
     print("Extracting candidates...")
-    candidates = rp.extract_entities()
+    params = configs.get("parameters", {})
+    cwe_ids = params.get("cwe_ids", [])
+    if not cwe_ids and params.get("cwe_id"):
+        cwe_ids = [params["cwe_id"]]
+    include_dirs: list[str] = []
+    for cwe_id in cwe_ids:
+        dirs = rp.bug_gen_dirs_include.get(cwe_id, [])
+        if not dirs:
+            print(f"WARNING: {rp.__class__.__name__} has no directory mapping for {cwe_id}. Using all candidates.")
+        include_dirs.extend(d for d in dirs if d not in include_dirs)
+    candidates = rp.extract_entities(
+        dirs_exclude=rp.bug_gen_dirs_exclude,
+        dirs_include=include_dirs,
+    )
     print(f"{len(candidates)} candidates found in {repo}")
+    if include_dirs:
+        print(f"Restricted to directories: {include_dirs}")
     if not candidates:
         print(f"No candidates found in {repo}.")
         return
