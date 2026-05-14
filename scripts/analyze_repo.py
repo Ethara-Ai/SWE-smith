@@ -1101,6 +1101,7 @@ def main():
     print("\n[3/6] Checking for existing profile...")
     repo_id = f"{owner}__{repo}.{commit[:8]}"
     existing_key = find_existing_profile(owner, repo)
+    test_cmd: str = ""
 
     if existing_key:
         print(f"  Found existing profile: {existing_key}")
@@ -1119,7 +1120,7 @@ def main():
         rp = _create_temp_profile(owner, repo, commit, test_cmd, language)
 
     print("\n[4/6] Cloning and extracting entities...")
-    rp.create_mirror() 
+    rp.create_mirror()
     repo_root, _ = rp.clone()
     print(f"  Cloned to: {repo_root}")
 
@@ -1142,6 +1143,23 @@ def main():
         print(f"\n  ⚠ Dockerfile warnings:")
         for w in docker_warnings:
             print(f"    - {w}")
+
+    if not existing_key:
+        print(
+            "\n  Adding bare profile (empty bug_gen_dirs_include) to language file..."
+        )
+        profiles_dir = Path(__file__).resolve().parent.parent / "swesmith" / "profiles"
+        bare_profile_code = generate_profile_code(
+            owner,
+            repo,
+            commit,
+            language,
+            test_cmd,
+            bug_gen_dirs_include={},
+            build_info=build_info,
+        )
+        bare_path = insert_profile_into_file(bare_profile_code, language, profiles_dir)
+        print(f"  Added bare profile in: {bare_path}")
 
     entities = rp.extract_entities(dirs_exclude=rp.bug_gen_dirs_exclude)
     print(f"\n  Total candidates: {len(entities)}")
@@ -1224,33 +1242,17 @@ def main():
             for d in dirs:
                 print(f"      - {d}")
 
-    if not existing_key:
-        if args.test_cmd:
-            test_cmd = args.test_cmd
-        else:
-            test_cmd = detect_test_command(owner, repo, commit)
-
-        profile_code = generate_profile_code(
-            owner,
-            repo,
-            commit,
-            language,
-            test_cmd,
-            bug_gen_dirs_include,
-            build_info=build_info,
-        )
-        print(f"\n  Generated profile code:")
-        print(f"  {'─' * 50}")
-        for line in profile_code.split("\n"):
-            print(f"  {line}")
-        print(f"  {'─' * 50}")
-
     if args.dry_run:
-        print(f"\n  [DRY RUN] No files modified.")
+        if not existing_key:
+            print(
+                f"\n  Bare profile already added above. bug_gen_dirs_include NOT written (--dry-run)."
+            )
+        else:
+            print(f"\n  [DRY RUN] No files modified.")
     else:
         profiles_dir = Path(__file__).resolve().parent.parent / "swesmith" / "profiles"
 
-        if existing_key:
+        if bug_gen_dirs_include:
             result_path = update_existing_profile_dirs_include(
                 repo_id, bug_gen_dirs_include, profiles_dir, language
             )
@@ -1261,18 +1263,7 @@ def main():
                 print(f"  Paste this into the profile class:")
                 print(format_dirs_include_field(bug_gen_dirs_include))
         else:
-            test_cmd_final = args.test_cmd or detect_test_command(owner, repo, commit)
-            profile_code = generate_profile_code(
-                owner,
-                repo,
-                commit,
-                language,
-                test_cmd_final,
-                bug_gen_dirs_include,
-                build_info=build_info,
-            )
-            result_path = insert_profile_into_file(profile_code, language, profiles_dir)
-            print(f"\n  Created profile in: {result_path}")
+            print(f"\n  No CWE mapping to write.")
 
     import shutil
 
