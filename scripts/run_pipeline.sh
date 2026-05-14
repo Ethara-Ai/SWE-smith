@@ -5,7 +5,7 @@ set -uo pipefail
 MAX_PARALLEL=2
 START_STEP=1
 START_STEP_REPO_INDEX=-1
-MODEL="bedrock/converse/arn:aws:bedrock:ap-south-1:426628337772:application-inference-profile/k15bb853wwgi"
+MODEL=""
 MAX_BUGS=2000
 N_WORKERS=1
 VALIDATION_WORKERS=2

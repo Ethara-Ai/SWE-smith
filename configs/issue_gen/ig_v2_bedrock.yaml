@@ -1,4 +1,4 @@
-model: bedrock/converse/arn:aws:bedrock:ap-south-1:426628337772:application-inference-profile/k15bb853wwgi
+model: 
 litellm_model_name_override: ""
 provider: ""
 system: |-
