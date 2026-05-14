@@ -148,7 +148,7 @@ RUN npm install -g pnpm@10.27.0 &&     pnpm install --ignore-scripts &&     pnpm
 CMD ["/bin/bash"]"""
 
     def log_parser(self, log: str) -> dict[str, str]:
-        return parse_log_vitest(log)
+        return parse_log_jest(log)
 
 
 @dataclass
@@ -270,7 +270,7 @@ RUN pnpm install --no-frozen-lockfile
 CMD ["/bin/bash"]"""
 
     def log_parser(self, log: str) -> dict[str, str]:
-        return parse_log_vitest(log)
+        return parse_log_jest(log)
 
 
 @dataclass
@@ -347,7 +347,7 @@ RUN bun install
 CMD ["/bin/bash"]"""
 
     def log_parser(self, log: str) -> dict[str, str]:
-        return parse_log_vitest(log)
+        return parse_log_jest(log)
 
 
 @dataclass
@@ -449,7 +449,7 @@ RUN bun install
 CMD ["/bin/bash"]"""
 
     def log_parser(self, log: str) -> dict[str, str]:
-        return parse_log_vitest(log)
+        return parse_log_jest(log)
 
 
 # @dataclass
@@ -637,7 +637,7 @@ RUN pnpm install
 CMD ["/bin/bash"]"""
 
     def log_parser(self, log: str) -> dict[str, str]:
-        return parse_log_vitest(log)
+        return parse_log_jest(log)
 
 
 @dataclass
@@ -688,7 +688,7 @@ ENV VITE_APP_API_URL=http://localhost:3000
 CMD ["yarn", "test"]"""
 
     def log_parser(self, log: str) -> dict[str, str]:
-        return parse_log_vitest(log)
+        return parse_log_jest(log)
 
 
 @dataclass
@@ -1134,7 +1134,7 @@ RUN bun install
 CMD ["/bin/bash"]"""
 
     def log_parser(self, log: str) -> dict[str, str]:
-        return parse_log_vitest(log)
+        return parse_log_jest(log)
 
 
 @dataclass
@@ -1259,7 +1259,7 @@ RUN cd gui && npm install
 CMD ["/bin/bash"]"""
 
     def log_parser(self, log: str) -> dict[str, str]:
-        return parse_log_vitest(log)
+        return parse_log_jest(log)
 
 
 @dataclass
@@ -1284,7 +1284,7 @@ RUN yarn install && yarn build
 CMD ["/bin/bash"]"""
 
     def log_parser(self, log: str) -> dict[str, str]:
-        return parse_log_vitest(log)
+        return parse_log_jest(log)
 
 
 @dataclass
@@ -1393,11 +1393,8 @@ CMD ["/bin/bash"]"""
             m = re.match(r"^\s*(\S+?:test\S*)\s*:", line)
             if m:
                 task_name = m.group(1)
-                if "ERROR" in line:
-                    results[task_name] = "FAILED"
-                elif task_name not in results:
-                    results[task_name] = "PASSED"
-            elif "ERROR" in line and ":" in line:
+                results.setdefault(task_name, "PASSED")
+            if "ERROR" in line and ":" in line:
                 parts = line.split(":")
                 if len(parts) >= 2:
                     task = parts[0].strip()
@@ -1740,7 +1737,7 @@ RUN bun install
 CMD ["/bin/bash"]"""
 
     def log_parser(self, log: str) -> dict[str, str]:
-        return parse_log_vitest(log)
+        return parse_log_jest(log)
 
 
 @dataclass
@@ -2094,7 +2091,7 @@ CMD ["/bin/bash"]"""
 @dataclass
 class Lobehub02767bac(TypeScriptProfile):
     owner: str = "lobehub"
-    repo: str = "lobe-chat"
+    repo: str = "lobehub"
     commit: str = "02767bac55f24173e01dfef3829cc13eb8e67684"
     test_cmd: str = "pnpm run test-app"
 
@@ -2632,7 +2629,7 @@ RUN pnpm install --no-frozen-lockfile
 CMD ["pnpm", "dev"]"""
 
     def log_parser(self, log: str) -> dict[str, str]:
-        return parse_log_vitest(log)
+        return parse_log_jest(log)
 
 
 @dataclass
@@ -3086,7 +3083,7 @@ RUN corepack enable && yarn install
 CMD ["/bin/bash"]"""
 
     def log_parser(self, log: str) -> dict[str, str]:
-        return parse_log_vitest(log)
+        return parse_log_jest(log)
 
 
 @dataclass
@@ -3244,7 +3241,7 @@ RUN pnpm install
 CMD ["/bin/bash"]"""
 
     def log_parser(self, log: str) -> dict[str, str]:
-        return parse_log_vitest(log)
+        return parse_log_mocha(log)
 
 
 # @dataclass
@@ -3573,28 +3570,7 @@ RUN pnpm install
 CMD ["/bin/bash"]"""
 
     def log_parser(self, log: str) -> dict[str, str]:
-        results = {}
-        for line in log.split("\n"):
-            m = re.match(r"^test\s+(.+?)\s+\.\.\.\s+(ok|FAILED|ignored)", line.strip())
-            if m:
-                test_name, status = m.groups()
-                if status == "ok":
-                    results[test_name] = "PASSED"
-                elif status == "FAILED":
-                    results[test_name] = "FAILED"
-                elif status == "ignored":
-                    results[test_name] = "SKIPPED"
-        if not results:
-            summary = re.search(r"test result: (ok|FAILED)\. (\d+) passed; (\d+) failed; (\d+) ignored", log)
-            if summary:
-                _, passed, failed, ignored = summary.groups()
-                for i in range(int(passed)):
-                    results[f"rust_test_{i}"] = "PASSED"
-                for i in range(int(failed)):
-                    results[f"rust_test_failed_{i}"] = "FAILED"
-                for i in range(int(ignored)):
-                    results[f"rust_test_ignored_{i}"] = "SKIPPED"
-        return results
+        return parse_log_vitest(log)
 
 
 @dataclass
@@ -3658,7 +3634,7 @@ RUN bun install
 CMD ["/bin/bash"]"""
 
     def log_parser(self, log: str) -> dict[str, str]:
-        return parse_log_vitest(log)
+        return parse_log_jest(log)
 
 
 @dataclass
@@ -3710,7 +3686,7 @@ RUN yarn install --immutable
 CMD ["/bin/bash"]"""
 
     def log_parser(self, log: str) -> dict[str, str]:
-        return parse_log_vitest(log)
+        return parse_log_jest(log)
 
 
 @dataclass
