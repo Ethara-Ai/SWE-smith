@@ -2,36 +2,15 @@ model: bedrock/converse/arn:aws:bedrock:ap-south-1:426628337772:application-infe
 litellm_model_name_override: ""
 provider: ""
 system: |-
-  You are a senior developer writing an internal security bug report. You have discovered a security vulnerability in the project through code review and testing. You need to communicate the issue to your team clearly enough that another developer can investigate and fix it — but you must NOT give away the solution or point to exact code locations.
+  You are a developer who found a security issue and is filing a quick bug report on GitHub.
 
-  You will receive background context (a patch, test output, test source code) so you fully understand the vulnerability. Use this ONLY to inform your understanding. Your written issue must NOT reference this context directly.
+  You will receive background context (a patch, test output, test source code) to understand the vulnerability. This is FOR YOUR EYES ONLY — your written issue must not reference it.
 
-  Your output: A technical but solution-free GitHub issue describing a security vulnerability.
+  NEVER include: code snippets, diffs, code blocks, file names, file paths, module names, function names, method names, class names, variable names, line numbers, test names, testing frameworks (pytest/unittest), verbatim error messages, stack traces, or any hint of what the fix would be.
 
-  BALANCE: Your issue should be a USEFUL TECHNICAL CLUE — not so vague that a developer has no idea where to start, and not so specific that it reveals the fix.
-
-  FORBIDDEN (solution leaking — these make the output useless):
-
-  1. NO code snippets, diffs, patches, or code blocks.
-  2. NO specific file names, file paths, or module paths.
-  3. NO specific function names, method names, class names, or variable names.
-  4. NO line numbers.
-  5. NO test names, test files, or mention that tests failed.
-  6. NO pytest, unittest, or any testing framework references.
-  7. NO description of what code change would fix it.
-  8. NO verbatim error messages or stack traces — rephrase symptoms in your own words.
-
-  REQUIRED (technical clues — these make the output useful):
-
-  1. Name the CATEGORY of security vulnerability (e.g., "SQL injection", "path traversal", "improper input validation", "insecure deserialization", "missing authentication check", "race condition in session handling").
-  2. Describe the OBSERVABLE BEHAVIOR that reveals the vulnerability — what happens when you trigger it (e.g., "passing a crafted payload to the API endpoint allows reading arbitrary files", "the session token remains valid after logout").
-  3. Indicate the FUNCTIONAL AREA affected using domain language (e.g., "the user registration flow", "file upload handling", "the API rate limiting logic", "password reset mechanism") — but NOT code-level identifiers.
-  4. Describe the SECURITY IMPACT — what an attacker could achieve (e.g., "unauthorized data access", "privilege escalation", "denial of service").
-  5. Optionally include a brief REPRODUCTION SCENARIO described in plain English (e.g., "Send a request with a specially crafted header value containing path separators and observe that the response includes contents from outside the intended directory").
-
-  TONE: Technical, direct, 4-10 sentences. Like a senior engineer's Jira ticket — not a formal security advisory, not a vague user complaint.
+  Write a SINGLE SHORT PARAGRAPH (4-7 sentences, no headers, no bullet points, no sections). Mention the type of vulnerability, what area of the product is affected in plain domain language, what goes wrong from a user's perspective, and why it matters security-wise. That's it. Keep it conversational and concise — like a quick Slack message to your team, not a formal report.
 demonstration: |-
-  Here are example GitHub issues. Match their technical depth and directness, but ensure yours focuses on describing the security vulnerability pattern without revealing code-level details.
+  Here are example GitHub issues for tone reference. Write yours as a single short paragraph like these — no headers, no sections.
 
   {% for problem_statement in demo_problem_statements[:2] %}
   <demonstration>
@@ -39,7 +18,7 @@ demonstration: |-
   </demonstration>
   {% endfor %}
 instance: |-
-  Study the following context to understand the vulnerability. DO NOT directly reference any of this in your output — no file names, function names, code, or error messages from here.
+  Study the context below to understand the vulnerability. DO NOT reference any of it directly in your output.
 
   <context_patch>
   {{patch}}
@@ -55,13 +34,7 @@ instance: |-
   {% endfor %}
   </context_test_source>
 
-  Now write the issue. Your goal is to give a developer enough technical direction to investigate WITHOUT giving away the fix. Include:
-  - The type/category of vulnerability
-  - What observable behavior or scenario reveals it
-  - Which functional area is affected (in domain terms, not code terms)
-  - What the security impact is
-
-  Do NOT include code, file names, function names, line numbers, test names, or the fix itself.
+  Write a single paragraph (4-7 sentences). Mention the vulnerability type, the affected area in domain terms, the observable misbehavior, and the security risk. No code, no file names, no function names, no headers, no bullets, no sections. Just a plain paragraph.
 
   **Issue Text**
   <START WRITING>
