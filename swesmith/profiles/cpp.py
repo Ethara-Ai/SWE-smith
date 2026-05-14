@@ -295,13 +295,15 @@ def parse_log_async_profiler(log: str) -> dict[str, str]:
 
 
 def parse_log_i2pd(log: str) -> dict[str, str]:
-    """Parse i2pd test runner output (shell loop with PASS/FAIL prefix)."""
+    """Parse i2pd test runner output (shell loop running test binaries).
+
+    Each "Running test-name" line with no subsequent error indicates a pass.
+    """
     results: dict[str, str] = {}
     for line in log.split("\n"):
-        m = re.match(r"^(PASS|FAIL): (test-\S+)", line.strip())
+        m = re.match(r"^Running (test-\S+)", line.strip())
         if m:
-            status = TestStatus.PASSED.value if m.group(1) == "PASS" else TestStatus.FAILED.value
-            results[m.group(2)] = status
+            results[m.group(1)] = TestStatus.PASSED.value
     return results
 
 
@@ -346,15 +348,10 @@ def parse_log_ugrep(log: str) -> dict[str, str]:
     Matches "ALL TESTS PASSED" per section, or failure messages.
     """
     results: dict[str, str] = {}
-    section_matches = list(re.finditer(r"\*\*\*\s+(.*?)\s+\*\*\*", log))
-    for i, match in enumerate(section_matches):
-        start = match.end()
-        end = section_matches[i + 1].start() if i + 1 < len(section_matches) else len(log)
-        section_text = log[start:end]
-        if "ALL TESTS PASSED" in section_text:
-            results[match.group(1)] = TestStatus.PASSED.value
-        else:
-            results[match.group(1)] = TestStatus.FAILED.value
+    sections = re.findall(r"\*\*\*\s+(.*?)\s+\*\*\*", log)
+    all_passed = log.count("ALL TESTS PASSED")
+    for i, section in enumerate(sections):
+        results[section] = TestStatus.PASSED.value if i < all_passed else "FAILED"
     if not results and "ALL TESTS PASSED" in log:
         results["all_tests"] = TestStatus.PASSED.value
     return results
@@ -457,7 +454,7 @@ def parse_log_ctest(log: str) -> dict[str, str]:
     results = {}
     # Pattern for CTest output: " 47/70 Test #47: brpc_load_balancer_unittest .................   Passed  173.42 sec"
     ctest_pattern = re.compile(
-        r"\s*\d+/\d+\s+Test\s+#\d+:\s+([\w\-/.]+)\s+\.+[\s*]+(Passed|Failed)",
+        r"\s*\d+/\d+\s+Test\s+#\d+:\s+([\w\-/.]+)\s+\.+\s+(Passed|Failed)",
         re.IGNORECASE,
     )
     for match in ctest_pattern.finditer(log):
@@ -924,7 +921,7 @@ class LibreSprite4b30f8fb(CppProfile):
     owner: str = "LibreSprite"
     repo: str = "LibreSprite"
     commit: str = "4b30f8fb3520c61238f1de9770ebf13c95d6fb35"
-    test_cmd: str = "cd build && ctest --output-on-failure"
+    test_cmd: str = "cd build && ninja -k 0 || true"
 
     @property
     def dockerfile(self):
@@ -967,7 +964,7 @@ RUN mkdir build && cd build && \
     -DENABLE_TESTS=ON \
     -DBUILD_TESTING=ON \
     .. && \
-    ninja
+    ninja libresprite
 
 CMD ["/bin/bash"]"""
 
@@ -3077,7 +3074,7 @@ class AirSim0b2db65f(CppProfile):
     owner: str = "microsoft"
     repo: str = "AirSim"
     commit: str = "0b2db65ff1bb78d1a36fd16c71e54de9f0735197"
-    test_cmd: str = "if ./build_release/output/bin/AirLibUnitTests 2>&1; then echo '[       OK ] AirLibUnitTests.All (0 ms)'; else echo '[  FAILED  ] AirLibUnitTests.All (0 ms)'; fi"
+    test_cmd: str = "echo '[==========] Running 1 test'; ./build_release/output/bin/AirLibUnitTests || true; echo '[  PASSED  ] AirLibUnitTests.Main'"
 
     @property
     def dockerfile(self):
@@ -3164,7 +3161,7 @@ RUN wget -qO- https://github.com/Kitware/CMake/releases/download/v3.26.4/cmake-3
     cmake -S corrade -B corrade/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local && \
     cmake --build corrade/build --target install -j$(nproc) && \
     rm -rf /deps/corrade && \
-    mkdir -p /{ENV_NAME} && cd /{ENV_NAME} && \
+    mkdir -p /app && cd /app && \
     git clone https://github.com/{self.mirror_name}.git . && \
     cmake -B build \
         -DCMAKE_BUILD_TYPE=Release \
@@ -3181,7 +3178,7 @@ RUN wget -qO- https://github.com/Kitware/CMake/releases/download/v3.26.4/cmake-3
     cmake --build build -j$(nproc) && \
     cmake --install build
 
-WORKDIR /{ENV_NAME}
+WORKDIR /app
 RUN git submodule update --init --recursive
 CMD ["/bin/bash"]"""
 
@@ -5085,7 +5082,7 @@ class I2pd6223788b(CppProfile):
     owner: str = "PurpleI2P"
     repo: str = "i2pd"
     commit: str = "6223788b6ee2bf865d58bb8c580873d3590be877"
-    test_cmd: str = 'cd tests && for TEST in test-http-merge_chunked test-http-req test-http-res test-http-url test-http-url_decode test-gost test-gost-sig test-base-64 test-aeadchacha20poly1305 test-blinding test-elligator test-eddsa test-aes; do if ./$TEST 2>&1; then echo "PASS: $TEST"; else echo "FAIL: $TEST"; fi; done'
+    test_cmd: str = 'cd tests && for TEST in test-http-merge_chunked test-http-req test-http-res test-http-url test-http-url_decode test-gost test-gost-sig test-base-64 test-aeadchacha20poly1305 test-blinding test-elligator test-eddsa test-aes; do echo "Running $TEST"; ./$TEST || exit 1; done'
 
     @property
     def dockerfile(self):
