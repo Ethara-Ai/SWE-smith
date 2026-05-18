@@ -731,12 +731,16 @@ class RepoProfile(ABC, metaclass=SingletonMeta):
                 if exclude_tests and self._is_test_path(root, file):
                     continue
                 if dirs_exclude and any(
-                    rel_root == x or rel_root.startswith(x + "/") or ("/" + x + "/") in ("/" + rel_root + "/")
+                    rel_root == x
+                    or rel_root.startswith(x + "/")
+                    or ("/" + x + "/") in ("/" + rel_root + "/")
                     for x in dirs_exclude
                 ):
                     continue
                 if dirs_include and not any(
-                    rel_root == x or rel_root.startswith(x + "/") or ("/" + x + "/") in ("/" + rel_root + "/")
+                    rel_root == x
+                    or rel_root.startswith(x + "/")
+                    or ("/" + x + "/") in ("/" + rel_root + "/")
                     for x in dirs_include
                 ):
                     continue
@@ -747,16 +751,24 @@ class RepoProfile(ABC, metaclass=SingletonMeta):
                 )
                 if files_exclude and rel_file_path in files_exclude:
                     continue
-
-                try:
-                    open(file_path, "r", encoding="utf-8").close()
-                except:
-                    continue
-
                 file_ext = Path(file_path).suffix
                 if file_ext not in self.exts:
                     continue
-                get_entities_from_file[file_ext](entities, file_path, max_entities)
+                try:
+                    get_entities_from_file[file_ext](entities, file_path, max_entities)
+                except UnicodeDecodeError as e:
+                    logger.warning(
+                        "Skipping %s (UnicodeDecodeError at byte %d): %s",
+                        file_path,
+                        e.start,
+                        e.reason,
+                    )
+                    continue
+                except Exception as e:
+                    logger.warning(
+                        "Skipping %s (%s): %s", file_path, type(e).__name__, e
+                    )
+                    continue
         if cloned:
             shutil.rmtree(dir_path)
         return entities

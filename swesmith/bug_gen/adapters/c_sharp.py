@@ -73,12 +73,7 @@ def get_entities_from_file_c_sharp(
     """
     parser = Parser(C_SHARP_LANGUAGE)
 
-    try:
-        file_content = open(file_path, "r", encoding="utf8").read()
-    except UnicodeDecodeError:
-        warnings.warn(f"Ignoring file {file_path} as it has an unsupported encoding")
-        return
-
+    file_content = open(file_path, "r", encoding="utf8").read()
     tree = parser.parse(bytes(file_content, "utf8"))
     root = tree.root_node
     lines = file_content.splitlines()

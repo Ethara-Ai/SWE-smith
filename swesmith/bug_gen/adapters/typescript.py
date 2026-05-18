@@ -195,12 +195,7 @@ def get_entities_from_file_ts(
     language = TSX_LANGUAGE if file_ext == ".tsx" else TS_LANGUAGE
     parser = Parser(language)
 
-    try:
-        file_content = open(file_path, "r", encoding="utf8").read()
-    except UnicodeDecodeError:
-        warnings.warn(f"Could not decode file {file_path}", stacklevel=2)
-        return entities
-
+    file_content = open(file_path, "r", encoding="utf8").read()
     tree = parser.parse(bytes(file_content, "utf8"))
     lines = file_content.splitlines()
 

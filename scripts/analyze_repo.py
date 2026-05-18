@@ -212,6 +212,9 @@ class RepoBuildInfo:
     build_cmd: str | None = None
     extra_apt_deps: list[str] = field(default_factory=list)
     uses_workspaces: bool = False
+    build_system: str | None = None
+    cmake_test_option: str | None = None
+    uses_wrapper: bool = False
 
 
 def detect_repo_build_info(repo_root: str, language: str) -> RepoBuildInfo:
@@ -222,6 +225,67 @@ def detect_repo_build_info(repo_root: str, language: str) -> RepoBuildInfo:
     defaults when files are missing or unparseable.
     """
     info = RepoBuildInfo()
+
+    if language in ("c", "cpp"):
+        cmakelists = os.path.join(repo_root, "CMakeLists.txt")
+        if os.path.exists(cmakelists):
+            info.build_system = "cmake"
+            try:
+                with open(cmakelists, encoding="utf-8", errors="replace") as f:
+                    cm = f.read()
+                opt_match = re.search(
+                    r"option\s*\(\s*([A-Z_][A-Z0-9_]*(?:TEST|TESTS|TESTING)[A-Z0-9_]*)\b",
+                    cm,
+                )
+                if opt_match:
+                    info.cmake_test_option = opt_match.group(1)
+                elif re.search(r"\benable_testing\s*\(", cm) or re.search(
+                    r"\bBUILD_TESTING\b", cm
+                ):
+                    info.cmake_test_option = "BUILD_TESTING"
+            except OSError:
+                pass
+            return info
+
+        autotools_markers = [
+            "configure.ac",
+            "configure.in",
+            "configure",
+            "Makefile.am",
+            "autogen.sh",
+        ]
+        if any(os.path.exists(os.path.join(repo_root, m)) for m in autotools_markers):
+            info.build_system = "autotools"
+            return info
+
+        if os.path.exists(os.path.join(repo_root, "Makefile")) or os.path.exists(
+            os.path.join(repo_root, "makefile")
+        ):
+            info.build_system = "make"
+            return info
+
+        return info
+
+    if language == "java":
+        if os.path.exists(os.path.join(repo_root, "pom.xml")):
+            info.build_system = "maven"
+            if os.path.exists(os.path.join(repo_root, "mvnw")):
+                info.uses_wrapper = True
+            return info
+
+        gradle_markers = [
+            "build.gradle",
+            "build.gradle.kts",
+            "settings.gradle",
+            "settings.gradle.kts",
+        ]
+        if any(os.path.exists(os.path.join(repo_root, m)) for m in gradle_markers):
+            info.build_system = "gradle"
+            if os.path.exists(os.path.join(repo_root, "gradlew")):
+                info.uses_wrapper = True
+            return info
+
+        return info
 
     if language not in ("javascript", "typescript"):
         return info
@@ -379,6 +443,119 @@ def generate_dockerfile_lines(
         lines.append('CMD [\\"/bin/bash\\"]')
         lines.append('"""')
 
+    elif language in ("c", "cpp"):
+        if build_info.build_system == "cmake":
+            test_opt = build_info.cmake_test_option or "BUILD_TESTING"
+            lines.append('        return f"""FROM gcc:11')
+            lines.append(
+                "RUN apt-get update && apt-get install -y cmake git build-essential "
+                "&& rm -rf /var/lib/apt/lists/*"
+            )
+            lines.append(
+                "RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}"
+            )
+            lines.append("WORKDIR /{ENV_NAME}")
+            lines.append("RUN git submodule update --init --recursive || true")
+            lines.append(
+                f"RUN mkdir build && cd build && "
+                f"cmake -DCMAKE_BUILD_TYPE=Debug -D{test_opt}=ON .. && "
+                "make -j$(nproc)"
+            )
+            lines.append('CMD [\\"/bin/bash\\"]')
+            lines.append('"""')
+        elif build_info.build_system == "autotools":
+            lines.append('        return f"""FROM ubuntu:22.04')
+            lines.append(
+                "RUN apt-get update && apt-get install -y "
+                "build-essential autoconf automake libtool pkg-config git "
+                "&& rm -rf /var/lib/apt/lists/*"
+            )
+            lines.append(
+                "RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}"
+            )
+            lines.append("WORKDIR /{ENV_NAME}")
+            lines.append("RUN git submodule update --init --recursive || true")
+            lines.append("RUN autoreconf -i && ./configure")
+            lines.append("RUN make -j$(nproc)")
+            lines.append('CMD [\\"/bin/bash\\"]')
+            lines.append('"""')
+        elif build_info.build_system == "make":
+            lines.append('        return f"""FROM ubuntu:22.04')
+            lines.append(
+                "RUN apt-get update && apt-get install -y "
+                "build-essential git "
+                "&& rm -rf /var/lib/apt/lists/*"
+            )
+            lines.append(
+                "RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}"
+            )
+            lines.append("WORKDIR /{ENV_NAME}")
+            lines.append("RUN make -j$(nproc) || true")
+            lines.append('CMD [\\"/bin/bash\\"]')
+            lines.append('"""')
+        else:
+            lines.append('        return f"""FROM ubuntu:22.04')
+            lines.append(
+                "RUN apt-get update && apt-get install -y "
+                "build-essential cmake autoconf automake libtool pkg-config git "
+                "&& rm -rf /var/lib/apt/lists/*"
+            )
+            lines.append(
+                "RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}"
+            )
+            lines.append("WORKDIR /{ENV_NAME}")
+            lines.append('CMD [\\"/bin/bash\\"]')
+            lines.append('"""')
+
+    elif language == "java":
+        if build_info.build_system == "maven":
+            lines.append('        return f"""FROM maven:3.9.6-eclipse-temurin-11')
+            lines.append(
+                "RUN apt-get update && apt-get install -y git "
+                "&& rm -rf /var/lib/apt/lists/*"
+            )
+            lines.append(
+                "RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}"
+            )
+            lines.append("WORKDIR /{ENV_NAME}")
+            lines.append('ENV JAVA_TOOL_OPTIONS=""')
+            if build_info.uses_wrapper:
+                lines.append("RUN ./mvnw clean install -B -q -DskipTests")
+            else:
+                lines.append("RUN mvn clean install -B -q -DskipTests")
+            lines.append('CMD [\\"/bin/bash\\"]')
+            lines.append('"""')
+        elif build_info.build_system == "gradle":
+            lines.append('        return f"""FROM eclipse-temurin:17-jdk')
+            lines.append(
+                "RUN apt-get update && apt-get install -y git "
+                "&& rm -rf /var/lib/apt/lists/*"
+            )
+            lines.append(
+                "RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}"
+            )
+            lines.append("WORKDIR /{ENV_NAME}")
+            if build_info.uses_wrapper:
+                lines.append(
+                    "RUN ./gradlew --no-daemon --console=plain assemble -x test"
+                )
+            else:
+                lines.append("RUN gradle --no-daemon --console=plain assemble -x test")
+            lines.append('CMD [\\"/bin/bash\\"]')
+            lines.append('"""')
+        else:
+            lines.append('        return f"""FROM eclipse-temurin:17-jdk')
+            lines.append(
+                "RUN apt-get update && apt-get install -y git maven "
+                "&& rm -rf /var/lib/apt/lists/*"
+            )
+            lines.append(
+                "RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}"
+            )
+            lines.append("WORKDIR /{ENV_NAME}")
+            lines.append('CMD [\\"/bin/bash\\"]')
+            lines.append('"""')
+
     return lines
 
 
@@ -426,6 +603,43 @@ def validate_dockerfile(build_info: RepoBuildInfo, language: str) -> list[str]:
             "a simple Dockerfile property. Manual profile setup recommended."
         )
 
+    if language in ("c", "cpp"):
+        if build_info.build_system is None:
+            warnings.append(
+                "No C/C++ build system detected (no CMakeLists.txt, configure*, "
+                "or Makefile). Generated Dockerfile will install build tools but "
+                "will not compile the project. Manual profile setup recommended."
+            )
+        elif build_info.build_system == "cmake" and not build_info.cmake_test_option:
+            warnings.append(
+                "CMake project detected but no project-specific test option found. "
+                "Falling back to -DBUILD_TESTING=ON; verify the project actually "
+                "uses this flag (some projects use e.g. <NAME>_BUILD_TESTS)."
+            )
+        elif build_info.build_system == "make":
+            warnings.append(
+                "Plain Makefile detected (no CMake/autotools). 'make test' "
+                "is assumed; adjust test_cmd if the project uses a different target."
+            )
+
+    if language == "java":
+        if build_info.build_system is None:
+            warnings.append(
+                "No Java build system detected (no pom.xml or build.gradle*). "
+                "Generated Dockerfile will install JDK and Maven but will not "
+                "compile the project. Manual profile setup recommended."
+            )
+        elif build_info.build_system == "maven" and not build_info.uses_wrapper:
+            warnings.append(
+                "Maven project detected but no mvnw wrapper found. "
+                "Image relies on system Maven; verify version compatibility."
+            )
+        elif build_info.build_system == "gradle" and not build_info.uses_wrapper:
+            warnings.append(
+                "Gradle project detected but no gradlew wrapper found. "
+                "Image relies on system Gradle; verify version compatibility."
+            )
+
     return warnings
 
 
@@ -439,6 +653,14 @@ EXCLUDED_DIR_PREFIXES = [
     "tests/",
     "__tests__/",
     "spec/",
+    "auxil/",
+    "vendor/",
+    "third_party/",
+    "third-party/",
+    "external/",
+    "deps/",
+    "contrib/",
+    "submodules/",
 ]
 
 EXCLUDED_DIR_PATTERNS = [
@@ -493,7 +715,18 @@ def detect_language(owner: str, repo: str) -> str:
     return "javascript"
 
 
-def detect_test_command(owner: str, repo: str, commit: str) -> str:
+def detect_test_command(
+    owner: str, repo: str, commit: str, language: str = "javascript"
+) -> str:
+    if language in ("c", "cpp"):
+        return "cd build && ctest --verbose --output-on-failure"
+    if language == "java":
+        return (
+            "mvn test -B -T 1C -Dsurefire.useFile=false "
+            "-Dsurefire.printSummary=true -Dsurefire.reportFormat=plain"
+        )
+    if language not in ("javascript", "typescript"):
+        return ""
     url = f"https://api.github.com/repos/{owner}/{repo}/contents/package.json?ref={commit}"
     headers = {"User-Agent": "swesmith-analyzer"}
     token = os.getenv("GITHUB_TOKEN")
@@ -566,12 +799,20 @@ def generate_profile_code(
         "python": "parse_log_pytest",
         "go": None,
         "rust": None,
-        "java": None,
+        "java": "parse_log_maven_surefire",
+        "c": "parse_log_ctest",
+        "cpp": "parse_log_ctest",
     }
     log_parser_fn = log_parser_map.get(language)
 
     if build_info is None:
         build_info = RepoBuildInfo()
+
+    if language in ("c", "cpp") and build_info.build_system == "autotools":
+        log_parser_fn = "parse_log_autotools"
+
+    if language == "java" and build_info.build_system == "gradle":
+        log_parser_fn = "parse_log_gradle_junit_xml"
 
     lines = []
     lines.append("")
@@ -625,7 +866,7 @@ def build_dir_profiles(entities: list, repo_root: str) -> dict[str, DirProfile]:
         rel_path = os.path.relpath(entity.file_path, repo_root).replace(os.sep, "/")
         parts = rel_path.split("/")
         if len(parts) > 1:
-            dir_key = "/".join(parts[: min(3, len(parts) - 1)])
+            dir_key = "/".join(parts[: min(4, len(parts) - 1)])
         else:
             dir_key = "."
         dir_entities[dir_key].append(entity)
@@ -669,7 +910,7 @@ def score_directory_for_cwe(dir_profile: DirProfile, cwe_id: str) -> float:
         count = dir_profile.tag_counts.get(tag, 0)
         if count > 0:
             density = count / max(dir_profile.total_entities, 1)
-            score += density * weight
+            score += min(density, 0.7) * weight
 
     path_lower = dir_profile.path.lower()
     path_keywords = heuristic.get("path_keywords", [])
@@ -840,8 +1081,11 @@ def insert_profile_into_file(
 ) -> str:
     """Insert a new profile into the appropriate language file.
 
-    Inserts before the registry.register_profile() block at end of file.
-    Returns the file path where it was inserted.
+    Inserts the new profile class alphabetically (case-insensitive) among
+    existing profile classes that subclass the language's base profile.
+    Falls back to inserting before the registry.register_profile() block
+    when no existing profile classes are found or the new class sorts
+    after all of them.
     """
     filename = PROFILE_FILE_MAP.get(language, "javascript.py")
     filepath = profiles_dir / filename
@@ -851,14 +1095,55 @@ def insert_profile_into_file(
 
     content = filepath.read_text()
 
-    register_pattern = r"\n# Register all .+ profiles with the global registry\n"
-    match = re.search(register_pattern, content)
+    class_match = re.search(r"class\s+(\w+)\s*\(", profile_code)
+    new_class_name = class_match.group(1) if class_match else None
 
-    if match:
-        insert_pos = match.start()
-        new_content = content[:insert_pos] + profile_code + "\n" + content[insert_pos:]
+    if new_class_name and re.search(
+        rf"\nclass\s+{re.escape(new_class_name)}\s*\(", content
+    ):
+        print(
+            f"  Skipping insert: class {new_class_name} already exists in {filepath.name}"
+        )
+        return str(filepath)
+
+    profile_class_map = {
+        "javascript": "JavaScriptProfile",
+        "typescript": "TypeScriptProfile",
+        "python": "PythonProfile",
+        "java": "JavaProfile",
+        "go": "GoProfile",
+        "rust": "RustProfile",
+        "c": "CProfile",
+        "cpp": "CppProfile",
+    }
+    base_class = profile_class_map.get(language, "JavaScriptProfile")
+
+    insert_match = None
+    if new_class_name:
+        subclass_pattern = (
+            rf"\n@dataclass\nclass\s+(\w+)\s*\(\s*{re.escape(base_class)}\s*\)\s*:"
+        )
+        for m in re.finditer(subclass_pattern, content):
+            existing_name = m.group(1)
+            if existing_name.lower() > new_class_name.lower():
+                insert_match = m
+                break
+
+    if insert_match is not None:
+        insert_pos = insert_match.start()
+        new_content = (
+            content[:insert_pos] + profile_code[1:] + "\n\n" + content[insert_pos:]
+        )
     else:
-        new_content = content + profile_code + "\n"
+        register_pattern = r"\n# Register all .+ profiles with the global registry\n"
+        match = re.search(register_pattern, content)
+        if match:
+            insert_pos = match.start()
+            new_content = (
+                content[:insert_pos] + profile_code + "\n" + content[insert_pos:]
+            )
+        else:
+            new_content = content + profile_code + "\n"
 
     filepath.write_text(new_content)
     return str(filepath)
@@ -981,6 +1266,27 @@ def _create_temp_profile(
         from swesmith.profiles.typescript import TypeScriptProfile
 
         base_classes["typescript"] = TypeScriptProfile
+    except ImportError:
+        pass
+
+    try:
+        from swesmith.profiles.c import CProfile
+
+        base_classes["c"] = CProfile
+    except ImportError:
+        pass
+
+    try:
+        from swesmith.profiles.cpp import CppProfile
+
+        base_classes["cpp"] = CppProfile
+    except ImportError:
+        pass
+
+    try:
+        from swesmith.profiles.java import JavaProfile
+
+        base_classes["java"] = JavaProfile
     except ImportError:
         pass
 
@@ -1114,7 +1420,7 @@ def main():
         if args.test_cmd:
             test_cmd = args.test_cmd
         else:
-            test_cmd = detect_test_command(owner, repo, commit)
+            test_cmd = detect_test_command(owner, repo, commit, language)
         print(f"  Test command: {test_cmd}")
 
         rp = _create_temp_profile(owner, repo, commit, test_cmd, language)
@@ -1126,17 +1432,59 @@ def main():
 
     print("\n[5/6] Detecting build configuration...")
     build_info = detect_repo_build_info(repo_root, language)
-    print(f"  Package manager: {build_info.package_manager}")
-    if build_info.pm_version:
-        print(f"  PM version: {build_info.pm_version}")
-    print(f"  Lockfile: {build_info.lockfile_name or 'none'}")
-    print(f"  Has build script: {build_info.has_build_script}")
-    print(f"  Corepack: {build_info.uses_corepack}")
-    print(f"  Node version: {build_info.node_version}")
-    if build_info.uses_workspaces:
-        print(f"  Workspaces: yes")
-    if build_info.extra_apt_deps:
-        print(f"  Extra apt deps: {', '.join(build_info.extra_apt_deps)}")
+    if language in ("c", "cpp"):
+        print(f"  Build system: {build_info.build_system or 'none detected'}")
+        if build_info.cmake_test_option:
+            print(f"  CMake test option: {build_info.cmake_test_option}")
+        if not args.test_cmd and not existing_key:
+            if build_info.build_system == "cmake":
+                opt = build_info.cmake_test_option or "BUILD_TESTING"
+                refined = (
+                    "cd build && cmake -D" + opt + "=ON .. && "
+                    "make -j$(nproc) && "
+                    "ctest --verbose --output-on-failure"
+                )
+            elif build_info.build_system == "autotools":
+                refined = "make check"
+            elif build_info.build_system == "make":
+                refined = "make test"
+            else:
+                refined = test_cmd
+            if refined and refined != test_cmd:
+                print(f"  Refined test command: {refined}")
+                test_cmd = refined
+                rp.test_cmd = refined
+    elif language == "java":
+        print(f"  Build system: {build_info.build_system or 'none detected'}")
+        print(f"  Uses wrapper: {build_info.uses_wrapper}")
+        if not args.test_cmd and not existing_key:
+            if build_info.build_system == "maven" and build_info.uses_wrapper:
+                refined = test_cmd.replace("mvn ", "./mvnw ", 1)
+            elif build_info.build_system == "gradle":
+                runner = "./gradlew" if build_info.uses_wrapper else "gradle"
+                refined = (
+                    f"{runner} test --rerun-tasks --continue "
+                    "--no-daemon --console=plain "
+                    "|| true; find . -type f -name 'TEST-*.xml' -exec cat {} \\;"
+                )
+            else:
+                refined = test_cmd
+            if refined and refined != test_cmd:
+                print(f"  Refined test command: {refined}")
+                test_cmd = refined
+                rp.test_cmd = refined
+    else:
+        print(f"  Package manager: {build_info.package_manager}")
+        if build_info.pm_version:
+            print(f"  PM version: {build_info.pm_version}")
+        print(f"  Lockfile: {build_info.lockfile_name or 'none'}")
+        print(f"  Has build script: {build_info.has_build_script}")
+        print(f"  Corepack: {build_info.uses_corepack}")
+        print(f"  Node version: {build_info.node_version}")
+        if build_info.uses_workspaces:
+            print(f"  Workspaces: yes")
+        if build_info.extra_apt_deps:
+            print(f"  Extra apt deps: {', '.join(build_info.extra_apt_deps)}")
 
     docker_warnings = validate_dockerfile(build_info, language)
     if docker_warnings:

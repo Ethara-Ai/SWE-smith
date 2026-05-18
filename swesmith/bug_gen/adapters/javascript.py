@@ -236,12 +236,7 @@ def get_entities_from_file_js(
     """
     parser = Parser(JS_LANGUAGE)
 
-    try:
-        file_content = open(file_path, "r", encoding="utf8").read()
-    except UnicodeDecodeError:
-        warnings.warn(f"Could not decode file {file_path}", stacklevel=2)
-        return entities
-
+    file_content = open(file_path, "r", encoding="utf8").read()
     tree = parser.parse(bytes(file_content, "utf8"))
     root = tree.root_node
     lines = file_content.splitlines()
