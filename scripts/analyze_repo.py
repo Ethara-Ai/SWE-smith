@@ -725,6 +725,10 @@ def detect_test_command(
             "mvn test -B -T 1C -Dsurefire.useFile=false "
             "-Dsurefire.printSummary=true -Dsurefire.reportFormat=plain"
         )
+    if language == "rust":
+        return "cargo test --verbose"
+    if language == "go":
+        return "go test -v ./..."
     if language not in ("javascript", "typescript"):
         return ""
     url = f"https://api.github.com/repos/{owner}/{repo}/contents/package.json?ref={commit}"
@@ -822,7 +826,8 @@ def generate_profile_code(
     lines.append(f'    owner: str = "{owner}"')
     lines.append(f'    repo: str = "{repo}"')
     lines.append(f'    commit: str = "{commit}"')
-    lines.append(f'    test_cmd: str = "{test_cmd}"')
+    if test_cmd:
+        lines.append(f'    test_cmd: str = "{test_cmd}"')
 
     if bug_gen_dirs_include:
         lines.append("    bug_gen_dirs_include: dict[str, list[str]] = field(")
@@ -1290,6 +1295,27 @@ def _create_temp_profile(
     except ImportError:
         pass
 
+    try:
+        from swesmith.profiles.rust import RustProfile
+
+        base_classes["rust"] = RustProfile
+    except ImportError:
+        pass
+
+    try:
+        from swesmith.profiles.golang import GoProfile
+
+        base_classes["go"] = GoProfile
+    except ImportError:
+        pass
+
+    try:
+        from swesmith.profiles.python import PythonProfile
+
+        base_classes["python"] = PythonProfile
+    except ImportError:
+        pass
+
     base = base_classes.get(language, JavaScriptProfile)
 
     cls = dataclass(
@@ -1473,7 +1499,7 @@ def main():
                 print(f"  Refined test command: {refined}")
                 test_cmd = refined
                 rp.test_cmd = refined
-    else:
+    elif language in ("javascript", "typescript"):
         print(f"  Package manager: {build_info.package_manager}")
         if build_info.pm_version:
             print(f"  PM version: {build_info.pm_version}")
@@ -1485,6 +1511,14 @@ def main():
             print(f"  Workspaces: yes")
         if build_info.extra_apt_deps:
             print(f"  Extra apt deps: {', '.join(build_info.extra_apt_deps)}")
+    elif language == "rust":
+        rust_version = getattr(rp, "rust_version", "unknown")
+        print(f"  Toolchain: cargo (rust {rust_version})")
+    elif language == "go":
+        print(f"  Toolchain: go modules")
+    elif language == "python":
+        python_version = getattr(rp, "python_version", "unknown")
+        print(f"  Toolchain: conda + pip (python {python_version})")
 
     docker_warnings = validate_dockerfile(build_info, language)
     if docker_warnings:
