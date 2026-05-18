@@ -2600,6 +2600,79 @@ CMD ["/bin/bash"]"""
         return parse_log_mocha(log)
 
 
+@dataclass
+class Knexaf57d1ec(JavaScriptProfile):
+    owner: str = "knex"
+    repo: str = "knex"
+    commit: str = "af57d1ec662aa5a0724d920e48b31905322e0e56"
+    test_cmd: str = "npm run test:unit-only"
+    timeout: int = 300
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "lib/util",
+                "lib/knex-builder",
+                "bin",
+                "bin/utils",
+                "lib/dialects/mysql2",
+                "lib/dialects/mssql",
+                "lib/dialects/postgres",
+                "lib/dialects/oracledb",
+            ],
+            "CWE-193": [
+                "lib/formatter",
+                "bin/utils",
+                "lib/query",
+                "lib/dialects/mssql",
+                "lib/dialects/postgres",
+                "lib/execution",
+                "lib/dialects/oracledb",
+                "lib/util",
+            ],
+            "CWE-20": [
+                "lib/knex-builder/internal",
+                "bin",
+                "lib/dialects/better-sqlite3",
+                "lib/execution",
+                "lib/dialects/mysql2",
+            ],
+            "CWE-682": [
+                "bin/utils",
+                "lib/dialects/better-sqlite3",
+                "lib/util",
+                "lib/migrations/migrate",
+                "lib/formatter",
+                "lib/knex-builder/internal",
+            ],
+            "CWE-754": [
+                "lib/knex-builder/internal",
+                "lib/dialects/pgnative",
+                "bin",
+                "lib/dialects/better-sqlite3",
+                "lib/execution/internal",
+                "lib/execution",
+                "lib/migrations/seed",
+                "lib/dialects/mysql2",
+            ],
+        }
+    )
+
+    @property
+    def dockerfile(self):
+        return f"""FROM node:20-slim
+
+RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
+
+RUN git clone https://github.com/knex/knex.git /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN npm install
+
+CMD ["/bin/bash"]"""
+
+    def log_parser(self, log: str) -> dict[str, str]:
+        return parse_log_mocha(log);
+
+
 # Register all JavaScript profiles with the global registry
 for name, obj in list(globals().items()):
     if (

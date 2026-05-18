@@ -248,10 +248,81 @@ class Mpbcf7d4dce(GoProfile):
 
 
 @dataclass
-class Bubbletea640d8793(GoProfile):
+class Bubbleteac60f0c53(GoProfile):
     owner: str = "charmbracelet"
     repo: str = "bubbletea"
-    commit: str = "640d8793966c506842bb31af23bdb9c672fae3ab"
+    commit: str = "c60f0c53042238305ec13b486326588f12aea0ec"
+    timeout: int = 120
+    timeout_ref: int = 1800
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "build/tools/gen-cockroachdb-metrics",
+                "pkg/cmd/generate-ash-inventory",
+                "pkg/cmd/roachprod-microbench",
+            ],
+            "CWE-193": [
+                "pkg/util/trigram",
+                "pkg/util/stringencoding",
+                "pkg/util/bitarray",
+                "pkg/sql/lex",
+                "pkg/cmd/generate-ash-inventory",
+            ],
+            "CWE-20": [
+                "pkg/sql/decodeusername",
+                "pkg/sql/paramparse",
+                "pkg/cmd/urlcheck",
+                "pkg/sql/parserutils",
+                "pkg/server/privchecker",
+                "pkg/sql/parser",
+                "pkg/workload/tpccchecks",
+            ],
+            "CWE-670": [
+                "pkg/spanconfig/spanconfigreconciler",
+                "pkg/cmd/cmp-protocol",
+                "pkg/sql/colencoding",
+                "pkg/util/schedulerlatency",
+                "pkg/util/binfetcher",
+                "pkg/cmd/generate-distdir",
+                "pkg/cmd/cmp-sql",
+            ],
+            "CWE-682": [
+                "pkg/sql/stats",
+                "pkg/sql/appstatspb",
+                "pkg/server/status",
+                "pkg/jobs/metricspoller",
+                "pkg/util/arith",
+            ],
+            "CWE-754": [
+                "pkg/cli/clierrorplus",
+                "pkg/util/errorutil",
+                "pkg/cli/clierror",
+                "pkg/sql/sqlerrors",
+                "pkg/roachprod/errors",
+                "pkg/server/srverrors",
+                "pkg/sql/colexecerror",
+            ],
+            "CWE-835": [
+                "pkg/util/iterutil",
+                "pkg/jobs/metricspoller",
+                "pkg/util/schedulerlatency",
+                "pkg/util/trigram",
+                "pkg/cli/syncbench",
+            ],
+        }
+    )
+
+    @property
+    def dockerfile(self):
+        return f"""FROM golang:1.25
+ENV GOTOOLCHAIN=auto
+RUN git clone https://github.com/charmbracelet/bubbletea.git /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN git checkout {self.commit}
+RUN go mod tidy
+RUN go test -v -count=1 ./... || true
+CMD ["/bin/bash"]
+"""
 
 
 @dataclass
@@ -787,12 +858,64 @@ class Httptreemux(GoProfile):
 
 
 @dataclass
-class Etcd36e2dbd5(GoProfile):
+class Etcd053fc705(GoProfile):
     owner: str = "etcd-io"
     repo: str = "etcd"
-    commit: str = "36e2dbd502b2acab083d8901574d7d4cc66109fd"
-    timeout: int = 180
-    timeout_ref: int = 1800
+    commit: str = "053fc705d99824509fb0313036dc8a18e0ff4b86"
+    timeout: int = 300
+    timeout_ref: int = 3600
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-193": [
+                "tools/rw-heatmaps/pkg",
+                "tools/benchmark/cmd",
+                "tools/etcd-dump-metrics",
+                "tools/etcd-dump-logs",
+                "tools/testgrid-analysis/cmd",
+                "pkg/netutil",
+                "server/verify",
+                "client/v3/mirror",
+            ],
+            "CWE-20": [
+                "pkg/netutil",
+                "tools/proto-annotations/cmd",
+                "pkg/pbutil",
+                "tools/check-grpc-experimental",
+                "client/pkg/tlsutil",
+            ],
+            "CWE-682": [
+                "pkg/idutil",
+                "pkg/netutil",
+                "server/etcdserver/txn",
+                "tools/etcd-dump-metrics",
+                "tools/etcd-dump-logs",
+                "tools/rw-heatmaps/pkg",
+                "tools/benchmark/cmd",
+            ],
+            "CWE-835": [
+                "tools/testgrid-analysis/cmd",
+                "client/pkg/tlsutil",
+                "server/proxy/tcpproxy",
+                "tools/benchmark/cmd",
+                "client/v3/leasing",
+                "tools/etcd-dump-logs",
+                "tools/local-tester/bridge",
+                "client/v3/mirror",
+            ],
+        }
+    )
+
+    @property
+    def dockerfile(self):
+        return f"""FROM golang:1.25
+ENV GOTOOLCHAIN=auto
+RUN apt-get update && apt-get install -y build-essential
+RUN git clone https://github.com/etcd-io/etcd.git /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN go mod tidy
+RUN go test -v -count=1 ./... || true
+CMD ["/bin/bash"]
+"""
 
 
 @dataclass
@@ -908,7 +1031,74 @@ class Traefikedd7d2eb(GoProfile):
     owner: str = "traefik"
     repo: str = "traefik"
     commit: str = "edd7d2eb333cb4aa25e525824f60968eba403d03"
-    timeout: int = 120
+    timeout: int = 180
+    timeout_ref: int = 1800
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-193": [
+                "pkg/config/kv",
+                "internal",
+                "pkg/provider/ecs",
+                "pkg/middlewares/encodedcharacters",
+                "pkg/middlewares/compress",
+                "pkg/middlewares/stripprefixregex",
+                "pkg/middlewares/forwardedheaders",
+            ],
+            "CWE-20": [
+                "pkg/healthcheck",
+                "pkg/ip",
+                "pkg/provider/nomad",
+                "pkg/config/kv",
+                "pkg/cli",
+            ],
+            "CWE-670": [
+                "pkg/middlewares/stripprefixregex",
+                "pkg/middlewares/headers",
+                "pkg/middlewares/stripprefix",
+                "pkg/middlewares/accesslog",
+                "pkg/middlewares/compress",
+                "pkg/middlewares/ingressnginx",
+                "pkg/middlewares/passtlsclientcert",
+                "pkg/server/router",
+            ],
+            "CWE-682": [
+                "pkg/middlewares/metrics",
+                "pkg/config/static",
+                "pkg/observability/metrics",
+                "pkg/collector",
+                "pkg/provider/http",
+                "pkg/tls/generate",
+            ],
+            "CWE-754": [
+                "pkg/middlewares/tcp",
+                "pkg/middlewares/snicheck",
+                "pkg/middlewares/ratelimiter",
+                "pkg/middlewares/replacepathregex",
+                "pkg/middlewares/auth",
+                "pkg/server/middleware",
+                "pkg/middlewares/ingressnginx",
+                "pkg/middlewares/stripprefix",
+            ],
+            "CWE-835": [
+                "pkg/provider/tailscale",
+                "pkg/provider/docker",
+                "pkg/provider/ecs",
+                "pkg/provider/consulcatalog",
+                "pkg/healthcheck",
+            ],
+        }
+    )
+
+    @property
+    def dockerfile(self):
+        return f"""FROM golang:1.25
+ENV GOTOOLCHAIN=auto
+RUN git clone https://github.com/traefik/traefik.git /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN go mod tidy
+RUN go test -v -count=1 ./... || true
+CMD ["/bin/bash"]
+"""
 
 
 @dataclass
@@ -926,6 +1116,1401 @@ class Minio7aac2a2c(GoProfile):
     repo: str = "minio"
     commit: str = "7aac2a2c5b7c882e68c1ce017d8256be2feea27f"
     timeout: int = 120
+
+
+@dataclass
+class Act123167dc(GoProfile):
+    owner: str = "nektos"
+    repo: str = "act"
+    commit: str = "123167dcaf6ec2c6a7e391ba21afadb55e4fadb5"
+    timeout: int = 180
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-20": [
+                "pkg/exprparser",
+                "pkg/model",
+                "pkg/schema",
+                "pkg/artifactcache",
+                "pkg/container",
+                "pkg/common/git",
+                "cmd",
+            ],
+            "CWE-670": [
+                "pkg/workflowpattern",
+                "pkg/exprparser",
+                "pkg/schema",
+                "pkg/model",
+                "cmd",
+                "pkg/runner",
+                "pkg/common",
+                "pkg/container",
+            ],
+            "CWE-835": [
+                "pkg/schema",
+                "pkg/common",
+                "pkg/container",
+            ],
+        }
+    )
+
+    @property
+    def dockerfile(self):
+        return f"""FROM golang:1.25
+ENV GOTOOLCHAIN=auto
+ENV GOPROXY=https://proxy.golang.org,direct
+ENV GOFLAGS=-mod=mod
+RUN git clone https://github.com/nektos/act.git /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN for i in 1 2 3 4 5; do go mod download -x && break || (echo "download retry $i" && sleep 15); done
+RUN for i in 1 2 3 4 5; do go mod tidy && break || (echo "tidy retry $i" && sleep 15); done
+RUN go test -v -count=1 ./... || true
+CMD ["/bin/bash"]
+"""
+
+
+@dataclass
+class Prometheuse793b267(GoProfile):
+    owner: str = "prometheus"
+    repo: str = "prometheus"
+    commit: str = "e793b26713cc7052c7558ae6ceffaa66c2a5b39f"
+    timeout: int = 300
+    timeout_ref: int = 3600
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-193": [
+                "tsdb/index",
+                "storage/remote/otlptranslator",
+                "model/histogram",
+                "util/convertnhcb",
+                "util/strutil",
+            ],
+            "CWE-20": [
+                "model/textparse",
+                "promql/parser",
+                "model/rulefmt",
+                "tsdb/compression",
+                "cmd/promtool",
+                "model/relabel",
+            ],
+            "CWE-670": [
+                "storage/remote/otlptranslator",
+                "discovery/refresh",
+                "util/treecache",
+                "util/testrecord",
+                "util/strutil",
+                "model/histogram",
+                "util/pool",
+                "util/fmtutil",
+            ],
+            "CWE-682": [
+                "util/stats",
+                "util/pool",
+                "discovery/refresh",
+                "util/testrecord",
+                "storage/remote/otlptranslator",
+                "cmd/promtool",
+                "model/relabel",
+                "web",
+            ],
+            "CWE-835": [
+                "util/treecache",
+                "cmd/prometheus",
+                "cmd/promtool",
+                "util/httputil",
+                "tsdb/index",
+            ],
+        }
+    )
+
+    @property
+    def dockerfile(self):
+        return f"""FROM golang:1.25
+ENV GOTOOLCHAIN=auto
+RUN git clone https://github.com/prometheus/prometheus.git /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN go mod tidy
+RUN go test -v -count=1 ./... || true
+CMD ["/bin/bash"]
+"""
+
+
+@dataclass
+class Goethereumda34eb59(GoProfile):
+    owner: str = "ethereum"
+    repo: str = "go-ethereum"
+    commit: str = "da34eb59fdee4b0d12e3cf0b8a5e5b3546cb0632"
+    timeout: int = 300
+    timeout_ref: int = 3600
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-193": [
+                "eth/gasprice",
+                "beacon/light/sync",
+                "miner/stress",
+                "cmd/workload",
+                "core/filtermaps",
+                "core/txpool/blobpool",
+                "common/bitutil",
+                "eth/tracers/internal",
+            ],
+            "CWE-20": [
+                "eth/filters",
+                "core/filtermaps",
+                "common/math",
+                "ethstats",
+                "cmd/geth",
+                "cmd/devp2p",
+            ],
+            "CWE-670": [
+                "eth/gasprice",
+                "core/state/snapshot",
+                "core/state/pruner",
+                "core/stateless",
+                "core/state",
+                "miner/stress",
+                "beacon/light/sync",
+                "cmd/rlpdump",
+            ],
+            "CWE-682": [
+                "metrics/influxdb",
+                "triedb/hashdb",
+                "core/state/pruner",
+                "core/stateless",
+                "core/state/snapshot",
+                "ethstats",
+                "common/math",
+                "consensus/ethash",
+            ],
+            "CWE-835": [
+                "eth/gasprice",
+                "miner/stress",
+                "core/txpool",
+                "eth/fetcher",
+                "internal/shutdowncheck",
+                "beacon/light/sync",
+            ],
+        }
+    )
+
+    @property
+    def dockerfile(self):
+        return f"""FROM golang:1.25
+ENV GOTOOLCHAIN=auto
+RUN apt-get update && apt-get install -y build-essential libsnappy-dev
+RUN git clone https://github.com/ethereum/go-ethereum.git /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN go mod tidy
+RUN go test -v -count=1 ./... || true
+CMD ["/bin/bash"]
+"""
+
+
+@dataclass
+class Memos638e4f39(GoProfile):
+    owner: str = "usememos"
+    repo: str = "memos"
+    commit: str = "638e4f398e90c556f70af150a79538312c8fc760"
+    timeout: int = 180
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "internal/motionphoto",
+                "internal/base",
+                "server/router/api/v1",
+                "server/router/fileserver",
+                "server/router/rss",
+            ],
+            "CWE-193": [
+                "internal/motionphoto",
+                "internal/ai/audio",
+                "internal/version",
+                "internal/markdown/renderer",
+                "server/router/rss",
+            ],
+            "CWE-20": [
+                "internal/filter",
+                "internal/markdown/parser",
+                "server/router/api/v1",
+                "internal/idp/oauth2",
+                "internal/httpgetter",
+            ],
+            "CWE-670": [
+                "internal/scheduler",
+                "server/router/rss",
+                "server/router/mcp",
+                "server/router/api/v1",
+                "server/router/fileserver",
+                "server/router/frontend",
+            ],
+            "CWE-835": [
+                "internal/scheduler",
+                "internal/webhook",
+                "internal/httpgetter",
+                "server/runner/s3presign",
+                "server/runner/memopayload",
+            ],
+        }
+    )
+
+    @property
+    def dockerfile(self):
+        return f"""FROM golang:1.25
+ENV GOTOOLCHAIN=auto
+RUN apt-get update && apt-get install -y build-essential
+RUN git clone https://github.com/usememos/memos.git /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN go mod tidy
+RUN go test -v -count=1 ./... || true
+CMD ["/bin/bash"]
+"""
+
+
+@dataclass
+class Rclonee95b64be(GoProfile):
+    owner: str = "rclone"
+    repo: str = "rclone"
+    commit: str = "e95b64be086bf685b2778a84797a2cae8663c53e"
+    timeout: int = 300
+    timeout_ref: int = 3600
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "cmd",
+                "cmd/selfupdate",
+                "backend/webdav/api",
+                "fs/filter",
+                "fs/fspath",
+                "fs/config/configstruct",
+            ],
+            "CWE-193": [
+                "lib/ranges",
+                "lib/encoder/filename",
+                "cmd/listremotes",
+                "cmd/rc",
+                "cmd/ncdu",
+                "backend/hidrive/hidrivehash",
+            ],
+            "CWE-20": [
+                "fs/filter",
+                "cmd/cryptdecode",
+                "cmd/check",
+            ],
+            "CWE-670": [
+                "cmd/listremotes",
+                "fs/config/configflags",
+                "fs/config/configstruct",
+            ],
+            "CWE-682": [
+                "lib/encoder/filename",
+                "backend/hasher",
+                "fs/hash",
+                "backend/hidrive/hidrivehash",
+                "backend/mailru/mrhash",
+                "lib/encoder",
+                "backend/dropbox/dbhash",
+                "backend/onedrive/quickxorhash",
+            ],
+            "CWE-754": [
+                "fs/fserrors",
+                "fs/march",
+                "fs/walk",
+                "backend/union/upstream",
+                "fs/dirtree",
+                "lib/batcher",
+            ],
+            "CWE-835": [
+                "fs/dirtree",
+                "cmd/listremotes",
+                "fs/walk",
+                "fs/march",
+                "lib/encoder/filename",
+            ],
+        }
+    )
+
+    @property
+    def dockerfile(self):
+        return f"""FROM golang:1.25
+ENV GOTOOLCHAIN=auto
+RUN git clone https://github.com/rclone/rclone.git /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN go mod tidy
+RUN go test -v -count=1 ./... || true
+CMD ["/bin/bash"]
+"""
+
+
+@dataclass
+class Gitea2450127c(GoProfile):
+    owner: str = "go-gitea"
+    repo: str = "gitea"
+    commit: str = "2450127c56ff36e0494e796918e99aa451c6b944"
+    timeout: int = 300
+    timeout_ref: int = 3600
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "modules/markup",
+                "modules/markup/common",
+                "modules/regexplru",
+                "modules/validation",
+                "modules/references",
+                "routers/web/admin",
+                "routers/web/user",
+            ],
+            "CWE-193": [
+                "modules/git/languagestats",
+                "modules/packages/rpm",
+                "modules/packages/swift",
+                "modules/packages/nuget",
+                "modules/indexer/code",
+                "services/repository/gitgraph",
+                "build",
+            ],
+            "CWE-20": [
+                "modules/validation",
+                "modules/updatechecker",
+                "modules/actions/jobparser",
+                "modules/git/pipeline",
+            ],
+            "CWE-670": [
+                "routers/web/explore",
+                "routers/web/user",
+                "routers/web/repo",
+                "routers/web/shared",
+                "routers/api/packages",
+                "routers/common",
+                "routers/web/admin",
+            ],
+            "CWE-682": [
+                "modules/git/languagestats",
+                "modules/commitstatus",
+                "modules/indexer/stats",
+                "modules/metrics",
+                "services/repository/commitstatus",
+            ],
+            "CWE-754": [
+                "modules/web/middleware",
+                "modules/packages/alpine",
+                "modules/proxy",
+            ],
+            "CWE-835": [
+                "modules/packages/nuget",
+                "modules/packages/cran",
+                "services/mailer/incoming",
+                "build",
+                "models/migrations/v1_6",
+                "modules/util/rotatingfilewriter",
+            ],
+        }
+    )
+
+    @property
+    def dockerfile(self):
+        return f"""FROM golang:1.25
+ENV GOTOOLCHAIN=auto
+RUN apt-get update && apt-get install -y build-essential git
+RUN git clone https://github.com/go-gitea/gitea.git /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN go mod tidy
+RUN go test -v -count=1 ./... || true
+CMD ["/bin/bash"]
+"""
+
+
+@dataclass
+class Terraform93b0eae7(GoProfile):
+    owner: str = "hashicorp"
+    repo: str = "terraform"
+    commit: str = "93b0eae7368ff4b4c2cfad8c3c92401c4bc26afb"
+    timeout: int = 300
+    timeout_ref: int = 3600
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "internal/getmodules/moduleaddrs",
+                "internal/states/statefile",
+                "internal/configs/configschema",
+                "internal/backend/remote-state",
+            ],
+            "CWE-193": [
+                "internal/ipaddr",
+                "internal/command/jsonconfig",
+                "internal/command/jsonplan",
+                "internal/command/format",
+                "internal/command/junit",
+            ],
+            "CWE-20": [
+                "internal/command/jsonplan",
+                "internal/command/jsonstate",
+                "internal/modsdir",
+                "internal/getmodules/moduleaddrs",
+                "internal/configs/hcl2shim",
+                "internal/providers/testing",
+                "internal/stacks/stackplan",
+            ],
+            "CWE-670": [
+                "internal/command/jsonstate",
+                "internal/states/statefile",
+                "internal/command/jsonplan",
+                "internal/command/jsonconfig",
+                "internal/command/format",
+                "internal/backend/remote-state",
+                "internal/states",
+            ],
+            "CWE-682": [
+                "internal/states/statefile",
+                "internal/backend/remote-state",
+                "internal/states/statemgr",
+            ],
+            "CWE-835": [
+                "internal/ipaddr",
+                "internal/command/jsonconfig",
+                "internal/command/jsonstate",
+                "internal/command/jsonplan",
+                "internal/configs/configschema",
+                "internal/command/format",
+            ],
+        }
+    )
+
+    @property
+    def dockerfile(self):
+        return f"""FROM golang:1.25
+ENV GOTOOLCHAIN=auto
+RUN git clone https://github.com/hashicorp/terraform.git /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN go mod tidy
+RUN go test -v -count=1 ./... || true
+CMD ["/bin/bash"]
+"""
+
+
+@dataclass
+class Alist527ad893(GoProfile):
+    owner: str = "AlistGo"
+    repo: str = "alist"
+    commit: str = "527ad89362a8f3d51a35c5e4b6672cf05c983a5b"
+    timeout: int = 180
+    timeout_ref: int = 1800
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "drivers/onedrive_sharelink",
+                "drivers/doubao_share",
+                "drivers/streamtape",
+                "drivers/chunker",
+                "server/handles",
+                "drivers/azure_blob",
+                "drivers/yunpan360",
+            ],
+            "CWE-193": [
+                "drivers/chunker",
+                "server/webdav/internal",
+                "pkg/sign",
+                "drivers/doubao_share",
+                "internal/net",
+                "pkg/http_range",
+                "pkg/singleflight",
+            ],
+            "CWE-20": [
+                "pkg/gowebdav/cmd",
+                "server/handles",
+                "drivers/webdav/odrvcookie",
+                "drivers/bitqiu",
+                "drivers/chaoxing",
+                "drivers/quqi",
+            ],
+            "CWE-670": [
+                "server/webdav",
+                "drivers/139",
+                "drivers/bitqiu",
+                "internal/archive/tool",
+                "server/webdav/internal",
+                "internal/bootstrap/data",
+                "internal/device",
+                "server/static",
+            ],
+            "CWE-682": [
+                "pkg/utils/hash",
+                "internal/setting",
+                "pkg/gowebdav/cmd",
+                "pkg/qbittorrent",
+                "drivers/guangyapan",
+                "server/handles",
+                "internal/bootstrap",
+            ],
+            "CWE-754": [
+                "drivers/yunpan360",
+                "drivers/aliyundrive_open",
+                "drivers/chaoxing",
+                "pkg/qbittorrent",
+                "drivers/quqi",
+                "drivers/azure_blob",
+                "server/middlewares",
+                "drivers/alias",
+            ],
+            "CWE-835": [
+                "internal/archive/tool",
+                "drivers/bitqiu",
+                "internal/net",
+                "internal/archive/rardecode",
+                "internal/search",
+                "server/webdav/internal",
+            ],
+        }
+    )
+
+    @property
+    def dockerfile(self):
+        return f"""FROM golang:1.25
+ENV GOTOOLCHAIN=auto
+RUN git clone https://github.com/AlistGo/alist.git /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN git checkout {self.commit}
+RUN go mod tidy
+RUN go test -v -count=1 ./... || true
+CMD ["/bin/bash"]
+"""
+
+
+@dataclass
+class Lazydocker7e7aadc2(GoProfile):
+    owner: str = "jesseduffield"
+    repo: str = "lazydocker"
+    commit: str = "7e7aadc2071d58031bf2daafca1fbd4093efc23f"
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-193": [
+                "pkg/utils",
+                "pkg/gui",
+                "pkg/commands",
+                "pkg/gui/presentation",
+            ],
+            "CWE-754": [
+                "pkg/log",
+                "pkg/commands/ssh",
+                "pkg/config",
+                "pkg/commands",
+                "pkg/gui",
+                "pkg/cheatsheet",
+            ],
+            "CWE-835": [
+                "pkg/tasks",
+                "pkg/gui",
+                "pkg/commands/ssh",
+            ],
+        }
+    )
+
+    @property
+    def dockerfile(self):
+        return f"""FROM golang:1.25
+ENV GOTOOLCHAIN=auto
+RUN git clone https://github.com/jesseduffield/lazydocker.git /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN git checkout {self.commit}
+RUN go mod tidy
+RUN go test -v -count=1 ./... || true
+CMD ["/bin/bash"]
+"""
+
+
+@dataclass
+class Gogsd7571322(GoProfile):
+    owner: str = "gogs"
+    repo: str = "gogs"
+    commit: str = "d7571322a04a29476d4241406ed50bf7eef0a5b7"
+    timeout: int = 180
+    timeout_ref: int = 1800
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "internal/lazyregexp",
+                "internal/database",
+                "internal/form",
+                "internal/gitx",
+                "internal/context",
+                "internal/markup",
+                "internal/route/repo",
+            ],
+            "CWE-193": [
+                "internal/strx",
+                "cmd/gogs",
+                "internal/route/repo",
+                "internal/markup",
+                "internal/route/user",
+            ],
+            "CWE-670": [
+                "internal/dbx",
+                "internal/ssh",
+                "internal/route/org",
+                "internal/route/admin",
+                "internal/markup",
+                "cmd/gogs",
+                "internal/route/user",
+            ],
+        }
+    )
+
+    @property
+    def dockerfile(self):
+        return f"""FROM golang:1.25
+ENV GOTOOLCHAIN=auto
+RUN git clone https://github.com/gogs/gogs.git /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN git checkout {self.commit}
+RUN go mod tidy
+RUN go test -v -count=1 ./... || true
+CMD ["/bin/bash"]
+"""
+
+
+@dataclass
+class Cli2b7e7767(GoProfile):
+    owner: str = "cli"
+    repo: str = "cli"
+    commit: str = "2b7e77674884953ac8bb904cd0272107a882caf7"
+    timeout: int = 180
+    timeout_ref: int = 1800
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "pkg/search",
+                "internal/update",
+                "pkg/cmd/api",
+                "pkg/cmd/release",
+                "pkg/cmd/attestation",
+                "pkg/cmd/run",
+                "pkg/githubtemplate",
+            ],
+            "CWE-193": [
+                "pkg/jsoncolor",
+                "pkg/cmd/api",
+                "pkg/cmd/ssh-key",
+                "pkg/cmd/skills",
+                "pkg/cmd/release",
+                "pkg/cmd/gist",
+            ],
+            "CWE-670": [
+                "pkg/cmd/workflow",
+                "pkg/cmd/api",
+                "pkg/jsoncolor",
+                "pkg/cmd/search",
+                "pkg/cmd/issue",
+                "pkg/cmd/status",
+                "pkg/cmd/run",
+            ],
+            "CWE-682": [
+                "pkg/cmd/status",
+                "pkg/cmd/attestation",
+                "pkg/cmd/ssh-key",
+                "pkg/cmd/skills",
+            ],
+            "CWE-835": [
+                "pkg/cmd/skills",
+                "pkg/cmd/api",
+                "pkg/cmd/run",
+                "pkg/cmd/ruleset",
+                "pkg/cmd/release",
+                "pkg/cmd/status",
+                "pkg/cmd/issue",
+            ],
+        }
+    )
+
+    @property
+    def dockerfile(self):
+        return f"""FROM golang:1.25
+ENV GOTOOLCHAIN=auto
+RUN git clone https://github.com/cli/cli.git /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN git checkout {self.commit}
+RUN go mod tidy
+RUN go test -v -count=1 ./... || true
+CMD ["/bin/bash"]
+"""
+
+
+@dataclass
+class Localai8af963bd(GoProfile):
+    owner: str = "mudler"
+    repo: str = "LocalAI"
+    commit: str = "8af963bdd92ea1208eadb93101b662b5a22f0aa5"
+    timeout: int = 300
+    timeout_ref: int = 3600
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "pkg/functions/grammars",
+                "core/config",
+                "pkg/functions",
+                "pkg/functions/peg",
+                "pkg/utils",
+                "core/backend",
+            ],
+            "CWE-193": [
+                "core/trace",
+                "pkg/xsysinfo",
+                "pkg/functions",
+                "pkg/functions/peg",
+                "core/config/gen_inference_defaults",
+                "pkg/sound",
+                "core/gallery/importers",
+            ],
+            "CWE-20": [
+                "backend/go/piper",
+                "backend/go/whisper",
+                "backend/go/sam3-cpp",
+                "backend/go/vibevoice-cpp",
+                "core/cli/worker",
+                "pkg/xsysinfo",
+                "core/services/skills",
+            ],
+            "CWE-670": [
+                "core/http/middleware",
+                "backend/go/acestep-cpp",
+                "backend/go/localvqe",
+                "core/cli",
+                "core/schema",
+                "backend/go/vibevoice-cpp",
+            ],
+            "CWE-754": [
+                "core/http/middleware",
+                "pkg/oci",
+                "core/cli/worker",
+                "core/services/skills",
+                "core/backend",
+                "core/services/modeladmin",
+                "backend/go/vibevoice-cpp",
+            ],
+            "CWE-835": [
+                "core/services/worker",
+                "core/cli/worker",
+                "core/cli/workerregistry",
+                "cmd/launcher/internal",
+                "backend/go/local-store",
+                "core/explorer",
+                "core/cli",
+            ],
+        }
+    )
+
+    @property
+    def dockerfile(self):
+        return f"""FROM golang:1.26
+ENV GOTOOLCHAIN=auto
+RUN apt-get update && apt-get install -y --no-install-recommends \\
+        unzip make curl build-essential ca-certificates git && \\
+    rm -rf /var/lib/apt/lists/*
+RUN git clone https://github.com/mudler/LocalAI.git /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN git checkout {self.commit}
+RUN make protogen-go
+RUN go mod tidy
+RUN go test -v -count=1 ./... || true
+CMD ["/bin/bash"sh"]
+"""
+
+
+@dataclass
+class Milvuse36613c7(GoProfile):
+    owner: str = "milvus-io"
+    repo: str = "milvus"
+    commit: str = "e36613c7eaa9edb0452e7198fc751f53c52b38c7"
+    timeout: int = 300
+    timeout_ref: int = 3600
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-193": [
+                "client/row",
+                "internal/datanode/index",
+                "pkg/util/merr",
+                "internal/parser/planparserv2",
+            ],
+            "CWE-20": [
+                "internal/querynodev2/pipeline",
+                "internal/util/indexparamcheck",
+                "internal/parser/planparserv2",
+                "internal/querycoordv2/checkers",
+                "client/ruleguard",
+                "internal/flushcommon/pipeline",
+            ],
+            "CWE-670": [
+                "internal/querynodev2/pipeline",
+                "internal/cdc/controller",
+                "pkg/mq/msgdispatcher",
+                "cmd/tools/config",
+                "internal/flushcommon/pipeline",
+                "client/row",
+                "internal/util/pipeline",
+                "internal/util/clustering",
+            ],
+            "CWE-682": [
+                "internal/util/metrics",
+                "pkg/util/metricsinfo",
+                "pkg/metrics",
+                "internal/storagev2",
+                "internal/util/clustering",
+                "pkg/util/timestamptz",
+            ],
+            "CWE-754": [
+                "pkg/util/interceptor",
+                "pkg/objectstorage/gcp",
+                "internal/distributed/utils",
+                "internal/storagev2",
+                "internal/proxy/replicate",
+                "pkg/util/timestamptz",
+                "pkg/util/externalspec",
+                "pkg/util/requestutil",
+            ],
+            "CWE-835": [
+                "internal/streamingcoord/server",
+                "internal/streamingcoord/client",
+                "internal/streamingnode/client",
+                "internal/distributed/streaming",
+                "internal/streamingnode/server",
+                "pkg/streaming/util",
+                "internal/util/streamingutil",
+            ],
+        }
+    )
+
+    @property
+    def dockerfile(self):
+        return f"""FROM golang:1.25
+ENV GOTOOLCHAIN=auto
+RUN git clone https://github.com/milvus-io/milvus.git /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN git checkout {self.commit}
+RUN go mod download
+RUN go test -v -count=1 ./... || true
+CMD ["/bin/bash"]
+"""
+
+
+
+@dataclass
+class Fabric6a9b55a0(GoProfile):
+    owner: str = "danielmiessler"
+    repo: str = "Fabric"
+    commit: str = "6a9b55a096361d368368fa8119f7dd3b8bf2673b"
+    timeout: int = 180
+    timeout_ref: int = 1800
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "cmd/generate_changelog/internal",
+                "internal/tools/spotify",
+                "internal/tools/youtube",
+            ],
+            "CWE-193": [
+                "cmd/code2context",
+                "cmd/generate_changelog/internal",
+                "internal/tools/youtube",
+                "internal/cli",
+                "internal/domain",
+            ],
+            "CWE-670": [
+                "internal/core",
+                "cmd/to_pdf",
+                "internal/cli",
+                "cmd/generate_changelog/internal",
+                "internal/plugins/ai",
+            ],
+            "CWE-835": [
+                "internal/core",
+                "cmd/generate_changelog/internal",
+                "internal/tools/youtube",
+                "internal/plugins/ai",
+                "internal/cli",
+            ],
+        }
+    )
+
+    @property
+    def dockerfile(self):
+        return f"""FROM golang:1.25
+ENV GOTOOLCHAIN=auto
+RUN git clone https://github.com/danielmiessler/Fabric.git /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN git checkout {self.commit}
+RUN go mod tidy
+RUN go test -v -count=1 ./... || true
+CMD ["/bin/bash"]
+"""
+
+
+@dataclass
+class Istio98c4a24a(GoProfile):
+    owner: str = "istio"
+    repo: str = "istio"
+    commit: str = "98c4a24a9faeeed620e4be0de56fed913161f94f"
+    timeout: int = 300
+    timeout_ref: int = 3600
+    # Scoped to bug_gen_dirs_include parents. Skips cni/*, tests/binary,
+    # tools/istio-{ip,nf}tables/pkg/capture, tools/istio-iptables/pkg/dependencies
+    # which blank-import unshare-go/netns (init() needs CAP_SYS_ADMIN, exits silently).
+    test_cmd: str = (
+        "go test -v "
+        "./tools/docker-builder/... ./tools/bug-report/pkg/... "
+        "./tools/istio-iptables/pkg/builder/... "
+        "./tools/istio-iptables/pkg/validation/... "
+        "./pkg/config/... ./pkg/util/... ./pkg/slices/... "
+        "./pkg/jwt/... ./pkg/filewatcher/... ./pkg/webhooks/... "
+        "./pkg/kube/controllers/... ./pkg/kube/watcher/... "
+        "./istioctl/pkg/metrics/... ./istioctl/pkg/validate/... "
+        "./istioctl/pkg/checkinject/... ./istioctl/pkg/precheck/... "
+        "./pilot/pkg/controllers/... ./pilot/pkg/status/... "
+        "./operator/pkg/install/..."
+    )
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "tools/docker-builder",
+                "tools/istio-iptables/pkg",
+                "tools/bug-report/pkg",
+                "pkg/config/labels",
+                "pkg/config/validation",
+            ],
+            "CWE-193": [
+                "pkg/util/strcase",
+                "pkg/slices",
+                "pkg/config/labels",
+                "istioctl/pkg/metrics",
+                "pkg/config/crd",
+            ],
+            "CWE-20": [
+                "istioctl/pkg/validate",
+                "istioctl/pkg/checkinject",
+                "pkg/config/validation",
+                "istioctl/pkg/precheck",
+                "pkg/webhooks/validation",
+            ],
+            "CWE-670": [
+                "pilot/pkg/controllers",
+                "istioctl/pkg/checkinject",
+                "pkg/jwt",
+                "pkg/kube/controllers",
+            ],
+            "CWE-682": [
+                "istioctl/pkg/metrics",
+                "pilot/pkg/status",
+                "pkg/util/hash",
+            ],
+            "CWE-835": [
+                "pkg/filewatcher",
+                "pkg/config/crd",
+                "operator/pkg/install",
+                "pkg/kube/watcher",
+            ],
+        }
+    )
+
+    @property
+    def dockerfile(self):
+        return f"""FROM golang:1.25
+ENV GOTOOLCHAIN=auto
+RUN git clone https://github.com/istio/istio.git /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN git checkout {self.commit}
+RUN go mod tidy
+RUN go test -v -count=1 ./pkg/config/... || true
+CMD ["/bin/bash"]
+"""
+
+
+@dataclass
+class Xraycore1bdb488c(GoProfile):
+    owner: str = "XTLS"
+    repo: str = "Xray-core"
+    commit: str = "1bdb488c9ec09ea51e6899697d5b7437f3cf6eb2"
+    timeout: int = 180
+    timeout_ref: int = 1800
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "common/geodata/strmatcher",
+                "infra/vprotogen",
+                "infra/conf",
+                "transport/internet",
+            ],
+            "CWE-193": [
+                "common/crypto/internal",
+                "common/bytespool",
+                "proxy/tun/icmp",
+                "common/protocol/bittorrent",
+                "proxy/vless/encryption",
+                "common/protocol/http",
+                "common/uuid",
+                "proxy",
+            ],
+            "CWE-20": [
+                "proxy/wireguard",
+                "proxy/wireguard/gvisortun",
+                "transport/pipe",
+            ],
+            "CWE-670": [
+                "proxy/tun/icmp",
+                "app/router",
+                "app/dispatcher",
+                "proxy",
+                "app/router/command",
+            ],
+            "CWE-682": [
+                "transport/internet/stat",
+                "app/stats/command",
+                "app/stats",
+            ],
+            "CWE-754": [
+                "common/errors",
+                "common/retry",
+                "common/ocsp",
+                "proxy/wireguard",
+                "app/dispatcher",
+            ],
+            "CWE-835": [
+                "common/retry",
+                "common/crypto/internal",
+                "common/bytespool",
+                "common/protocol/http",
+                "proxy",
+            ],
+        }
+    )
+
+    @property
+    def dockerfile(self):
+        return f"""FROM golang:1.25
+ENV GOTOOLCHAIN=auto
+RUN git clone https://github.com/XTLS/Xray-core.git /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN git checkout {self.commit}
+RUN go mod tidy
+RUN go test -v -count=1 ./common/... || true
+CMD ["/bin/bash"]
+"""
+
+
+@dataclass
+class Photoprismf6a5dc84(GoProfile):
+    owner: str = "photoprism"
+    repo: str = "photoprism"
+    commit: str = "f6a5dc8412a7bb5bd2736231a98b7be396b6e39b"
+    timeout: int = 300
+    timeout_ref: int = 3600
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "internal/config",
+                "internal/meta",
+                "internal/entity",
+                "pkg/txt",
+                "pkg/clean",
+                "pkg/http/header",
+                "pkg/http/dns",
+            ],
+            "CWE-193": [
+                "pkg/txt/clip",
+                "pkg/txt",
+                "pkg/http/dns",
+                "pkg/vector/alg",
+                "internal/photoprism/backup",
+                "internal/auth/jwt",
+            ],
+            "CWE-20": [
+                "internal/form",
+                "pkg/http/safe",
+                "pkg/clean",
+                "pkg/time/tz",
+            ],
+            "CWE-670": [
+                "pkg/dsn",
+                "internal/photoprism/backup",
+                "internal/thumb/avatar",
+            ],
+            "CWE-682": [
+                "internal/ffmpeg/encode",
+                "internal/thumb/crop",
+                "pkg/vector/alg",
+                "pkg/geo",
+            ],
+            "CWE-835": [
+                "internal/workers",
+                "internal/workers/auto",
+                "pkg/vector/alg",
+                "internal/auth/jwt",
+                "internal/api",
+            ],
+        }
+    )
+
+    @property
+    def dockerfile(self):
+        return f"""FROM golang:1.25
+ENV GOTOOLCHAIN=auto
+RUN apt-get update && apt-get install -y build-essential libheif-dev libvips-dev ffmpeg curl ca-certificates
+RUN git clone https://github.com/photoprism/photoprism.git /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN git checkout {self.commit}
+RUN bash scripts/dist/install-tensorflow.sh /usr && ldconfig
+RUN go mod tidy
+RUN go test -v -count=1 ./pkg/... || true
+CMD ["/bin/bash"]
+"""
+
+
+@dataclass
+class Xui3af45c14(GoProfile):
+    owner: str = "MHSanaei"
+    repo: str = "3x-ui"
+    commit: str = "3af45c14622c65e5b815b1ae4399c96d32f3a737"
+    timeout: int = 180
+    timeout_ref: int = 1800
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "web/controller",
+                "web/job",
+                "util/netsafe",
+                "web/service",
+                "xray",
+                "web/global",
+            ],
+            "CWE-193": [
+                "sub",
+                "web/job",
+                "util/random",
+            ],
+            "CWE-670": [
+                "web/middleware",
+                "web/controller",
+                "sub",
+            ],
+            "CWE-754": [
+                "web/middleware",
+                "config",
+                "database",
+                "web/locale",
+                "web/session",
+                "web/network",
+                "util/sys",
+            ],
+            "CWE-835": [
+                "util/common",
+                "util/sys",
+                "web/websocket",
+                "web/service",
+            ],
+        }
+    )
+
+    @property
+    def dockerfile(self):
+        return f"""FROM golang:1.25
+ENV GOTOOLCHAIN=auto
+RUN apt-get update && apt-get install -y build-essential
+RUN git clone https://github.com/MHSanaei/3x-ui.git /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN git checkout {self.commit}
+RUN go mod tidy
+RUN go test -v -count=1 ./... || true
+CMD ["/bin/bash"]
+"""
+
+
+@dataclass
+class Fiber33b7fd47(GoProfile):
+    owner: str = "gofiber"
+    repo: str = "fiber"
+    commit: str = "33b7fd4718f7d94e05214f424ed8d44bdd601836"
+    timeout: int = 180
+    timeout_ref: int = 1800
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                ".",
+                "middleware/rewrite",
+                "middleware/redirect",
+            ],
+            "CWE-193": [
+                "middleware/redirect",
+                "middleware/static",
+                "middleware/etag",
+                "addon/retry",
+                "middleware/rewrite",
+                "middleware/keyauth",
+                "middleware/cors",
+                "internal/memory",
+            ],
+            "CWE-20": [
+                "middleware/static",
+                "extractors",
+                "middleware/cors",
+                "middleware/basicauth",
+                "middleware/keyauth",
+            ],
+            "CWE-670": [
+                "middleware/keyauth",
+                "middleware/static",
+                "middleware/idempotency",
+                "middleware/cors",
+                "middleware/cache",
+                "middleware/logger",
+                "middleware/rewrite",
+                "middleware/basicauth",
+            ],
+            "CWE-682": [
+                "middleware/static",
+                "middleware/rewrite",
+                "middleware/favicon",
+                "middleware/redirect",
+                "middleware/etag",
+                "addon/retry",
+                "middleware/limiter",
+            ],
+            "CWE-754": [
+                "middleware/compress",
+                "middleware/timeout",
+                "middleware/favicon",
+                "middleware/static",
+                "middleware/keyauth",
+                "middleware/etag",
+                "middleware/idempotency",
+                "middleware/encryptcookie",
+            ],
+            "CWE-835": [
+                "addon/retry",
+                "internal/logtemplate",
+                "middleware/cache",
+                "middleware/rewrite",
+                "middleware/redirect",
+                "middleware/keyauth",
+            ],
+        }
+    )
+
+    @property
+    def dockerfile(self):
+        return f"""FROM golang:1.25
+ENV GOTOOLCHAIN=auto
+RUN git clone https://github.com/gofiber/fiber.git /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN git checkout {self.commit}
+RUN go mod tidy
+RUN go test -v -count=1 ./... || true
+CMD ["/bin/bash"]
+"""
+
+
+@dataclass
+class Compose659b269e(GoProfile):
+    owner: str = "docker"
+    repo: str = "compose"
+    commit: str = "659b269e5291dcc3078a4e00804a07d8fa4bea6d"
+    timeout: int = 180
+    timeout_ref: int = 1800
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-193": [
+                "pkg/compose/transform",
+                "cmd/display",
+                "cmd/compatibility",
+                "pkg/utils",
+            ],
+            "CWE-835": [
+                "pkg/watch",
+                "pkg/compose/transform",
+                "pkg/compose",
+                "pkg/utils",
+                "cmd/display",
+            ],
+        }
+    )
+
+    @property
+    def dockerfile(self):
+        return f"""FROM golang:1.25
+ENV GOTOOLCHAIN=auto
+RUN git clone https://github.com/docker/compose.git /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN git checkout {self.commit}
+RUN go mod tidy
+RUN go test -v -count=1 ./pkg/compose/... || true
+CMD ["/bin/bash"]
+"""
+
+
+@dataclass
+class Esbuild6a794dff(GoProfile):
+    owner: str = "evanw"
+    repo: str = "esbuild"
+    commit: str = "6a794dff68e6a43539f6da671e3080efdf11ca70"
+    timeout: int = 180
+    timeout_ref: int = 1800
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "cmd/esbuild",
+                "internal/config",
+                "internal/js_parser",
+                "internal/resolver",
+                "pkg/api",
+            ],
+            "CWE-193": [
+                "internal/sourcemap",
+                "internal/css_printer",
+                "internal/css_lexer",
+                "internal/bundler",
+                "internal/linker",
+                "internal/logger",
+                "internal/css_parser",
+                "internal/js_lexer",
+            ],
+            "CWE-20": [
+                "internal/js_parser",
+                "internal/css_parser",
+                "pkg/api",
+                "pkg/cli",
+                "internal/bundler",
+                "internal/resolver",
+            ],
+            "CWE-670": [
+                "internal/css_printer",
+                "internal/bundler",
+                "internal/sourcemap",
+                "internal/linker",
+                "internal/js_parser",
+            ],
+            "CWE-682": [
+                "internal/xxhash",
+                "internal/sourcemap",
+                "internal/css_parser",
+                "internal/js_parser",
+                "internal/js_printer",
+            ],
+            "CWE-835": [
+                "internal/sourcemap",
+                "internal/linker",
+                "internal/css_printer",
+                "internal/bundler",
+                "internal/css_lexer",
+            ],
+        }
+    )
+
+    @property
+    def dockerfile(self):
+        return f"""FROM golang:1.25
+ENV GOTOOLCHAIN=auto
+RUN git clone https://github.com/evanw/esbuild.git /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN git checkout {self.commit}
+RUN go mod tidy
+RUN go test -v -count=1 ./internal/... || true
+CMD ["/bin/bash"]
+"""
+
 
 
 # Register all Go profiles with the global registry
