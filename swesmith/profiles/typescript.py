@@ -103,6 +103,45 @@ class NextChatc3b8c158(TypeScriptProfile):
     owner: str = "ChatGPTNextWeb"
     repo: str = "NextChat"
     commit: str = "c3b8c1587c04fff05f7b42276a43016e87771527"
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "app",
+                "app/utils",
+                "app/mcp",
+                "app/components",
+            ],
+            "CWE-193": [
+                "app/lib",
+                "app/utils/cloud",
+                "app/components",
+                "app/utils",
+                "app/client/platforms",
+                "app",
+            ],
+            "CWE-20": [
+                "app/api",
+                "app/mcp",
+                "app/utils/cloud",
+                "app/config",
+            ],
+            "CWE-682": [
+                "app/config",
+                "app/components/sd",
+                "app/api",
+                "app/components",
+                "app/utils",
+                "app",
+                "app/client/platforms",
+                "app/lib",
+            ],
+            "CWE-754": [
+                "app/api",
+                "app/client/platforms",
+                "app/utils/cloud",
+            ],
+        }
+    )
     test_cmd: str = (
         "node --no-warnings --experimental-vm-modules $(yarn bin jest) --ci --forceExit"
     )
@@ -557,7 +596,7 @@ CMD ["/bin/bash"]"""
 class Query9d1ce70b(TypeScriptProfile):
     owner: str = "TanStack"
     repo: str = "query"
-    commit: str = "9d1ce70b39d91271356432147d16f5441f9fa892"
+    commit: str = "334161f2f511689b3998c6e041d9c25f792a2721"
     test_cmd: str = "pnpm run test:ci"
 
     @property
@@ -1089,7 +1128,61 @@ CMD ["/bin/bash"]"""
 class Cline90c81122(TypeScriptProfile):
     owner: str = "cline"
     repo: str = "cline"
-    commit: str = "90c8112257f40bfabbf5e6e2bcf5013fd151c2e7"
+    commit: str = "3821f7e52e137516c22ebf9dd740c15a36e8225d"
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "src/services/search",
+                "src/core/assistant-message",
+                "src/core/permissions",
+                "src/core/commands",
+                "webview-ui/src/utils",
+                "webview-ui/src/components",
+            ],
+            "CWE-193": [
+                "src/services/ripgrep",
+                "src/core/permissions",
+                "src/core/assistant-message",
+                "src/core/commands",
+                "src/services/glob",
+                "src/services/search",
+            ],
+            "CWE-20": [
+                "src/integrations/checkpoints",
+                "src/integrations/misc",
+                "src/services/account",
+                "src/core/storage",
+                "src/services/ripgrep",
+                "src/core/commands",
+            ],
+            "CWE-670": [
+                "src/services/ripgrep",
+                "src/core/controller",
+                "src/core/permissions",
+            ],
+            "CWE-682": [
+                "src/dev/commands",
+                "src/services/ripgrep",
+                "webview-ui/src/utils",
+                "src/services/banner",
+                "src/services/search",
+            ],
+            "CWE-754": [
+                "src/core/commands",
+                "src/integrations/misc",
+                "src/services/account",
+                "src/core/storage",
+                "src/integrations/checkpoints",
+                "src/core/controller",
+                "src/services/error",
+            ],
+            "CWE-835": [
+                "src/services/search",
+                "src/core/permissions",
+                "src/core/assistant-message",
+            ],
+        }
+    )
     test_cmd: str = "npm run test:unit"
 
     @property
@@ -1098,11 +1191,22 @@ class Cline90c81122(TypeScriptProfile):
 
 RUN apt-get update && apt-get install -y     git     python3     make     g++     pkg-config     libsqlite3-dev     bash     && rm -rf /var/lib/apt/lists/*
 
+ENV NODE_OPTIONS=--max-old-space-size=4096
+ENV HUSKY=0
+ENV npm_config_fetch_timeout=600000
+ENV npm_config_fetch_retries=10
+ENV npm_config_fetch_retry_mintimeout=20000
+ENV npm_config_fetch_retry_maxtimeout=120000
+ENV npm_config_maxsockets=4
+ENV npm_config_prefer_offline=true
+ENV npm_config_audit=false
+ENV npm_config_fund=false
+
 RUN git clone https://github.com/{self.mirror_name}.git /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN git submodule update --init --recursive
 
-RUN npm run install:all
+RUN --mount=type=cache,target=/root/.npm npm run install:all
 
 RUN npm run protos
 
@@ -1141,7 +1245,7 @@ CMD ["/bin/bash"]"""
 class Codeserverdbd25c94(TypeScriptProfile):
     owner: str = "coder"
     repo: str = "code-server"
-    commit: str = "dbd25c945c548f2bc00a9f0186ab1e4fc7480e03"
+    commit: str = "53d981a724a55e90f980dd8b147ba0028a956c24"
     test_cmd: str = "npm run test:unit -- --ci --colors --reporters=default"
 
     @property
@@ -2093,6 +2197,57 @@ class Lobehub02767bac(TypeScriptProfile):
     owner: str = "lobehub"
     repo: str = "lobehub"
     commit: str = "02767bac55f24173e01dfef3829cc13eb8e67684"
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "plugins/vite",
+                "packages/database/src",
+                "packages/web-crawler/src",
+                "src/libs",
+            ],
+            "CWE-193": [
+                "packages/builtin-tool-lobe-agent/src",
+                "packages/agent-tracing/src",
+                "packages/builtin-tool-knowledge-base/src",
+                "packages/builtin-tool-calculator/src",
+            ],
+            "CWE-20": [
+                "packages/eval-dataset-parser/src",
+                "src/features/ChatInput",
+                "src/server/workflows-hono",
+                "packages/local-file-shell/src",
+                "src/server/agent-hono",
+                "src/app/(backend)",
+            ],
+            "CWE-670": [
+                "src/server/routers",
+                "src/server/workflows-hono",
+                "src/server/workflows",
+            ],
+            "CWE-682": [
+                "packages/builtin-tool-calculator/src",
+                "packages/builtin-tool-page-agent/src",
+                "src/libs",
+                "packages/builtin-tool-knowledge-base/src",
+                "src/hooks",
+            ],
+            "CWE-754": [
+                "src/components/BootErrorBoundary",
+                "src/server/workflows-hono",
+                "packages/local-file-shell/src",
+                "packages/builtin-tool-knowledge-base/src",
+                "packages/tool-runtime/src",
+                "packages/builtin-tool-message/src",
+                "src/server/agent-hono",
+                "src/app/(backend)",
+            ],
+            "CWE-835": [
+                "src/services/utils",
+                "src/server/agent-hono",
+                "packages/database/src",
+            ],
+        }
+    )
     test_cmd: str = "pnpm run test-app"
 
     @property
@@ -2466,35 +2621,54 @@ CMD ["/bin/bash"]"""
 class Nest3c6c2855(TypeScriptProfile):
     owner: str = "nestjs"
     repo: str = "nest"
-    commit: str = "3c6c285561f56c2f9e0301f0b8bbf7b2c1395806"
+    commit: str = "8ee0aa52a04410a34b49fe9a80b3857ba738468b"
     test_cmd: str = "npm test"
     bug_gen_dirs_include: dict[str, list[str]] = field(
         default_factory=lambda: {
+            "CWE-1333": [
+                "tools/gulp/tasks",
+                "packages/core/router",
+                "packages/core/middleware",
+                "packages/microservices/server",
+                "packages/platform-fastify/adapters",
+                "packages/common/pipes",
+                "packages/websockets/errors",
+            ],
+            "CWE-193": [
+                "packages/microservices/helpers",
+                "packages/core/interceptors",
+                "packages/common/pipes",
+                "packages/platform-fastify/adapters",
+                "packages/core/inspector",
+                "packages/platform-socket.io/adapters",
+                "packages/core/repl",
+            ],
             "CWE-20": [
                 "packages/common/pipes",
+                "packages/core/guards",
                 "packages/microservices/deserializers",
-                "packages/core/router",
-                "packages/platform-express/adapters",
-                "packages/platform-fastify/adapters",
-            ],
-            "CWE-754": [
-                "packages/core/injector",
-                "packages/core/router",
-                "packages/core/middleware",
-                "packages/core/exceptions",
-                "packages/microservices/server",
-                "packages/microservices/client",
-                "packages/microservices/helpers",
+                "packages/core/pipes",
             ],
             "CWE-670": [
-                "packages/core/injector",
                 "packages/core/router",
                 "packages/core/middleware",
-                "packages/core/exceptions",
                 "packages/microservices/server",
                 "packages/microservices/client",
-                "packages/common/pipes",
                 "packages/platform-fastify/adapters",
+            ],
+            "CWE-682": [
+                "packages/core/services",
+                "packages/platform-socket.io/adapters",
+                "packages/common/pipes",
+                "packages/core/interceptors",
+            ],
+            "CWE-754": [
+                "packages/core/exceptions",
+                "packages/websockets/exceptions",
+                "packages/microservices/exceptions",
+                "packages/core/middleware",
+                "packages/core/errors",
+                "packages/common/pipes",
             ],
         }
     )
@@ -2559,7 +2733,42 @@ CMD ["/bin/bash"]"""
 class Nuxt93b085c2(TypeScriptProfile):
     owner: str = "nuxt"
     repo: str = "nuxt"
-    commit: str = "93b085c2d3e2396a57b4ef498fca0a636a000bb3"
+    commit: str = "fe86029c0a6883c3d8506879d61d1e1c37fb7308"
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "packages/nitro-server/src",
+                "packages/ui-templates/lib",
+                "packages/kit/src",
+                "packages/webpack/src",
+                "packages/schema/src",
+                "packages/vite/src",
+                "packages/nuxt/src",
+            ],
+            "CWE-193": [
+                "packages/ui-templates/lib",
+                "packages/nuxt/src",
+                "packages/vite/src",
+                "packages/webpack/src",
+                "packages/kit/src",
+                "packages/nitro-server/src",
+            ],
+            "CWE-682": [
+                "packages/vite/src",
+                "packages/schema/src",
+                "packages/nitro-server/src",
+                "packages/nuxt/src",
+                "packages/kit/src",
+                "packages/webpack/src",
+            ],
+            "CWE-835": [
+                "packages/vite/src",
+                "packages/webpack/src",
+                "packages/nuxt/src",
+                "packages/kit/src",
+            ],
+        }
+    )
     test_cmd: str = "pnpm test:unit"
 
     @property
@@ -2732,32 +2941,6 @@ CMD ["/bin/bash"]"""
 
     def log_parser(self, log: str) -> dict[str, str]:
         return parse_log_jest(log)
-
-
-@dataclass
-class Zustand6bc451ef(TypeScriptProfile):
-    owner: str = "pmndrs"
-    repo: str = "zustand"
-    commit: str = "6bc451efd5f0d4ef6e7b2c8d6fc6f8340562a31d"
-    test_cmd: str = "pnpm run test:spec"
-
-    @property
-    def dockerfile(self):
-        return f"""FROM node:20
-
-RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
-RUN npm install -g pnpm@10
-
-RUN git clone https://github.com/{self.mirror_name}.git /{ENV_NAME}
-WORKDIR /{ENV_NAME}
-RUN git submodule update --init --recursive
-RUN pnpm install
-
-CMD ["/bin/bash"]"""
-
-    def log_parser(self, log: str) -> dict[str, str]:
-        return parse_log_vitest(log)
-
 
 @dataclass
 class Pnpm832d8986(TypeScriptProfile):
@@ -3087,33 +3270,6 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Redux38faff51(TypeScriptProfile):
-    owner: str = "reduxjs"
-    repo: str = "redux"
-    commit: str = "38faff513dc213bac08002f188243d6f23a1b74c"
-    test_cmd: str = "yarn vitest --run --reporter=verbose"
-
-    @property
-    def dockerfile(self):
-        return f"""FROM node:20-slim
-
-RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
-
-RUN git clone https://github.com/{self.mirror_name}.git /{ENV_NAME}
-WORKDIR /{ENV_NAME}
-RUN git submodule update --init --recursive
-
-RUN corepack enable && corepack prepare yarn@4.4.1 --activate
-
-RUN yarn install
-
-CMD ["/bin/bash"]"""
-
-    def log_parser(self, log: str) -> dict[str, str]:
-        return parse_log_vitest(log)
-
-
-@dataclass
 class Refinedgithub888412e1(TypeScriptProfile):
     owner: str = "refined-github"
     repo: str = "refined-github"
@@ -3169,7 +3325,62 @@ CMD ["/bin/bash"]"""
 class Reactrouter2ba36dca(TypeScriptProfile):
     owner: str = "remix-run"
     repo: str = "react-router"
-    commit: str = "2ba36dcab76ba973b652f1ad5219816de5e2bc2a"
+    commit: str = "caaae6535b4a9eb42ef08c08fe34b8e1c9861072"
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "packages/react-router/lib",
+                "packages/react-router-fs-routes",
+                "packages/react-router-dev/vite",
+                "packages/react-router-dev/config",
+                "packages/create-react-router",
+            ],
+            "CWE-193": [
+                "packages/react-router-fs-routes",
+                "packages/react-router-dev/vite",
+                "packages/react-router-dev/config",
+                "packages/react-router/lib",
+                "packages/create-react-router",
+                "packages/react-router-node/sessions",
+            ],
+            "CWE-20": [
+                "packages/react-router-node/sessions",
+                "packages/react-router/lib",
+                "packages/react-router-dev/config",
+            ],
+            "CWE-670": [
+                "packages/react-router-cloudflare/sessions",
+                "packages/react-router-architect/sessions",
+                "packages/react-router-dev/config",
+                "packages/react-router-remix-routes-option-adapter",
+                "packages/react-router-serve",
+                "packages/react-router-dev/vite",
+                "packages/react-router-fs-routes",
+            ],
+            "CWE-682": [
+                "packages/react-router-node/sessions",
+                "packages/react-router-architect/sessions",
+                "packages/react-router-cloudflare/sessions",
+                "packages/react-router-fs-routes",
+                "packages/react-router-dev/vite",
+                "packages/react-router/lib",
+            ],
+            "CWE-754": [
+                "packages/react-router-node/sessions",
+                "packages/react-router-fs-routes",
+                "packages/react-router-express",
+                "packages/react-router-dev/vite",
+            ],
+            "CWE-835": [
+                "packages/react-router-fs-routes",
+                "packages/react-router-architect/sessions",
+                "packages/react-router-cloudflare/sessions",
+                "packages/react-router-node/sessions",
+                "packages/react-router-dev/config",
+                "packages/react-router-dev/vite",
+            ],
+        }
+    )
     test_cmd: str = "pnpm test"
 
     @property
@@ -3613,22 +3824,97 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Claudemem4db99da4(TypeScriptProfile):
+class Claudemem37d24944(TypeScriptProfile):
     owner: str = "thedotmack"
     repo: str = "claude-mem"
-    commit: str = "4db99da432d86536097b6bbd3413b4c7b9e31a75"
+    commit: str = "37d24944af5f4afaa0de2b0bd0034bb432f2b714"
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "src/bin",
+                "src/server/middleware",
+                "ragtime",
+                "openclaw/src",
+            ],
+            "CWE-193": [
+                "ragtime",
+                "src/services/smart-file-read",
+                "src/services/sync",
+                "src/bin",
+                "openclaw/src",
+            ],
+            "CWE-20": [
+                "src/cli",
+                "src/npx-cli/install",
+                "ragtime",
+                "src/integrations/opencode-plugin",
+                "src/services/infrastructure",
+                "src/server/compat",
+                "src/servers",
+            ],
+            "CWE-670": [
+                "src/cli/handlers",
+                "src/server/middleware",
+                "src/services/sync",
+                "src/services/worker",
+                "src/server/runtime",
+            ],
+            "CWE-682": [
+                "src/integrations/opencode-plugin",
+                "ragtime",
+                "src/server/middleware",
+                "src/cli",
+                "src/bin",
+                "openclaw/src",
+                "src/npx-cli",
+            ],
+            "CWE-754": [
+                "src/cli/handlers",
+                "src/server/middleware",
+                "src/cli",
+                "src/npx-cli/install",
+                "src/server/compat",
+                "ragtime",
+                "src/services/infrastructure",
+                "src/servers",
+            ],
+            "CWE-835": [
+                "ragtime",
+                "src/services/worker",
+                "src/services/smart-file-read",
+                "src/bin",
+                "src/services/sync",
+            ],
+        }
+    )
     test_cmd: str = "bun test"
 
     @property
     def dockerfile(self):
-        return f"""FROM oven/bun:1.1-slim
+        return f"""FROM oven/bun:1.1.45
 
-RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y \
+    git \
+    python3 \
+    make \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV PYTHON=/usr/bin/python3
 
 RUN git clone https://github.com/{self.mirror_name}.git /{ENV_NAME}
-WORKDIR /{ENV_NAME}
-RUN git submodule update --init --recursive
 
+WORKDIR /{ENV_NAME}
+
+RUN git submodule update --init --recursive || true
+
+# Install deps without native postinstall scripts first
+RUN bun install --ignore-scripts
+
+# Rebuild native modules manually
+RUN bunx node-gyp rebuild || true
+
+# Install remaining scripts
 RUN bun install
 
 CMD ["/bin/bash"]"""
@@ -3994,7 +4280,36 @@ CMD ["/bin/bash"]"""
 class Vite7c3a61f4(TypeScriptProfile):
     owner: str = "vitejs"
     repo: str = "vite"
-    commit: str = "7c3a61f42da6445904e93f0e29e9a2a838fa684a"
+    commit: str = "8e59c97a44d923c4c06f67287a793c9aa5a4ebaa"
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "packages/mermaid/src",
+                "packages/parser/src",
+                "packages/mermaid/src/utils",
+                "packages/mermaid/src/diagrams/flowchart",
+                "packages/mermaid/src/diagram-api",
+            ],
+            "CWE-193": [
+                "packages/mermaid-layout-tidy-tree/src",
+                "packages/mermaid/src",
+                "packages/mermaid-layout-elk/src",
+                "packages/parser/src",
+            ],
+            "CWE-20": [
+                "packages/parser/src",
+                "packages/mermaid/src",
+                "packages/mermaid/src/diagrams/git",
+                "packages/mermaid/src/rendering-util",
+            ],
+            "CWE-682": [
+                "packages/mermaid-layout-tidy-tree/src",
+                "packages/mermaid/src",
+                "packages/mermaid-layout-elk/src",
+                "packages/mermaid/src/dagre-wrapper",
+            ],
+        }
+    )
     test_cmd: str = "pnpm run test-unit"
 
     @property
@@ -4078,6 +4393,959 @@ RUN git submodule update --init --recursive
 
 RUN pnpm install
 RUN pnpm build:all
+
+CMD ["/bin/bash"]"""
+
+    def log_parser(self, log: str) -> dict[str, str]:
+        return parse_log_jest(log)
+
+@dataclass
+class Mermaid(TypeScriptProfile):
+    owner: str = "mermaid-js"
+    repo: str = "mermaid"
+    commit: str = "dffd2c8520122b6012d3a86237a1b8af53c96909"
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "packages/vite/src/node",
+                "packages/vite/src/node/plugins",
+                "packages/vite/src/node/optimizer",
+                "packages/vite/src/node/server/middlewares",
+                "packages/vite/src/client",
+                "packages/vite/src/module-runner",
+                "packages/plugin-legacy/src",
+            ],
+            "CWE-193": [
+                "packages/vite/src/node",
+                "packages/vite/src/node/plugins",
+                "packages/vite/src/node/server",
+                "packages/vite/src/module-runner",
+                "packages/vite/src/shared",
+                "packages/vite/src/client",
+                "packages/plugin-legacy/src",
+                "packages/create-vite/src",
+            ],
+            "CWE-682": [
+                "packages/vite/src/node",
+                "packages/vite/src/node/plugins",
+                "packages/vite/src/node/server",
+                "packages/vite/src/node/ssr",
+                "packages/vite/src/module-runner/sourcemap",
+                "packages/vite/src/shared",
+            ],
+            "CWE-754": [
+                "packages/vite/src/node",
+                "packages/vite/src/node/server",
+                "packages/vite/src/node/server/middlewares",
+                "packages/vite/src/node/plugins",
+                "packages/vite/src/node/ssr",
+                "packages/vite/src/module-runner",
+                "packages/vite/src/client",
+            ],
+            "CWE-835": [
+                "packages/vite/src/client",
+                "packages/vite/src/node",
+                "packages/vite/src/node/optimizer",
+                "packages/vite/src/node/server",
+                "packages/vite/src/node/plugins",
+                "packages/vite/src/module-runner/sourcemap",
+            ],
+        }
+    )
+    test_cmd: str = "NODE_OPTIONS='--max-old-space-size=8192' pnpm test"
+
+    @property
+    def dockerfile(self):
+        return f"""FROM node:22-slim
+
+RUN apt-get update && apt-get install -y \
+    git \
+    chromium \
+    python3 \
+    make \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN npm install -g pnpm@10.28.2
+
+RUN git clone https://github.com/{self.mirror_name}.git /{ENV_NAME}
+
+WORKDIR /{ENV_NAME}
+
+RUN git submodule update --init --recursive || true
+
+RUN pnpm install --no-frozen-lockfile
+
+RUN npx playwright install chromium || true
+
+ENV CI=true
+ENV CHROME_BIN=/usr/bin/chromium
+ENV NODE_OPTIONS="--max-old-space-size=8192"
+
+CMD ["/bin/bash"]
+"""
+
+    def log_parser(self, log: str) -> dict[str, str]:
+        return parse_log_vitest(log)
+
+@dataclass
+class Hoppscotch(TypeScriptProfile):
+    owner: str = "hoppscotch"
+    repo: str = "hoppscotch"
+    commit: str = "b4f9e7f726f34282b18c85eb9d4b853ca11ff21a"
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "packages/hoppscotch-common/src",
+                "packages/hoppscotch-data/src",
+                "packages/hoppscotch-js-sandbox/src",
+                "packages/hoppscotch-backend/src",
+                "packages/hoppscotch-cli/src",
+                "packages/hoppscotch-selfhost-web/src",
+                "packages/hoppscotch-sh-admin/src",
+            ],
+            "CWE-193": [
+                "packages/hoppscotch-common/src",
+                "packages/hoppscotch-js-sandbox/src",
+                "packages/hoppscotch-selfhost-web/src",
+                "packages/hoppscotch-cli/src",
+                "packages/hoppscotch-data/src",
+                "packages/hoppscotch-sh-admin/src",
+            ],
+            "CWE-682": [
+                "packages/hoppscotch-data/src",
+                "packages/hoppscotch-common/src",
+                "packages/hoppscotch-selfhost-web/src",
+                "packages/hoppscotch-desktop/src",
+                "packages/hoppscotch-js-sandbox/src",
+            ],
+            "CWE-754": [
+                "packages/hoppscotch-desktop/src",
+                "packages/hoppscotch-kernel/src",
+                "packages/hoppscotch-data/src",
+                "packages/hoppscotch-common/src",
+                "packages/hoppscotch-backend/src",
+            ],
+        }
+    )
+    test_cmd: str = (
+        "cd packages/hoppscotch-backend && "
+        "NODE_OPTIONS='--max-old-space-size=6144' "
+        "pnpm exec jest --runInBand"
+    )
+
+    @property
+    def dockerfile(self):
+        return f"""FROM node:22-slim
+
+RUN apt-get update && apt-get install -y \
+    git \
+    python3 \
+    build-essential \
+    curl \
+    jq \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN corepack enable && corepack prepare pnpm@10.28.2 --activate
+
+RUN git clone https://github.com/{self.mirror_name}.git /{ENV_NAME}
+
+WORKDIR /{ENV_NAME}
+
+RUN git submodule update --init --recursive || true
+
+RUN pnpm install --no-frozen-lockfile
+
+CMD ["/bin/bash"]"""
+
+    def log_parser(self, log: str) -> dict[str, str]:
+        return parse_log_vitest(log)
+
+@dataclass
+class StirlingPDF(TypeScriptProfile):
+    owner: str = "Stirling-Tools"
+    repo: str = "Stirling-PDF"
+    commit: str = "8a59c10f424d6087a49fe07bd151f9a4c0d24440"
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "frontend/src/proprietary",
+                "frontend/src/core",
+                "frontend/src/desktop",
+                "frontend/src/prototypes",
+                "frontend/src/saas",
+            ],
+            "CWE-193": [
+                "frontend/src/core",
+                "frontend/src/desktop",
+                "frontend/src/proprietary",
+                "frontend/src/prototypes",
+                "frontend/src/saas",
+            ],
+            "CWE-682": [
+                "frontend/src/desktop",
+                "frontend/src/core",
+                "frontend/src/proprietary",
+                "frontend/src/saas",
+            ],
+            "CWE-754": [
+                "frontend/src/desktop",
+                "frontend/src/proprietary",
+                "frontend/src/core",
+                "frontend/src/prototypes",
+                "frontend/src/saas",
+            ],
+        }
+    )
+    test_cmd: str = "./gradlew test"
+
+    @property
+    def dockerfile(self):
+        return f"""FROM eclipse-temurin:21-jdk
+
+RUN apt-get update && apt-get install -y \
+    git \
+    python3 \
+    build-essential \
+    curl \
+    jq \
+    nodejs \
+    npm \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN git clone https://github.com/{self.mirror_name}.git /{ENV_NAME}
+
+WORKDIR /{ENV_NAME}
+
+RUN git submodule update --init --recursive || true
+
+# Frontend dependencies if needed
+RUN npm install || true
+
+# Backend build tooling
+RUN chmod +x gradlew
+
+CMD ["/bin/bash"]"""
+
+    def log_parser(self, log: str) -> dict[str, str]:
+        return parse_log_junit(log)
+
+@dataclass
+class LobehubCanary(TypeScriptProfile):
+    owner: str = "lobehub"
+    repo: str = "lobehub"
+    commit: str = "d00770a956a379265efd5fa5d77d3c3864e72e7f"
+    test_cmd: str = "pnpm run test-app"
+
+    @property
+    def dockerfile(self):
+        return f"""FROM node:22-slim
+
+RUN apt-get update && apt-get install -y \
+    git \
+    python3 \
+    make \
+    g++ \
+    curl \
+    jq \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN corepack enable && corepack prepare pnpm@10.20.0 --activate
+
+RUN git clone https://github.com/{self.mirror_name}.git /{ENV_NAME}
+
+WORKDIR /{ENV_NAME}
+
+RUN git submodule update --init --recursive || true
+
+RUN pnpm install --no-frozen-lockfile
+
+CMD ["/bin/bash"]"""
+
+    def log_parser(self, log: str) -> dict[str, str]:
+        return parse_log_jest(log)
+
+@dataclass
+class Grafana(TypeScriptProfile):
+    owner: str = "grafana"
+    repo: str = "grafana"
+    commit: str = "146c6674081a330bb232f87a295d191e63fe9ee4"
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "public/app",
+                "packages/grafana-openapi/src",
+                "packages/grafana-data/src",
+                "packages/grafana-ui/src",
+                "packages/grafana-alerting/src",
+                "public/app/core",
+                "packages/grafana-e2e-selectors/src",
+                "public/app/api",
+            ],
+            "CWE-193": [
+                "packages/grafana-openapi/src",
+                "packages/grafana-o11y-ds-frontend/src",
+                "packages/grafana-flamegraph/src",
+                "packages/grafana-data/src",
+                "packages/grafana-ui/src",
+                "public/app",
+                "public/app/core",
+            ],
+            "CWE-20": [
+                "packages/grafana-openapi/src",
+                "public/boot",
+                "packages/grafana-e2e-selectors/src",
+                "packages/grafana-api-clients/src",
+                "public/app/api",
+                "packages/grafana-runtime/src",
+                "packages/grafana-alerting/src",
+            ],
+            "CWE-682": [
+                "packages/grafana-openapi/src",
+                "public/app/api",
+                "packages/grafana-e2e-selectors/src",
+                "packages/grafana-ui/src",
+                "public/app/plugins",
+                "public/boot",
+            ],
+            "CWE-754": [
+                "packages/grafana-openapi/src",
+                "public/boot",
+                "packages/grafana-api-clients/src",
+                "packages/grafana-e2e-selectors/src",
+                "public/app/api",
+                "packages/grafana-runtime/src",
+            ],
+            "CWE-835": [
+                "packages/grafana-data/src",
+                "public/app/core",
+                "public/app",
+                "public/app/plugins",
+            ],
+        }
+    )
+    test_cmd: str = (
+        "NODE_OPTIONS='--max-old-space-size=8192' "
+        "yarn test"
+    )
+
+    @property
+    def dockerfile(self):
+        return f"""FROM node:22-slim
+
+RUN apt-get update && apt-get install -y \
+    git \
+    python3 \
+    build-essential \
+    curl \
+    jq \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN corepack enable
+
+RUN git clone https://github.com/{self.mirror_name}.git /{ENV_NAME}
+
+WORKDIR /{ENV_NAME}
+
+RUN git submodule update --init --recursive || true
+
+ENV NODE_OPTIONS="--max-old-space-size=8192"
+
+RUN yarn install
+
+CMD ["/bin/bash"]"""
+
+    def log_parser(self, log: str) -> dict[str, str]:
+        return parse_log_jest(log)
+
+@dataclass
+class Astro(TypeScriptProfile):
+    owner: str = "withastro"
+    repo: str = "astro"
+    commit: str = "c6b4854772ddb97c314f1cff302e385feae1c937"
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "packages/integrations/partytown/src",
+                "packages/integrations/vue/src",
+                "packages/integrations/mdx/src",
+                "packages/integrations/markdoc/src",
+                "packages/markdown/remark/src",
+                "packages/language-tools/language-server/src",
+                "packages/integrations/svelte/src",
+                "packages/internal-helpers/src",
+            ],
+            "CWE-193": [
+                "packages/integrations/partytown/src",
+                "packages/underscore-redirects/src",
+                "packages/astro-prism/src",
+                "packages/integrations/mdx/src",
+                "packages/integrations/markdoc/src",
+                "packages/integrations/sitemap/src",
+                "packages/language-tools/language-server/src",
+                "packages/integrations/svelte/src",
+            ],
+            "CWE-20": [
+                "packages/integrations/netlify/src",
+                "packages/integrations/cloudflare/src",
+                "packages/integrations/node/src",
+                "packages/integrations/vercel/src",
+                "packages/astro-rss/src",
+                "packages/integrations/mdx/src",
+                "packages/language-tools/astro-check/src",
+                "packages/upgrade/src",
+            ],
+            "CWE-670": [
+                "packages/integrations/partytown/src",
+                "packages/integrations/sitemap/src",
+                "packages/underscore-redirects/src",
+                "packages/integrations/node/src",
+            ],
+            "CWE-682": [
+                "packages/underscore-redirects/src",
+                "packages/integrations/svelte/src",
+                "packages/astro-prism/src",
+                "packages/integrations/mdx/src",
+                "packages/integrations/markdoc/src",
+                "packages/language-tools/language-server/src",
+                "packages/integrations/sitemap/src",
+                "packages/integrations/partytown/src",
+            ],
+            "CWE-754": [
+                "packages/astro-rss/src",
+                "packages/integrations/node/src",
+                "packages/integrations/mdx/src",
+                "packages/integrations/cloudflare/src",
+                "packages/integrations/netlify/src",
+                "packages/integrations/vercel/src",
+                "packages/markdown/remark/src",
+                "packages/integrations/svelte/src",
+            ],
+            "CWE-835": [
+                "packages/integrations/partytown/src",
+                "packages/integrations/sitemap/src",
+                "packages/integrations/markdoc/src",
+                "packages/integrations/svelte/src",
+                "packages/markdown/remark/src",
+                "packages/language-tools/language-server/src",
+                "packages/underscore-redirects/src",
+            ],
+        }
+    )
+    test_cmd: str = "cd packages/astro && pnpm run build:ci && pnpm run test:unit"
+
+    @property
+    def dockerfile(self):
+        return f"""FROM node:22-slim
+
+RUN apt-get update && apt-get install -y \
+    git \
+    python3 \
+    make \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN corepack enable && corepack prepare pnpm@11.0.9 --activate
+
+ENV NODE_OPTIONS=--max-old-space-size=4096
+ENV HUSKY=0
+ENV npm_config_fetch_timeout=600000
+ENV npm_config_fetch_retries=10
+ENV npm_config_fetch_retry_mintimeout=20000
+ENV npm_config_fetch_retry_maxtimeout=120000
+ENV npm_config_network_concurrency=4
+
+RUN git clone https://github.com/{self.mirror_name}.git /{ENV_NAME}
+
+WORKDIR /{ENV_NAME}
+
+RUN git submodule update --init --recursive || true
+
+RUN --mount=type=cache,target=/root/.local/share/pnpm/store pnpm install --filter astro... --frozen-lockfile --prefer-offline --ignore-scripts
+
+RUN --mount=type=cache,target=/root/.local/share/pnpm/store pnpm --filter "astro^..." run build
+
+CMD ["/bin/bash"]"""
+
+    def log_parser(self, log: str) -> dict[str, str]:
+        return parse_log_vitest(log)
+
+
+@dataclass
+class Ohmyopenagent(TypeScriptProfile):
+    owner: str = "code-yeongyu"
+    repo: str = "oh-my-openagent"
+    commit: str = "9f6d0d2281e9e1fd82fc56ad4eea589e9114b956"
+    test_cmd: str = "bun test"
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "src/tools/skill-mcp",
+                "src/hooks/runtime-fallback",
+                "src/hooks/ralph-loop",
+                "src/hooks/auto-update-checker",
+            ],
+            "CWE-193": [
+                "src/hooks/read-image-resizer",
+                "src/hooks/thinking-block-validator",
+                "src/tools/skill-mcp",
+                "src/tools/background-task",
+                "src/features/context-injector",
+                "src/hooks/tool-pair-validator",
+            ],
+            "CWE-20": [
+                "src/hooks/comment-checker",
+                "src/hooks/thinking-block-validator",
+                "src/hooks/tool-pair-validator",
+                "src/hooks/webfetch-redirect-guard",
+                "src/hooks/write-existing-file-guard",
+                "src/cli/mcp-oauth",
+                "src/hooks/auto-update-checker",
+            ],
+            "CWE-670": [
+                "src/plugin-handlers",
+                "src/features/boulder-state",
+                "src/features/claude-code-session-state",
+                "src/features/run-continuation-state",
+                "src/hooks/interactive-bash-session",
+                "src/tools/call-omo-agent",
+            ],
+            "CWE-682": [
+                "src/hooks/hashline-read-enhancer",
+                "src/features/boulder-state",
+                "src/tools/hashline-edit",
+                "src/features/opencode-skill-loader",
+                "src/hooks/team-mode-status-injector",
+            ],
+            "CWE-754": [
+                "src/hooks/session-recovery",
+                "src/hooks/anthropic-context-window-limit-recovery",
+                "src/hooks/runtime-fallback",
+                "src/plugin-handlers",
+                "src/hooks/model-fallback",
+                "src/cli/mcp-oauth",
+                "src/tools/skill-mcp",
+                "web/app/api",
+            ],
+            "CWE-835": [
+                "src/hooks/ralph-loop",
+                "src/hooks/directory-readme-injector",
+                "src/features/opencode-skill-loader",
+                "src/hooks/runtime-fallback",
+            ],
+        }
+    )
+
+    @property
+    def dockerfile(self):
+        return f"""FROM oven/bun:latest
+
+RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
+
+RUN git clone https://github.com/{self.mirror_name}.git /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN git submodule update --init --recursive
+
+RUN bun install
+
+CMD ["/bin/bash"]"""
+
+    def log_parser(self, log: str) -> dict[str, str]:
+        return parse_log_jest(log)
+
+@dataclass
+class Joplin(TypeScriptProfile):
+    owner: str = "laurent22"
+    repo: str = "joplin"
+    commit: str = "9ac4aac4e51e0c788b7a2346d69fe7ff64aaaa29"
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "packages/renderer",
+                "packages/renderer/MdToHtml",
+                "packages/tools",
+                "packages/tools/fuzzer",
+                "packages/tools/website",
+                "packages/app-desktop/plugins",
+                "packages/lib/models",
+                "packages/htmlpack",
+            ],
+            "CWE-193": [
+                "packages/renderer/MdToHtml",
+                "packages/app-desktop/plugins",
+                "packages/lib/models",
+                "packages/renderer",
+                "packages/tools",
+                "packages/editor/ProseMirror",
+                "packages/utils",
+            ],
+            "CWE-20": [
+                "packages/plugin-repo-cli/lib",
+                "packages/server/src",
+                "packages/lib/models",
+                "packages/app-mobile/services",
+                "packages/app-cli/app",
+            ],
+            "CWE-670": [
+                "packages/lib/testing",
+                "Assets/TinyMCE/JoplinLists",
+                "packages/editor/CodeMirror",
+                "packages/server/src",
+            ],
+            "CWE-682": [
+                "packages/pdf-viewer",
+                "packages/app-desktop/gui",
+                "packages/editor/ProseMirror",
+                "packages/tools",
+                "Assets/TinyMCE/JoplinLists",
+                "packages/app-desktop/plugins",
+            ],
+            "CWE-754": [
+                "packages/plugin-repo-cli",
+                "packages/renderer",
+                "packages/server/src",
+                "packages/app-cli/app",
+                "packages/app-mobile/services",
+            ],
+            "CWE-835": [
+                "packages/lib/testing",
+                "packages/renderer",
+                "packages/tools",
+                "packages/lib/models",
+            ],
+        }
+    )
+    test_cmd: str = "cd packages/lib && yarn test"
+
+    @property
+    def dockerfile(self):
+        return f"""FROM node:20-slim
+
+RUN apt-get update && apt-get install -y git python3 make g++ curl rsync && rm -rf /var/lib/apt/lists/*
+
+RUN corepack enable && corepack prepare yarn@4.12.0 --activate
+
+ENV HUSKY=0
+ENV NODE_OPTIONS=--max-old-space-size=6144
+ENV YARN_HTTP_TIMEOUT=600000
+ENV BUILD_SEQUENCIAL=1
+ENV YARN_HTTP_RETRY=10
+ENV YARN_NETWORK_CONCURRENCY=4
+ENV YARN_ENABLE_TELEMETRY=0
+
+RUN git clone https://github.com/{self.mirror_name}.git /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN git submodule update --init --recursive || true
+
+RUN --mount=type=cache,target=/root/.yarn/berry/cache yarn install
+
+CMD ["/bin/bash"]"""
+
+    def log_parser(self, log: str) -> dict[str, str]:
+        return parse_log_jest(log)
+
+
+@dataclass
+class Worldmonitor(TypeScriptProfile):
+    owner: str = "koala73"
+    repo: str = "worldmonitor"
+    commit: str = "86c3034a8cb8c1c4edcc20f142669303b6d105c5"
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "server/worldmonitor/research",
+                "server/worldmonitor/maritime",
+                "server/worldmonitor/cyber",
+            ],
+            "CWE-193": [
+                "consumer-prices-core/src/snapshots",
+                "src/services/correlation-engine",
+                "server/worldmonitor/displacement",
+                "server/worldmonitor/conflict",
+                "server/worldmonitor/research",
+            ],
+            "CWE-20": [
+                "server/worldmonitor/conflict",
+                "server/worldmonitor/leads",
+                "server/worldmonitor/trade",
+                "server/worldmonitor/consumer-prices",
+                "api/user",
+            ],
+            "CWE-682": [
+                "server/worldmonitor/webcam",
+                "server/worldmonitor/conflict",
+                "consumer-prices-core/src/snapshots",
+                "api/user",
+                "server/worldmonitor/trade",
+            ],
+            "CWE-754": [
+                "server/worldmonitor/conflict",
+                "src/services/supply-chain",
+                "server/worldmonitor/consumer-prices",
+                "src/services/trade",
+                "src/services/consumer-prices",
+                "server/worldmonitor/trade",
+                "server/worldmonitor/leads",
+                "api/user",
+            ],
+            "CWE-835": [
+                "consumer-prices-core/src/jobs",
+                "src/services/correlation-engine",
+                "server/worldmonitor/cyber",
+            ],
+        }
+    )
+    test_cmd: str = "npx vitest run --config vitest.config.mts"
+
+    @property
+    def dockerfile(self):
+        return f"""FROM node:22-slim
+
+RUN apt-get update && apt-get install -y git python3 make g++ && rm -rf /var/lib/apt/lists/*
+
+ENV NODE_OPTIONS=--max-old-space-size=4096
+ENV HUSKY=0
+ENV npm_config_fetch_timeout=600000
+ENV npm_config_fetch_retries=10
+ENV npm_config_fetch_retry_mintimeout=20000
+ENV npm_config_fetch_retry_maxtimeout=120000
+ENV npm_config_maxsockets=4
+
+RUN git clone https://github.com/{self.mirror_name}.git /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN git submodule update --init --recursive || true
+
+RUN --mount=type=cache,target=/root/.npm npm install --ignore-scripts --no-audit --no-fund --prefer-offline
+
+CMD ["/bin/bash"]"""
+
+    def log_parser(self, log: str) -> dict[str, str]:
+        return parse_log_vitest(log)
+
+
+@dataclass
+class Vuecore(TypeScriptProfile):
+    owner: str = "vuejs"
+    repo: str = "core"
+    commit: str = "1ce598eb0ac7bed5bdc14857244424520498d29d"
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "packages/compiler-core/src",
+                "packages/runtime-dom/src",
+                "packages/compiler-sfc/src",
+                "packages/shared/src",
+                "packages/runtime-core/src",
+                "packages/compiler-dom/src",
+                "packages/compiler-ssr/src",
+                "packages/server-renderer/src",
+            ],
+            "CWE-193": [
+                "packages/compiler-core/src",
+                "packages/compiler-ssr/src",
+                "packages/compiler-dom/src",
+                "packages/server-renderer/src",
+                "packages/runtime-core/src",
+                "packages/compiler-sfc/src",
+                "packages/runtime-dom/src",
+                "packages/shared/src",
+            ],
+            "CWE-682": [
+                "packages/shared/src",
+                "packages/compiler-sfc/src",
+                "packages/compiler-core/src",
+                "packages/runtime-core/src",
+                "packages/runtime-dom/src",
+                "packages/compiler-dom/src",
+                "packages/compiler-ssr/src",
+                "packages/server-renderer/src",
+            ],
+            "CWE-754": [
+                "packages/compiler-sfc/src",
+                "packages/server-renderer/src",
+                "packages/compiler-dom/src",
+                "packages/runtime-core/src",
+                "packages/reactivity/src",
+                "packages/runtime-test/src",
+                "packages/compiler-core/src",
+                "packages/runtime-dom/src",
+            ],
+            "CWE-835": [
+                "packages/server-renderer/src",
+                "packages/compiler-core/src",
+                "packages/runtime-core/src",
+                "packages/runtime-dom/src",
+                "packages/reactivity/src",
+                "packages/compiler-sfc/src",
+            ],
+        }
+    )
+    test_cmd: str = "pnpm run test-unit -- --run"
+
+    @property
+    def dockerfile(self):
+        return f"""FROM node:22-slim
+
+RUN apt-get update && apt-get install -y \\
+    git \\
+    python3 \\
+    make \\
+    g++ \\
+    curl \\
+    && rm -rf /var/lib/apt/lists/*
+
+RUN corepack enable && corepack prepare pnpm@10.33.3 --activate
+
+ENV SIMPLE_GIT_HOOKS_SKIP=1
+
+RUN git clone https://github.com/{self.owner}/{self.repo}.git /testbed/{self.repo}
+WORKDIR /testbed/{self.repo}
+RUN git checkout {self.commit}
+RUN git submodule update --init --recursive || true
+
+RUN pnpm install --no-frozen-lockfile --ignore-scripts
+
+CMD ["/bin/bash"]"""
+
+    def log_parser(self, log: str) -> dict[str, str]:
+        return parse_log_vitest(log)
+
+
+@dataclass
+class Flowise(TypeScriptProfile):
+    owner: str = "FlowiseAI"
+    repo: str = "Flowise"
+    commit: str = "9ae635b434d4410e17186d3f267f89bf6aa7d556"
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "packages/server/src",
+                "packages/agentflow/src",
+                "packages/observe/src",
+                "packages/components/nodes",
+                "packages/components/src",
+            ],
+            "CWE-193": [
+                "packages/components/evaluation",
+                "packages/observe/src",
+                "packages/agentflow/src",
+                "packages/components/nodes",
+                "packages/components/src",
+                "packages/server/src",
+            ],
+            "CWE-682": [
+                "packages/observe/src",
+                "packages/agentflow/src",
+                "packages/components/evaluation",
+                "packages/components/nodes",
+                "packages/components/src",
+            ],
+            "CWE-754": [
+                "packages/components/evaluation",
+                "packages/components/nodes",
+                "packages/components/src",
+                "packages/observe/src",
+                "packages/agentflow/src",
+                "packages/server/src",
+            ],
+        }
+    )
+    test_cmd: str = "cd packages/server && npx jest --runInBand --forceExit --passWithNoTests"
+
+    @property
+    def dockerfile(self):
+        return f"""FROM node:20-slim
+
+RUN apt-get update && apt-get install -y \\
+    git \\
+    python3 \\
+    make \\
+    g++ \\
+    curl \\
+    && rm -rf /var/lib/apt/lists/*
+
+RUN corepack enable && corepack prepare pnpm@10.26.0 --activate
+
+ENV HUSKY=0
+ENV NODE_OPTIONS=--max-old-space-size=6144
+ENV npm_config_fetch_timeout=600000
+ENV npm_config_fetch_retries=10
+ENV npm_config_fetch_retry_mintimeout=20000
+ENV npm_config_fetch_retry_maxtimeout=120000
+ENV npm_config_network_concurrency=4
+
+RUN git clone https://github.com/{self.owner}/{self.repo}.git /testbed/{self.repo}
+WORKDIR /testbed/{self.repo}
+RUN git checkout {self.commit}
+RUN git submodule update --init --recursive || true
+
+RUN pnpm install --filter flowise... --no-frozen-lockfile --prefer-offline --ignore-scripts
+
+CMD ["/bin/bash"]"""
+
+    def log_parser(self, log: str) -> dict[str, str]:
+        return parse_log_jest(log)
+
+
+@dataclass
+class Ionicframework(TypeScriptProfile):
+    owner: str = "ionic-team"
+    repo: str = "ionic-framework"
+    commit: str = "7334144389796a18e9329f069bad7b7f9953a355"
+    test_cmd: str = "cd core && npm run test.spec"
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "core/src/components",
+                "packages/angular/common",
+                "packages/vue/src",
+                "packages/react/src",
+            ],
+            "CWE-193": [
+                "core/src/components",
+                "packages/vue/src",
+                "packages/angular/common",
+                "core/src/utils",
+                "packages/react/src",
+            ],
+            "CWE-670": [
+                "packages/react-router/src",
+                "core/src/components",
+                "core/src/utils",
+                "packages/react/src",
+            ],
+            "CWE-682": [
+                "core/src/global",
+                "core/src/components",
+                "core/src/utils",
+                "packages/react/src",
+            ],
+        }
+    )
+
+    @property
+    def dockerfile(self):
+        return f"""FROM node:22-slim
+
+RUN apt-get update && apt-get install -y git python3 make g++ && rm -rf /var/lib/apt/lists/*
+
+ENV NODE_OPTIONS=--max-old-space-size=4096
+ENV HUSKY=0
+ENV npm_config_fetch_timeout=600000
+ENV npm_config_fetch_retries=10
+ENV npm_config_fetch_retry_mintimeout=20000
+ENV npm_config_fetch_retry_maxtimeout=120000
+ENV npm_config_maxsockets=4
+ENV npm_config_prefer_offline=true
+ENV npm_config_audit=false
+ENV npm_config_fund=false
+
+RUN git clone https://github.com/{self.mirror_name}.git /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN git submodule update --init --recursive || true
+
+RUN --mount=type=cache,target=/root/.npm cd core && npm install --no-audit --no-fund
 
 CMD ["/bin/bash"]"""
 
