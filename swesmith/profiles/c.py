@@ -21,6 +21,77 @@ class CProfile(RepoProfile):
 
 
 @dataclass
+class Fluentbit6474297f(CProfile):
+    owner: str = "fluent"
+    repo: str = "fluent-bit"
+    commit: str = "6474297f3d6e540848d9116f05570b9d8a8501b2"
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "plugins/processor_metrics_selector",
+                "plugins/filter_grep",
+                "plugins/filter_modify",
+                "plugins/filter_rewrite_tag",
+                "plugins/in_tail",
+                "plugins/filter_kubernetes",
+            ],
+            "CWE-20": [
+                "plugins/filter_nest",
+                "plugins/filter_record_modifier",
+                "plugins/filter_parser",
+                "plugins/filter_modify",
+                "plugins/filter_checklist",
+                "plugins/filter_multiline",
+                "plugins/filter_rewrite_tag",
+                "plugins/filter_lua",
+            ],
+            "CWE-682": [
+                "plugins/in_winstat",
+                "plugins/in_podman_metrics",
+                "plugins/filter_log_to_metrics",
+                "plugins/in_statsd",
+                "plugins/out_flowcounter",
+                "plugins/in_node_exporter_metrics",
+                "plugins/in_windows_exporter_metrics",
+            ],
+            "CWE-754": [
+                "plugins/in_statsd",
+                "plugins/in_winstat",
+                "plugins/in_blob",
+                "plugins/in_systemd",
+                "plugins/out_loki",
+                "plugins/in_tail",
+            ],
+            "CWE-835": [
+                "plugins/out_cloudwatch_logs",
+                "plugins/out_kinesis_streams",
+                "src/stream_processor",
+                "src/stream_processor/parser",
+                "plugins/in_tail",
+                "plugins/in_systemd",
+                "plugins/in_exec",
+                "plugins/in_blob",
+            ],
+        }
+    )
+    test_cmd: str = "cd build && cmake -DFLB_TESTS_RUNTIME=ON .. && make -j$(nproc) && ctest --verbose --output-on-failure"
+
+    @property
+    def dockerfile(self):
+        return f"""FROM gcc:11
+RUN apt-get update && apt-get install -y cmake git build-essential && rm -rf /var/lib/apt/lists/*
+RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN git submodule update --init --recursive || true
+RUN mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Debug -DFLB_TESTS_RUNTIME=ON .. && make -j$(nproc)
+CMD [\"/bin/bash\"]
+"""
+
+    def log_parser(self, log: str) -> dict[str, str]:
+        return parse_log_ctest(log)
+
+
+@dataclass
 class Jq9761ceb7(CProfile):
     owner: str = "jqlang"
     repo: str = "jq"
