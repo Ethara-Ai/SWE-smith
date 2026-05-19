@@ -5352,6 +5352,57 @@ CMD ["/bin/bash"]"""
     def log_parser(self, log: str) -> dict[str, str]:
         return parse_log_jest(log)
 
+@dataclass
+class Zustand6bc451ef(TypeScriptProfile):
+    owner: str = "pmndrs"
+    repo: str = "zustand"
+    commit: str = "6bc451efd5f0d4ef6e7b2c8d6fc6f8340562a31d"
+    test_cmd: str = "pnpm run test:spec"
+
+    @property
+    def dockerfile(self):
+        return f"""FROM node:20
+
+RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
+RUN npm install -g pnpm@10
+
+RUN git clone https://github.com/{self.mirror_name}.git /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN git submodule update --init --recursive
+RUN pnpm install
+
+CMD ["/bin/bash"]"""
+
+    def log_parser(self, log: str) -> dict[str, str]:
+        return parse_log_vitest(log)
+
+
+@dataclass
+class Redux38faff51(TypeScriptProfile):
+    owner: str = "reduxjs"
+    repo: str = "redux"
+    commit: str = "38faff513dc213bac08002f188243d6f23a1b74c"
+    test_cmd: str = "yarn vitest --run --reporter=verbose"
+
+    @property
+    def dockerfile(self):
+        return f"""FROM node:20-slim
+
+RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
+
+RUN git clone https://github.com/{self.mirror_name}.git /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN git submodule update --init --recursive
+
+RUN corepack enable && corepack prepare yarn@4.4.1 --activate
+
+RUN yarn install
+
+CMD ["/bin/bash"]"""
+
+    def log_parser(self, log: str) -> dict[str, str]:
+        return parse_log_vitest(log)
+        
 
 # Register all TypeScript profiles with the global registry
 for name, obj in list(globals().items()):
