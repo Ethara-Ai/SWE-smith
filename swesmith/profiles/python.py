@@ -1429,6 +1429,82 @@ class Dagster3a8263af(PythonProfile):
         ]
     )
 
+@dataclass
+class Langchain992c613b(PythonProfile):
+    owner: str = "langchain-ai"
+    repo: str = "langchain"
+    commit: str = "992c613b51fb40213dc1e0156ce0d66db6771055"
+    python_version: str = "3.11"
+    install_cmds: list = field(
+        default_factory=lambda: [
+            "pip install -e libs/core",
+            "pip install -e libs/langchain",
+            "pip install pytest pytest-asyncio",
+        ]
+    )
+    min_testing: bool = True
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "libs/text-splitters/langchain_text_splitters",
+                "libs/core/langchain_core",
+                "libs/core/langchain_core/language_models",
+                "libs/core/langchain_core/messages",
+                "libs/core/langchain_core/utils",
+            ],
+            "CWE-193": [
+                "libs/text-splitters/langchain_text_splitters",
+                "libs/core/langchain_core/indexing",
+                "libs/langchain_v1/langchain/agents",
+                "libs/standard-tests/langchain_tests/utils",
+                "libs/partners/openrouter/langchain_openrouter",
+                "libs/partners/mistralai/langchain_mistralai",
+                "libs/langchain/langchain_classic/indexes",
+            ],
+            "CWE-20": [
+                "libs/core/langchain_core/output_parsers",
+                "libs/langchain/langchain_classic/output_parsers",
+                "libs/langchain/langchain_classic/_api",
+                "libs/model-profiles/langchain_model_profiles",
+            ],
+            "CWE-670": [
+                "libs/partners/openrouter/langchain_openrouter",
+                "libs/standard-tests/langchain_tests",
+                "libs/langchain_v1/langchain/agents",
+                "libs/partners/mistralai/langchain_mistralai",
+                "libs/text-splitters/langchain_text_splitters",
+            ],
+            "CWE-682": [
+                "libs/partners/qdrant/langchain_qdrant",
+                "libs/partners/chroma/langchain_chroma",
+                "libs/partners/ollama/langchain_ollama",
+                "libs/langchain_v1/langchain/agents",
+            ],
+            "CWE-754": [
+                "libs/langchain/langchain_classic/_api",
+                "libs/model-profiles/langchain_model_profiles",
+                "libs/standard-tests/langchain_tests/utils",
+            ],
+            "CWE-835": [
+                "libs/text-splitters/langchain_text_splitters",
+                "libs/partners/openrouter/langchain_openrouter",
+                "libs/partners/mistralai/langchain_mistralai",
+                "libs/core/langchain_core/language_models",
+            ],
+        }
+    )
+
+    @property
+    def dockerfile(self):
+        return f"""FROM python:{self.python_version}
+RUN git clone https://github.com/{self.owner}/{self.repo}.git /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN git checkout {self.commit}
+RUN pip install -e libs/core
+RUN pip install -e libs/langchain
+RUN pip install pytest pytest-asyncio
+CMD ["/bin/bash"]
+"""
 
 @dataclass
 class Ckan5b25321e(PythonProfile):
