@@ -3,6 +3,7 @@ from dataclasses import dataclass, field
 
 from swesmith.constants import ENV_NAME
 from swesmith.profiles.base import RepoProfile, registry
+from swesmith.profiles.cpp import parse_log_bun
 
 from swesmith.profiles.javascript import (
     parse_log_jasmine,
@@ -93,70 +94,6 @@ WORKDIR /{ENV_NAME}
 RUN npm install
 CMD ["/bin/bash"]
 """
-
-    def log_parser(self, log: str) -> dict[str, str]:
-        return parse_log_vitest(log)
-
-
-@dataclass
-class NextChatc3b8c158(TypeScriptProfile):
-    owner: str = "ChatGPTNextWeb"
-    repo: str = "NextChat"
-    commit: str = "c3b8c1587c04fff05f7b42276a43016e87771527"
-    bug_gen_dirs_include: dict[str, list[str]] = field(
-        default_factory=lambda: {
-            "CWE-1333": [
-                "app",
-                "app/utils",
-                "app/mcp",
-                "app/components",
-            ],
-            "CWE-193": [
-                "app/lib",
-                "app/utils/cloud",
-                "app/components",
-                "app/utils",
-                "app/client/platforms",
-                "app",
-            ],
-            "CWE-20": [
-                "app/api",
-                "app/mcp",
-                "app/utils/cloud",
-                "app/config",
-            ],
-            "CWE-682": [
-                "app/config",
-                "app/components/sd",
-                "app/api",
-                "app/components",
-                "app/utils",
-                "app",
-                "app/client/platforms",
-                "app/lib",
-            ],
-            "CWE-754": [
-                "app/api",
-                "app/client/platforms",
-                "app/utils/cloud",
-            ],
-        }
-    )
-    test_cmd: str = (
-        "node --no-warnings --experimental-vm-modules $(yarn bin jest) --ci --forceExit"
-    )
-
-    @property
-    def dockerfile(self):
-        return f"""FROM node:18-slim
-
-RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
-
-RUN git clone https://github.com/{self.mirror_name}.git /{ENV_NAME}
-WORKDIR /{ENV_NAME}
-RUN git submodule update --init --recursive
-RUN yarn install
-CMD ["/bin/bash"]"""
 
     def log_parser(self, log: str) -> dict[str, str]:
         return parse_log_jest(log)
@@ -1517,10 +1454,54 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Excalidraw974b338b(TypeScriptProfile):
+class Excalidraw0457ac90(TypeScriptProfile):
     owner: str = "excalidraw"
     repo: str = "excalidraw"
-    commit: str = "974b338b7e5fed5176cfd83b7a120b137751a1db"
+    commit: str = "0457ac90634b8556feaa9c0e56be94d3f13fd9bd"
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-193": [
+                "packages/fractional-indexing/src",
+                "packages/common/src",
+                "packages/excalidraw/renderer",
+                "packages/excalidraw/eraser",
+                "packages/math/src",
+                "packages/excalidraw/components",
+            ],
+            "CWE-20": [
+                "packages/excalidraw/data",
+                "excalidraw-app/data",
+                "excalidraw-app/components",
+                "packages/common/src",
+                "excalidraw-app/collab",
+            ],
+            "CWE-682": [
+                "packages/math/src",
+                "packages/fractional-indexing/src",
+                "packages/common/src",
+                "packages/utils/src",
+                "packages/excalidraw/wysiwyg",
+                "packages/excalidraw/components",
+                "packages/excalidraw/lasso",
+                "excalidraw-app/data",
+            ],
+            "CWE-754": [
+                "packages/excalidraw/data",
+                "packages/excalidraw/fonts",
+                "excalidraw-app/data",
+                "excalidraw-app/collab",
+                "packages/common/src",
+                "packages/element/src",
+                "excalidraw-app/components",
+            ],
+            "CWE-835": [
+                "packages/element/src",
+                "packages/fractional-indexing/src",
+                "packages/common/src",
+                "packages/excalidraw/renderer",
+            ],
+        }
+    )
     test_cmd: str = "yarn test:app --watch=false"
 
     @property
@@ -1566,54 +1547,101 @@ CMD ["/bin/bash"]"""
         return parse_log_vitest(log)
 
 
-# @dataclass
-# class Firecrawl43f61e7f(TypeScriptProfile):
-#     owner: str = "firecrawl"
-#     repo: str = "firecrawl"
-#     commit: str = "43f61e7fe5c85e106cd016a69cb2bbe42a419569"
-#     test_cmd: str = "pnpm test --ci --coverage=false --testPathIgnorePatterns='none'"
+@dataclass
+class Firecrawlaf8adaf6(TypeScriptProfile):
+    owner: str = "firecrawl"
+    repo: str = "firecrawl"
+    commit: str = "af8adaf67b92bbf4812bde6b8c36fbcb2107da2f"
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "apps/api/src/scraper/WebScraper",
+                "apps/api/src/scraper/scrapeURL/transformers",
+                "apps/api/src/scraper/scrapeURL/engines",
+                "apps/api/src/scraper/scrapeURL/lib",
+                "apps/api/src/lib",
+                "apps/api/src/controllers",
+            ],
+            "CWE-193": [
+                "apps/ui/ingestion-ui",
+                "apps/api/src/scraper/WebScraper",
+                "apps/api/src/scraper/scrapeURL/transformers",
+                "apps/api/src/scraper/scrapeURL/engines",
+                "apps/api/src/lib",
+                "apps/api/src/services",
+                "apps/api/src/controllers",
+            ],
+            "CWE-20": [
+                "apps/js-sdk/firecrawl",
+                "apps/api/src/scraper/scrapeURL/transformers",
+                "apps/api/src/scraper/scrapeURL/engines",
+                "apps/api/src/controllers",
+                "apps/api/src/lib",
+            ],
+            "CWE-682": [
+                "apps/api/src/scraper/scrapeURL/transformers",
+                "apps/api/src/scraper/scrapeURL/engines",
+                "apps/js-sdk/firecrawl/src",
+                "apps/ui/ingestion-ui",
+                "apps/playwright-service-ts",
+            ],
+            "CWE-754": [
+                "apps/js-sdk/firecrawl",
+                "apps/ui/ingestion-ui",
+                "apps/api/src",
+                "apps/playwright-service-ts",
+            ],
+            "CWE-835": [
+                "apps/api/src",
+                "apps/js-sdk/firecrawl",
+                "apps/ui/ingestion-ui",
+            ],
+        }
+    )
+    test_cmd: str = "cd apps/api && pnpm test --ci --coverage=false --testPathIgnorePatterns='none'"
 
-#     @property
-#     def dockerfile(self):
-#         return f"""FROM node:22
+    @property
+    def dockerfile(self):
+        return f"""FROM node:22
 
-# RUN apt-get update && apt-get install -y \
-#     git \
-#     curl \
-#     build-essential \
-#     pkg-config \
-#     python3 \
-#     && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    build-essential \
+    pkg-config \
+    python3 \
+    && rm -rf /var/lib/apt/lists/*
 
-# RUN curl -L https://go.dev/dl/go1.23.4.linux-arm64.tar.gz | tar -C /usr/local -xz
-# ENV PATH=$PATH:/usr/local/go/bin
+RUN ARCH=$(dpkg --print-architecture) && \
+    curl -L https://go.dev/dl/go1.23.4.linux-${{ARCH}}.tar.gz | tar -C /usr/local -xz
+ENV PATH=$PATH:/usr/local/go/bin
 
-# ENV RUSTUP_HOME=/usr/local/rustup \
-#     CARGO_HOME=/usr/local/cargo \
-#     PATH=/usr/local/cargo/bin:$PATH
-# RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --no-modify-path \
-#     && chmod -R a+w $RUSTUP_HOME $CARGO_HOME
+ENV RUSTUP_HOME=/usr/local/rustup \
+    CARGO_HOME=/usr/local/cargo \
+    PATH=/usr/local/cargo/bin:$PATH
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --no-modify-path \
+    && chmod -R a+w $RUSTUP_HOME $CARGO_HOME
 
-# WORKDIR /{ENV_NAME}
+RUN corepack enable
 
-# RUN corepack enable
+RUN git clone https://github.com/{self.mirror_name}.git /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN git submodule update --init --recursive
 
-# RUN git clone https://github.com/{self.mirror_name}.git /{ENV_NAME}
-# WORKDIR /{ENV_NAME}
-# RUN git submodule update --init --recursive
+WORKDIR /{ENV_NAME}/apps/api
 
-# WORKDIR /{ENV_NAME}/apps/api
+RUN cd sharedLibs/go-html-to-md && \
+    go build -o libhtml-to-markdown.so -buildmode=c-shared html-to-markdown.go
 
-# RUN cd sharedLibs/go-html-to-md && \
-#     go build -o libhtml-to-markdown.so -buildmode=c-shared html-to-markdown.go
+RUN pnpm install --no-frozen-lockfile
+RUN pnpm run build
 
-# RUN pnpm install --no-frozen-lockfile
-# RUN pnpm run build
+WORKDIR /{ENV_NAME}
+CMD ["/bin/bash"]"""
 
-# CMD ["/bin/bash"]"""
+    def log_parser(self, log: str) -> dict[str, str]:
+        return parse_log_jest(log)
 
-#     def log_parser(self, log: str) -> dict[str, str]:
-#         return parse_log_jest(log)
 
 
 @dataclass
@@ -2456,10 +2484,51 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Vscode07f93b5b(TypeScriptProfile):
+class Vscodea7a48c50(TypeScriptProfile):
     owner: str = "microsoft"
     repo: str = "vscode"
-    commit: str = "07f93b5bc73ba1d51e7c292e3779cb4263875de4"
+    commit: str = "a7a48c50753ffd5a01c3582118ed43090631f1b9"
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-193": [
+                "extensions/emmet/src",
+                "extensions/markdown-language-features/preview-src",
+                "extensions/git/src",
+                "extensions/typescript-language-features/src",
+                "extensions/markdown-language-features/src",
+                "extensions/notebook-renderers/src",
+            ],
+            "CWE-20": [
+                "extensions/git/src",
+                "extensions/typescript-language-features/src",
+                "extensions/github-authentication/src",
+                "extensions/notebook-renderers/src",
+            ],
+            "CWE-682": [
+                "extensions/git/src",
+                "extensions/typescript-language-features/src",
+                "extensions/markdown-language-features/src",
+                "extensions/markdown-language-features/preview-src",
+                "extensions/emmet/src",
+                "extensions/notebook-renderers/src",
+                "extensions/media-preview/src",
+            ],
+            "CWE-754": [
+                "extensions/git/src",
+                "extensions/typescript-language-features/src",
+                "extensions/markdown-language-features/src",
+                "extensions/ipynb/notebook-src",
+                "extensions/emmet/src",
+                "extensions/github-authentication/src",
+            ],
+            "CWE-835": [
+                "extensions/git/src",
+                "extensions/typescript-language-features/src",
+                "extensions/markdown-language-features/preview-src",
+            ],
+        }
+    )
+
     test_cmd: str = "npm run compile && ./node_modules/.bin/mocha test/unit/node/index.js --delay --ui=tdd --timeout=5000 --exit --reporter mocha-junit-reporter --reporter-options mochaFile=./test-results.xml || true"
 
     @property
@@ -2488,6 +2557,7 @@ CMD ["/bin/bash"]"""
 
     def log_parser(self, log: str) -> dict[str, str]:
         return parse_log_mocha(log)
+
 
 
 @dataclass
@@ -2560,11 +2630,77 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class N8nf42be903(TypeScriptProfile):
+class N8n5d872d13(TypeScriptProfile):
     owner: str = "n8n-io"
     repo: str = "n8n"
-    commit: str = "f42be9030e7f549da5ed6dc3902d058c2ebbadcb"
-    test_cmd: str = "pnpm turbo run test --filter=n8n-workflow --filter=n8n-core -- --reporter=default --reporter=junit --outputFile=results.xml"
+    commit: str = "5d872d13755e2d24cfc4cbd59152c4aff53e70c0"
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "packages/core/src",
+                "packages/cli/src",
+                "packages/frontend/editor-ui",
+                "packages/frontend/@n8n",
+                "packages/nodes-base/nodes",
+                "packages/nodes-base/utils",
+                "packages/nodes-base/credentials",
+                "packages/workflow/src",
+            ],
+            "CWE-193": [
+                "packages/workflow/src",
+                "packages/cli/src",
+                "packages/core/src",
+                "packages/nodes-base/nodes",
+                "packages/@n8n/ai-utilities",
+                "packages/@n8n/chat-hub",
+                "packages/@n8n/utils",
+                "packages/@n8n/codemirror-lang-sql",
+            ],
+            "CWE-20": [
+                "packages/@n8n/api-types",
+                "packages/cli/src",
+                "packages/workflow/src",
+                "packages/core/src",
+                "packages/nodes-base/nodes",
+                "packages/nodes-base/utils",
+                "packages/@n8n/json-schema-to-zod",
+                "packages/@n8n/utils",
+            ],
+            "CWE-670": [
+                "packages/@n8n/workflow-sdk",
+                "packages/@n8n/ai-workflow-builder.ee",
+                "packages/workflow/src",
+                "packages/cli/src",
+                "packages/core/src",
+            ],
+            "CWE-682": [
+                "packages/@n8n/computer-use",
+                "packages/@n8n/utils",
+                "packages/@n8n/chat-hub",
+                "packages/workflow/src",
+                "packages/core/src",
+                "packages/nodes-base/utils",
+                "packages/cli/src",
+            ],
+            "CWE-754": [
+                "packages/@n8n/errors",
+                "packages/nodes-base/nodes",
+                "packages/cli/src",
+                "packages/core/src",
+                "packages/workflow/src",
+                "packages/nodes-base/utils",
+            ],
+            "CWE-835": [
+                "packages/workflow/src",
+                "packages/cli/src",
+                "packages/core/src",
+                "packages/nodes-base/nodes",
+                "packages/@n8n/workflow-sdk",
+                "packages/@n8n/json-schema-to-zod",
+            ],
+        }
+    )
+    test_cmd: str = "pnpm turbo run test --filter=n8n-workflow --filter=n8n-core --concurrency=1 --no-cache -- --reporter=default --reporter=junit --outputFile=results.xml"
 
     @property
     def dockerfile(self):
@@ -2583,8 +2719,11 @@ RUN git clone https://github.com/{self.mirror_name}.git /{ENV_NAME}
 WORKDIR /{ENV_NAME}
 RUN git submodule update --init --recursive
 
+ENV TURBO_TELEMETRY_DISABLED=1
+ENV TURBO_NO_UPDATE_NOTIFIER=1
+
 RUN pnpm install --frozen-lockfile
-RUN pnpm turbo run build --filter=n8n-workflow --filter=n8n-core
+RUN pnpm turbo run build --filter=n8n-workflow --filter=n8n-core --filter=n8n-nodes-base --concurrency=1 --no-cache
 
 CMD ["/bin/bash"]"""
 
@@ -2792,31 +2931,103 @@ CMD ["/bin/bash"]"""
         return parse_log_jest(log)
 
 
-# @dataclass
-# class Openclaw7dfa99a6(TypeScriptProfile):
-#     owner: str = "openclaw"
-#     repo: str = "openclaw"
-#     commit: str = "7dfa99a6f70c161ca88459be8b419cbfb9b75d7d"
-#     test_cmd: str = "pnpm exec vitest run --config vitest.unit.config.ts"
+@dataclass
+class Openclawb1db684a(TypeScriptProfile):
+    owner: str = "openclaw"
+    repo: str = "openclaw"
+    commit: str = "b1db684aca5315369a0f5fab0875f79e2bc8ffa7"
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "src/web-search",
+                "ui/src/ui",
+                "ui/src/i18n",
+                "qa/convex-credential-broker/convex",
+                "extensions/lmstudio/src",
+                "extensions/memory-lancedb",
+                "extensions/azure-speech",
+            ],
+            "CWE-193": [
+                "src/markdown",
+                "src/shared/text",
+                "src/media-generation",
+                "src/agents/pi-hooks",
+                "extensions/oc-path/src",
+                "extensions/vydra",
+            ],
+            "CWE-20": [
+                "extensions/lobster/src",
+                "src/infra/tls",
+                "extensions/comfy",
+                "src/cli/cron-cli",
+                "extensions/runway",
+            ],
+            "CWE-670": [
+                "extensions/openrouter",
+                "src/plugin-state",
+                "src/markdown",
+                "src/shared/text",
+            ],
+            "CWE-682": [
+                "src/commands/gateway-status",
+                "src/commands/status-all",
+                "src/status",
+                "src/plugin-state",
+                "extensions/thread-ownership",
+            ],
+            "CWE-754": [
+                "extensions/lobster/src",
+                "src/infra/tls",
+                "extensions/comfy",
+                "extensions/runway",
+                "src/cli/cron-cli",
+                "extensions/vydra",
+                "src/hooks/bundled",
+                "extensions/clickclack/src",
+            ],
+            "CWE-835": [
+                "src/markdown",
+                "src/shared/text",
+                "src/hooks/bundled",
+                "extensions/matrix",
+                "src/agents/pi-hooks",
+            ],
+        }
+    )
+    test_cmd = "pnpm test"
 
-#     @property
-#     def dockerfile(self):
-#         return f"""FROM node:20-slim
+    @property
+    def dockerfile(self):
+        return f"""FROM node:22-slim
 
-# RUN apt-get update && apt-get install -y git python3 make g++ pkg-config libpixman-1-dev libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y \
+    git \
+    python3 \
+    make \
+    g++ \
+    pkg-config \
+    libpixman-1-dev \
+    libcairo2-dev \
+    libpango1.0-dev \
+    libjpeg-dev \
+    libgif-dev \
+    librsvg2-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-# RUN npm install -g pnpm
+RUN npm install -g pnpm@latest
 
-# RUN git clone https://github.com/{self.mirror_name}.git /{ENV_NAME}
-# WORKDIR /{ENV_NAME}
-# RUN git submodule update --init --recursive
+RUN git clone https://github.com/{self.mirror_name}.git /{ENV_NAME}
+WORKDIR /{ENV_NAME}
 
-# RUN pnpm install --frozen-lockfile
+RUN git submodule update --init --recursive
+RUN pnpm install --frozen-lockfile
 
-# CMD ["pnpm", "start"]"""
+CMD ["/bin/bash"]
+"""
 
-#     def log_parser(self, log: str) -> dict[str, str]:
-#         return parse_log_vitest(log)
+    def log_parser(self, log: str) -> dict[str, str]:
+        return parse_log_vitest(log)
+
 
 
 @dataclass
@@ -2980,19 +3191,59 @@ class Prismad6d9fc9e(TypeScriptProfile):
     owner: str = "prisma"
     repo: str = "prisma"
     commit: str = "d6d9fc9ed341946d45c7d0aba35081a7bd741aa1"
-    test_cmd: str = "cd packages/get-platform && pnpm exec jest --ci --reporters=default --reporters=jest-junit --outputFile=test_output.xml"
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "packages/internals/src/highlight",
+                "packages/adapter-d1/src",
+                "packages/client-engine-runtime/src",
+            ],
+            "CWE-193": [
+                "helpers/blaze",
+                "eslint-local-rules",
+                "packages/param-graph/src",
+                "packages/internals/src/get-generators",
+                "packages/param-graph-builder/src",
+                "packages/sqlcommenter-query-insights/src/shape",
+                "helpers/compile/plugins/fill-plugin",
+            ],
+            "CWE-20": [
+                "packages/migrate/src/views",
+                "packages/query-plan-executor/src/formats",
+            ],
+            "CWE-682": [
+                "packages/get-dmmf/src",
+                "packages/query-plan-executor/src/formats",
+                "packages/client-engine-runtime/src",
+            ],
+            "CWE-754": [
+                "packages/client-runtime-utils/src/errors",
+                "packages/migrate/src/views",
+                "packages/query-plan-executor/src/formats",
+                "packages/cli/src/bootstrap",
+                "packages/migrate/src/commands",
+                "packages/fetch-engine/src",
+                "packages/adapter-mssql/src",
+                "packages/get-dmmf/src",
+            ],
+        }
+    )
+    test_cmd: str = (
+        "cd packages/get-platform && "
+        "pnpm exec vitest run --reporter=verbose --reporter=junit "
+        "--outputFile.junit=test_output.xml"
+    )
 
     @property
     def dockerfile(self):
         return f"""FROM node:22-slim
 
-RUN apt-get update && apt-get install -y git python3 make g++ && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y git python3 make g++ openssl ca-certificates && rm -rf /var/lib/apt/lists/*
 
 RUN npm install -g pnpm@10.15.1
 
 RUN git clone https://github.com/{self.mirror_name}.git /{ENV_NAME}
 WORKDIR /{ENV_NAME}
-RUN git submodule update --init --recursive
 
 RUN pnpm install
 
@@ -3001,7 +3252,7 @@ RUN pnpm turbo build --filter=@prisma/get-platform...
 CMD ["/bin/bash"]"""
 
     def log_parser(self, log: str) -> dict[str, str]:
-        return parse_log_jest(log)
+        return parse_log_vitest(log)
 
 
 @dataclass
@@ -5402,7 +5653,712 @@ CMD ["/bin/bash"]"""
 
     def log_parser(self, log: str) -> dict[str, str]:
         return parse_log_vitest(log)
-        
+
+
+@dataclass
+class Vscodecsharp887a443f(TypeScriptProfile):
+    owner: str = "dotnet"
+    repo: str = "vscode-csharp"
+    commit: str = "887a443fea73b32300a6760ddac3ad7387bb747d"
+    test_cmd: str = "yarn test"
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "tasks",
+                "tasks/packaging",
+                "tasks/tags",
+                "tasks/snap",
+            ],
+            "CWE-193": [
+                "src/razor",
+                "src/razor/src",
+                "src/tools",
+                "tasks/snap",
+                "src/lsptoolshost/autoInsert",
+            ],
+            "CWE-20": [
+                "src/lsptoolshost/copilot",
+                "tasks/profiling",
+                "src/tools",
+                "src/lsptoolshost/projectRestore",
+                "tasks/localization",
+                "src/lsptoolshost/testing",
+                "src/lsptoolshost/debugger",
+            ],
+            "CWE-682": [
+                "src/lsptoolshost/projectContext",
+                "src/tools",
+                "src/razor",
+                "tasks/snap",
+                "src/lsptoolshost/autoInsert",
+            ],
+            "CWE-754": [
+                "src/lsptoolshost/copilot",
+                "tasks/localization",
+                "tasks/profiling",
+                "src/tools",
+                "src/lsptoolshost/projectRestore",
+                "src/shared/utils",
+                "src/lsptoolshost/debugger",
+                "src/lsptoolshost/dotnetRuntime",
+            ],
+            "CWE-835": [
+                "src/tools",
+                "tasks/packaging",
+                "src/lsptoolshost/debugger",
+                "src/omnisharp/engines",
+            ],
+        }
+    )
+
+    @property
+    def dockerfile(self):
+        return f"""FROM node:22-bullseye
+
+RUN apt-get update && apt-get install -y \
+    git \
+    wget \
+    ca-certificates \
+    libicu67 \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV DOTNET_ROOT=/usr/share/dotnet
+ENV PATH=$PATH:/usr/share/dotnet
+ENV DOTNET_CLI_TELEMETRY_OPTOUT=1
+ENV DOTNET_NOLOGO=1
+ENV DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
+
+RUN ARCH=$(dpkg --print-architecture) && \
+    case "$ARCH" in \
+        amd64) DOTNET_ARCH=x64 ;; \
+        arm64) DOTNET_ARCH=arm64 ;; \
+        *) echo "Unsupported arch: $ARCH" && exit 1 ;; \
+    esac && \
+    wget -q https://dot.net/v1/dotnet-install.sh -O /tmp/dotnet-install.sh && \
+    chmod +x /tmp/dotnet-install.sh && \
+    /tmp/dotnet-install.sh --channel 9.0 --install-dir /usr/share/dotnet --architecture $DOTNET_ARCH && \
+    /tmp/dotnet-install.sh --channel 8.0 --install-dir /usr/share/dotnet --architecture $DOTNET_ARCH && \
+    rm /tmp/dotnet-install.sh && \
+    dotnet --info
+
+RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN npm ci
+CMD [\"/bin/bash\"]
+"""
+
+    def log_parser(self, log: str) -> dict[str, str]:
+        return parse_log_jest(log)
+    
+
+
+@dataclass
+class Apollotoolinga778ca16(TypeScriptProfile):
+    owner: str = "apollographql"
+    repo: str = "apollo-tooling"
+    commit: str = "a778ca162bdd20be9e60a914887302390c274644"
+    test_cmd: str = "yarn test"
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "packages/apollo-codegen-flow/src",
+                "packages/apollo-language-server/src",
+                "packages/apollo-codegen-scala/src",
+                "packages/apollo-codegen-swift/src",
+                "packages/apollo-codegen-core/src",
+                "packages/apollo-graphql/src",
+                "packages/apollo/src",
+                "packages/apollo-codegen-typescript/src",
+            ],
+            "CWE-193": [
+                "packages/apollo/src",
+                "packages/apollo-codegen-core/src",
+                "packages/apollo-language-server/src",
+                "packages/apollo-codegen-swift/src",
+                "packages/apollo-codegen-typescript/src",
+                "packages/apollo-codegen-flow/src",
+                "packages/apollo-codegen-scala/src",
+            ],
+            "CWE-682": [
+                "packages/apollo-tools/src",
+                "packages/apollo/src",
+                "packages/apollo-codegen-swift/src",
+                "packages/apollo-language-server/src",
+                "packages/apollo-codegen-scala/src",
+                "packages/apollo-codegen-core/src",
+                "packages/apollo-codegen-flow/src",
+            ],
+            "CWE-754": [
+                "packages/apollo/src",
+                "packages/apollo-language-server/src",
+                "packages/apollo-tools/src",
+                "packages/apollo-codegen-core/src",
+                "packages/apollo-graphql/src",
+                "packages/apollo-codegen-swift/src",
+                "packages/apollo-codegen-scala/src",
+            ],
+            "CWE-835": [
+                "packages/apollo-codegen-swift/src",
+                "packages/apollo-language-server/src",
+                "packages/apollo-codegen-flow/src",
+                "packages/apollo-codegen-typescript/src",
+            ],
+        }
+    )
+
+    @property
+    def dockerfile(self):
+        return f"""FROM node:16-bullseye
+RUN apt-get update && apt-get install -y git python3 make g++ && rm -rf /var/lib/apt/lists/*
+RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN npm ci
+RUN npm run build
+CMD [\"/bin/bash\"]
+"""
+
+    def log_parser(self, log: str) -> dict[str, str]:
+        return parse_log_jest(log)
+
+
+@dataclass
+class Yawebadb59873c8f(TypeScriptProfile):
+    owner: str = "yume-chan"
+    repo: str = "ya-webadb"
+    commit: str = "59873c8f30b6ab0bb488709a02ac2a9d0ecce2f2"
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "libraries/android-bin/src",
+                "libraries/scrcpy/src/2_0/impl",
+                "libraries/scrcpy/src/2_2/impl",
+                "libraries/adb-credential-nodejs/src",
+            ],
+            "CWE-193": [
+                "libraries/media-codec/src",
+                "libraries/android-bin/src",
+                "libraries/adb/src",
+                "libraries/adb-server-node-tcp/src",
+                "libraries/scrcpy-decoder-h264bsd/src",
+                "libraries/stream-extra/src",
+                "libraries/struct/src",
+            ],
+            "CWE-20": [
+                "libraries/scrcpy-decoder-shared/src",
+                "libraries/scrcpy-decoder-h264bsd/src",
+                "libraries/scrcpy-decoder-webcodecs/src",
+            ],
+            "CWE-682": [
+                "libraries/no-data-view/src",
+                "libraries/pcm-player/worker",
+                "libraries/media-codec/src",
+                "libraries/adb-server-node-tcp/src",
+                "libraries/aoa/src",
+                "libraries/android-bin/src",
+            ],
+            "CWE-754": [
+                "libraries/media-codec/src",
+                "libraries/adb-server-node-tcp/src",
+                "libraries/adb-daemon-webusb/src",
+                "libraries/adb-credential-web/src",
+                "libraries/adb-credential-nodejs/src",
+            ],
+            "CWE-835": [
+                "libraries/stream-extra/src",
+                "libraries/android-bin/src",
+                "libraries/adb-daemon-webusb/src",
+                "libraries/adb/src",
+                "libraries/struct/src",
+            ],
+        }
+    )
+    test_cmd: str = "yarn test"
+
+    @property
+    def dockerfile(self):
+        return f"""FROM node:22-bullseye
+RUN apt update && apt install -y git
+RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN npm install -g pnpm@9
+RUN pnpm install && pnpm run build
+CMD [\"/bin/bash\"]
+"""
+
+    def log_parser(self, log: str) -> dict[str, str]:
+        return parse_log_jest(log)
+
+
+
+@dataclass
+class Legendlistf27c3cf2(TypeScriptProfile):
+    owner: str = "LegendApp"
+    repo: str = "legend-list"
+    commit: str = "f27c3cf24985c7273276a52565dd16bcfd435a13"
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-193": [
+                "src/core",
+                "src/utils",
+                "src/components",
+            ],
+            "CWE-682": [
+                "src/core",
+                "src/utils",
+                "src/state",
+                "src/integrations",
+                "src/components",
+            ],
+        }
+    )
+    test_cmd: str = "bun test"
+
+    @property
+    def dockerfile(self):
+        return f"""FROM node:18-bullseye
+RUN apt update && apt install -y git curl unzip
+RUN curl -fsSL https://bun.sh/install | bash
+ENV PATH="/root/.bun/bin:$PATH"
+RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN bun install
+CMD [\"/bin/bash\"]
+"""
+
+    def log_parser(self, log: str) -> dict[str, str]:
+        return parse_log_jest(log)
+
+
+
+@dataclass
+class Tsedf406d9b2(TypeScriptProfile):
+    owner: str = "tsedio"
+    repo: str = "tsed"
+    commit: str = "f406d9b24c1b42801208a3dcb17537be8cf85b4d"
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-193": [
+                "packages/platform/platform-express",
+                "packages/platform/platform-koa",
+                "packages/platform/platform-fastify",
+                "packages/di/src",
+                "packages/security/passport",
+                "packages/specs/schema",
+                "packages/perf/src",
+                "packages/orm/adapters",
+            ],
+            "CWE-20": [
+                "packages/config/src",
+                "packages/security/passport",
+                "packages/security/jwks",
+                "packages/specs/openapi-utils",
+                "packages/platform/platform-serverless",
+                "packages/platform/platform-mcp",
+                "packages/platform/platform-cache",
+            ],
+            "CWE-682": [
+                "packages/platform/platform-cache",
+                "packages/platform/platform-http",
+                "packages/platform/platform-serverless",
+                "packages/orm/adapters-redis",
+                "packages/orm/testcontainers-mongo",
+                "packages/security/oidc-provider",
+                "packages/graphql/apollo",
+                "packages/config/src",
+                "packages/perf/src",
+            ],
+            "CWE-754": [
+                "packages/core/src",
+                "packages/security/passport",
+                "packages/specs/json-mapper",
+                "packages/config/src",
+                "packages/di/src",
+            ],
+        }
+    )
+    test_cmd: str = 'npx lerna run test --scope "@tsed/{core,di,schema,json-mapper,config,perf,jwks,openapi-utils,platform-http,platform-cache,platform-express,platform-koa,platform-fastify,platform-serverless,platform-mcp,adapters,passport}" --no-bail --stream'
+
+    @property
+    def dockerfile(self):
+        return f"""FROM node:20-bullseye
+RUN apt update && apt install -y git
+RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN corepack enable && yarn install
+RUN npm install -g typescript@6.0.2
+RUN npm run build
+CMD [\"/bin/bash\"]
+"""
+
+    def log_parser(self, log: str) -> dict[str, str]:
+        return parse_log_jest(log)
+
+
+@dataclass
+class Vue9e887079(TypeScriptProfile):
+    owner: str = "vuejs"
+    repo: str = "vue"
+    commit: str = "9e88707940088cb1f4cd7dd210c9168a50dc347c"
+
+    test_cmd: str = "pnpm test -- unit"
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "packages/compiler-sfc/src",
+                "packages/server-renderer/src",
+                "src/platforms/web",
+                "src/core/util",
+                "src/core/components",
+                "src/core/instance",
+                "src/shared",
+                "src/compiler/parser",
+            ],
+            "CWE-193": [
+                "src/core/vdom",
+                "src/compiler/parser",
+                "src/core/observer",
+                "src/compiler/codegen",
+                "src/core/util",
+                "src/compiler/directives",
+                "src/shared",
+            ],
+            "CWE-20": [
+                "src/compiler/parser",
+                "src/compiler/directives",
+                "src/compiler/codegen",
+                "src/compiler",
+                "src/core/util",
+                "packages/compiler-sfc/src",
+            ],
+            "CWE-682": [
+                "src/compiler/codegen",
+                "src/compiler/directives",
+                "src/compiler/parser",
+                "src/core/vdom",
+                "src/core/observer",
+                "src/shared",
+            ],
+        }
+    )
+
+    @property
+    def dockerfile(self):
+        return f"""FROM node:20-bullseye
+
+RUN apt-get update && apt-get install -y \
+    git \
+    chromium \
+    --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV CHROME_BIN=/usr/bin/chromium
+
+RUN npm install -g pnpm
+
+RUN git clone https://github.com/{self.mirror_name}.git /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+
+RUN pnpm install
+
+CMD ["/bin/bash"]
+"""
+
+    def log_parser(self, log: str) -> dict[str, str]:
+        return parse_log_jasmine(log)
+   
+
+
+@dataclass
+class Opencoded488e3fd(TypeScriptProfile):
+    owner: str = "anomalyco"
+    repo: str = "opencode"
+    commit: str = "d488e3fd2a6fabcc65a0df758246bf17a409f288"
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "packages/ui/src",
+                "packages/llm/src",
+                "packages/opencode/src",
+            ],
+            "CWE-193": [
+                "packages/core/src",
+                "packages/app/src",
+                "packages/ui/src",
+                "packages/opencode/src",
+            ],
+            "CWE-20": [
+                "packages/console/function",
+                "packages/opencode/src",
+                "packages/desktop/src",
+                "packages/app/src",
+            ],
+            "CWE-682": [
+                "packages/opencode/src",
+                "packages/console/function",
+                "packages/ui/src",
+                "packages/desktop/src",
+            ],
+            "CWE-754": [
+                "packages/opencode/src",
+                "packages/core/src",
+                "packages/app/src",
+                "packages/desktop/src",
+                "sdks/vscode/src",
+            ],
+            "CWE-835": [
+                "packages/opencode/src",
+                "packages/core/src",
+                "packages/app/src",
+                "packages/desktop/src",
+            ],
+        }
+    )
+    test_cmd: str = "cd packages/opencode && bun test --timeout 30000"
+
+    @property
+    def dockerfile(self):
+        return f"""FROM oven/bun:latest
+
+RUN apt-get update && apt-get install -y \
+    git \
+    python3 \
+    make \
+    g++ \
+    pkg-config \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV PYTHON=/usr/bin/python3
+
+RUN git clone https://github.com/{self.mirror_name}.git /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN git submodule update --init --recursive
+
+RUN bun install
+
+CMD ["/bin/bash"]"""
+
+    def log_parser(self, log: str) -> dict[str, str]:
+        return parse_log_bun(log)
+    
+
+
+
+
+@dataclass
+class Dify3f6644a6(TypeScriptProfile):
+    owner: str = "langgenius"
+    repo: str = "dify"
+    commit: str = "3f6644a615291ad87019b7153655c3e77f8c31d8"
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-193": [
+                "packages/migrate-no-unchecked-indexed-access/src",
+                "web/utils",
+                "web/app/components",
+                "web/service",
+                "web/features",
+                "packages/dify-ui/src",
+                "sdks/nodejs-client/src",
+            ],
+            "CWE-20": [
+                "web/app/signin",
+                "web/service",
+                "web/utils",
+                "web/app/components",
+                "sdks/nodejs-client/src",
+            ],
+            "CWE-682": [
+                "web/app/(shareLayout)",
+                "web/app/reset-password",
+                "web/app/signin",
+                "web/service",
+                "web/utils",
+                "web/app/components",
+                "sdks/nodejs-client/src",
+            ],
+            "CWE-754": [
+                "web/app/signin",
+                "web/utils",
+                "web/service",
+                "web/app/components",
+                "web/app/signup",
+                "web/app/account",
+                "web/app/(shareLayout)",
+                "web/app/reset-password",
+            ],
+        }
+    )
+    test_cmd: str = "cd web && pnpm test run --reporter=default"
+
+    @property
+    def dockerfile(self):
+        return f"""FROM node:22-bookworm-slim
+
+RUN apt-get update && apt-get install -y \
+    git \
+    python3 \
+    make \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN npm install -g pnpm@9.12.2
+
+RUN git clone https://github.com/{self.mirror_name}.git /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN git submodule update --init --recursive
+
+WORKDIR /{ENV_NAME}/web
+RUN pnpm install --no-frozen-lockfile
+
+WORKDIR /{ENV_NAME}
+CMD ["/bin/bash"]"""
+
+    def log_parser(self, log: str) -> dict[str, str]:
+        return parse_log_vitest(log)
+
+
+
+@dataclass
+class Openspec8498042f(TypeScriptProfile):
+    owner: str = "Fission-AI"
+    repo: str = "OpenSpec"
+    commit: str = "8498042fe8a738e8ad6facd94a5fc7f5025bf81d"
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "src/core/parsers",
+                "src/core/completions/generators",
+                "src/core/workspace",
+                "src/core/shared",
+                "src/core",
+            ],
+            "CWE-193": [
+                "src/core/converters",
+                "src/core/parsers",
+                "src/core/completions/generators",
+                "src/core/validation",
+                "src/core",
+            ],
+            "CWE-20": [
+                "src/core/validation",
+                "src/core/parsers",
+                "src/utils",
+                "src/commands/workflow",
+            ],
+            "CWE-670": [
+                "src/commands/workflow",
+                "src/core/completions",
+                "src/core/completions/generators",
+                "src/commands",
+            ],
+            "CWE-682": [
+                "src/ui",
+                "src/utils",
+                "src/commands",
+                "src/core",
+            ],
+            "CWE-754": [
+                "src/core/completions/installers",
+                "src/commands/workflow",
+                "src/utils",
+            ],
+            "CWE-835": [
+                "src/core/parsers",
+                "src/core/workspace",
+                "src/utils",
+                "src/core",
+                "src/core/completions/installers",
+                "src/core/artifact-graph",
+            ],
+        }
+    )
+    test_cmd: str = "pnpm test"
+
+    @property
+    def dockerfile(self):
+        return f"""FROM node:20-bullseye
+RUN apt update && apt install -y git
+RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN npm install -g pnpm@10
+RUN pnpm install && pnpm run build
+CMD [\"/bin/bash\"]
+"""
+
+    def log_parser(self, log: str) -> dict[str, str]:
+        return parse_log_vitest(log)
+    
+
+
+@dataclass
+class Pixijsfd367781(TypeScriptProfile):
+    owner: str = "pixijs"
+    repo: str = "pixijs"
+    commit: str = "fd367781840da88f7d2352cd51b0f1b651931810"
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-193": [
+                "src/unsafe-eval/ubo",
+                "src/utils/canvas",
+                "src/scene/text-bitmap/utils",
+                "src/rendering/high-shader/shader-bits",
+                "src/rendering/batcher/gpu",
+                "src/scene/container/utils",
+                "src/utils/logging",
+            ],
+            "CWE-20": [
+                "src/filters",
+                "src/filters/defaults/displacement",
+                "src/filters/defaults/blur",
+                "src/filters/defaults/noise",
+                "src/filters/defaults/alpha",
+                "src/filters/mask",
+                "src/filters/blend-modes",
+                "src/assets/loader/parsers",
+            ],
+            "CWE-670": [
+                "src/scene/text-bitmap/utils",
+            ],
+            "CWE-682": [
+                "src/math-extras",
+                "src/maths/misc",
+                "src/maths/shapes",
+                "src/maths/matrix",
+                "src/maths/point",
+            ],
+            "CWE-754": [
+                "src/compressed-textures/basis/utils",
+                "src/compressed-textures/dds",
+                "src/utils/browser",
+                "src/compressed-textures/ktx",
+                "src/compressed-textures/ktx2/utils",
+            ],
+            "CWE-835": [
+                "src/unsafe-eval/ubo",
+                "src/utils/canvas",
+                "src/scene/text-bitmap/utils",
+                "src/rendering/high-shader/shader-bits",
+                "src/rendering/batcher/gpu",
+            ],
+        }
+    )
+    test_cmd: str = "npm test"
+
+    @property
+    def dockerfile(self):
+        return f"""FROM node:24-bullseye
+RUN apt update && apt install -y git
+RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN npm ci
+RUN npm run build
+CMD [\"/bin/bash\"]
+"""
+
+    def log_parser(self, log: str) -> dict[str, str]:
+        return parse_log_jest(log)
+
+
 
 # Register all TypeScript profiles with the global registry
 for name, obj in list(globals().items()):
