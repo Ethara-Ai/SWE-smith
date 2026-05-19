@@ -1445,7 +1445,7 @@ class Zxingandroidembeddedd09b7c76(JavaProfile):
     owner: str = "journeyapps"
     repo: str = "zxing-android-embedded"
     commit: str = "d09b7c76c3124fbfbd096a65d60b1997f37ff90f"
-    test_cmd: str = "./gradlew :zxing-android-embedded:test --rerun-tasks --continue --no-daemon --console=plain || true; find . -type f -name 'TEST-*.xml' -exec cat {} \\;"
+    test_cmd: str = "./gradlew :zxing-android-embedded:test --rerun-tasks --continue --no-daemon --console=plain || true; find . -type f -name 'TEST-*.xml' -exec cat {}+"
     timeout: int = 300  # Gradle tests can be slow
 
     @property
@@ -1463,7 +1463,8 @@ RUN mkdir -p $ANDROID_SDK_ROOT/cmdline-tools && \
 
 ENV PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools
 
-RUN yes | sdkmanager --licenses && \
+RUN unset HTTP_PROXY HTTPS_PROXY http_proxy https_proxy && \
+    yes | sdkmanager --licenses && \
     sdkmanager "platform-tools" "platforms;android-30" "build-tools;30.0.3"
 
 RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
@@ -2107,6 +2108,26 @@ class Zxing62a33ca7(JavaProfile):
     commit: str = "62a33ca7a328907dee602798043692ff1f83b0c0"
     test_cmd: str = "mvn test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain"
     timeout: int = 400  # Maven tests can be slow
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "core/src/main/java",
+                "zxing.appspot.com/src/main/java",
+                "zxingorg/src/main/java",
+                "javase/src/main/java",
+                "android-core/src/main/java",
+                "android/src/com/google",
+            ],
+            "CWE-193": [
+                "core/src/main/java",
+                "javase/src/main/java",
+                "zxingorg/src/main/java",
+                "android/src/com/google",
+                "zxing.appspot.com/src/main/java",
+                "android-core/src/main/java",
+            ],
+        }
+    )
 
     @property
     def dockerfile(self):
@@ -2285,10 +2306,10 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Nacos67885da8(JavaProfile):
+class Nacosb57b8e82(JavaProfile):
     owner: str = "alibaba"
     repo: str = "nacos"
-    commit: str = "67885da801c4e094d9489a41a5cda9ff557f69a4"
+    commit: str = "b57b8e829c51cd9616678256598a59a6b0256cda"
     test_cmd: str = "mvn test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain"
     timeout: int = 400  # Maven tests can be slow
 
@@ -2300,7 +2321,7 @@ RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
 
 RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
 WORKDIR /{ENV_NAME}
-RUN mvn clean install -B -q -DskipTests
+RUN mvn clean install -B -q -DskipTests -Drat.skip=true
 CMD ["/bin/bash"]"""
 
     def log_parser(self, log: str) -> dict[str, str]:
@@ -2367,32 +2388,70 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Dubbo6916d1bb(JavaProfile):
+class Dubbo3dbba260(JavaProfile):
     owner: str = "apache"
     repo: str = "dubbo"
-    commit: str = "6916d1bb49823b15ff2f7443398d5663168bea64"
+    commit: str = "3dbba260caee92e3adc63fd2e982c4bbd60e4861"
     test_cmd: str = "./mvnw test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain -pl dubbo-common,dubbo-remoting,dubbo-rpc,dubbo-cluster,dubbo-registry,dubbo-config"
-    timeout: int = 400  # Maven tests can be slow
+    timeout: int = 400
 
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "dubbo-compatible/src/main/java",
+                "dubbo-registry/dubbo-registry-multiple/src/main",
+                "dubbo-registry/dubbo-registry-nacos/src/main",
+                "dubbo-registry/dubbo-registry-api/src/main",
+                "dubbo-configcenter/dubbo-configcenter-apollo/src/main",
+                "dubbo-plugin/dubbo-mcp/src/main",
+                "dubbo-metadata/dubbo-metadata-definition-protobuf/src/main",
+                "dubbo-metrics/dubbo-metrics-api/src/main",
+            ],
+            "CWE-20": [
+                "dubbo-plugin/dubbo-filter-validation/src/main",
+                "dubbo-plugin/dubbo-filter-cache/src/main",
+                "dubbo-rpc/dubbo-rpc-injvm/src/main",
+                "dubbo-remoting/dubbo-remoting-zookeeper-curator5/src/main",
+                "dubbo-plugin/dubbo-mcp/src/main",
+                "dubbo-configcenter/dubbo-configcenter-nacos/src/main",
+                "dubbo-metadata/dubbo-metadata-definition-protobuf/src/main",
+            ],
+            "CWE-682": [
+                "dubbo-metrics/dubbo-metrics-config-center/src/main",
+                "dubbo-metrics/dubbo-metrics-default/src/main",
+                "dubbo-metrics/dubbo-metrics-api/src/main",
+                "dubbo-metrics/dubbo-metrics-event/src/main",
+                "dubbo-registry/dubbo-registry-api/src/main",
+                "dubbo-metrics/dubbo-metrics-registry/src/main",
+                "dubbo-plugin/dubbo-filter-cache/src/main",
+            ],
+            "CWE-754": [
+                "dubbo-plugin/dubbo-filter-validation/src/main",
+                "dubbo-remoting/dubbo-remoting-zookeeper-curator5/src/main",
+                "dubbo-plugin/dubbo-spring-security/src/main",
+                "dubbo-plugin/dubbo-mcp/src/main",
+                "dubbo-metadata/dubbo-metadata-definition-protobuf/src/main",
+                "dubbo-rpc/dubbo-rpc-injvm/src/main",
+                "dubbo-configcenter/dubbo-configcenter-nacos/src/main",
+                "dubbo-metadata/dubbo-metadata-report-nacos/src/main",
+            ],
+            "CWE-835": [
+                "dubbo-configcenter/dubbo-configcenter-file/src/main",
+                "dubbo-metrics/dubbo-metrics-api/src/main",
+                "dubbo-registry/dubbo-registry-api/src/main",
+            ],
+        }
+    )
     @property
     def dockerfile(self):
         return f"""FROM eclipse-temurin:8-jdk-focal
-
 RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
-
-
 RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
 WORKDIR /{ENV_NAME}
+ENV JAVA_TOOL_OPTIONS=""
 RUN ./mvnw clean install -B -q -DskipTests -pl dubbo-common,dubbo-remoting,dubbo-rpc,dubbo-cluster,dubbo-registry,dubbo-config -am
-
 CMD ["/bin/bash"]"""
-
     def log_parser(self, log: str) -> dict[str, str]:
-        """Parse Maven Surefire text output with per-method granularity.
-
-        Parses individual test methods from Maven Surefire output when using:
-        mvn test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain
-        """
         return parse_log_maven_surefire(log)
 
 
@@ -3208,28 +3267,51 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Springboot5d4848cf(JavaProfile):
+class Springboot23bcc680(JavaProfile):
     owner: str = "spring-projects"
     repo: str = "spring-boot"
-    commit: str = "5d4848cf7509730938f545a15b9c4f7588d2892b"
+    commit: str = "23bcc680d5c49b1eec85fb34d8cebb0c546ddabd"
     test_cmd: str = "./gradlew :core:spring-boot:test --rerun-tasks --continue --no-daemon --console=plain || true; find . -type f -name 'TEST-*.xml' -exec cat {} +"
-    timeout: int = 300  # Gradle tests can be slow
+    timeout: int = 300
 
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "buildpack/spring-boot-buildpack-platform/src/main",
+                "core/spring-boot-docker-compose/src/main",
+                "core/spring-boot/src/main",
+                "module/spring-boot-actuator/src/main",
+                "module/spring-boot-devtools/src/main",
+                "loader/spring-boot-loader/src/main",
+                "module/spring-boot-http-client/src/main",
+                "module/spring-boot-security/src/main",
+            ],
+            "CWE-20": [
+                "module/spring-boot-validation/src/main",
+                "core/spring-boot/src/main",
+                "module/spring-boot-actuator/src/main",
+                "module/spring-boot-web-server/src/main",
+                "module/spring-boot-security/src/main",
+                "buildpack/spring-boot-buildpack-platform/src/main",
+            ],
+            "CWE-682": [
+                "module/spring-boot-micrometer-metrics/src/main",
+                "loader/spring-boot-loader/src/main",
+                "module/spring-boot-actuator/src/main",
+                "buildpack/spring-boot-buildpack-platform/src/main",
+                "core/spring-boot/src/main",
+            ],
+        }
+    )
     @property
     def dockerfile(self):
-        return f"""FROM eclipse-temurin:21-jdk
-
+        return f"""FROM eclipse-temurin:25-jdk
 RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
-
 RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
 WORKDIR /{ENV_NAME}
-# Use -x javadoc to skip the failing javadoc task
 RUN ./gradlew :core:spring-boot:assemble -x javadoc --no-daemon --console=plain
-
 CMD ["/bin/bash"]"""
-
     def log_parser(self, log: str) -> dict[str, str]:
-        """Parse JUnit XML test results from Gradle output."""
         return parse_log_gradle_junit_xml(log)
 
 
@@ -3335,12 +3417,47 @@ CMD ["/bin/bash"]"""
 
 
 @dataclass
-class Netty93c5a40d(JavaProfile):
+class Nettyb2d2137c(JavaProfile):
     owner: str = "netty"
     repo: str = "netty"
-    commit: str = "93c5a40d393e5c11e7d2637e319ca36587ee1a95"
+    commit: str = "b2d2137c4404af425bf9d5d601a62576f5c06925"
     test_cmd: str = "mvn test -B -T 1C -Dsurefire.useFile=false -Dsurefire.printSummary=true -Dsurefire.reportFormat=plain -pl transport,codec,common"
     timeout: int = 400
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "handler/src/main/java",
+                "codec-http/src/main/java",
+                "common/src/main/java",
+                "resolver/src/main/java",
+                "resolver-dns/src/main/java",
+            ],
+            "CWE-193": [
+                "buffer/src/main/java",
+                "common/src/main/java",
+                "codec-compression/src/main/java",
+                "codec-http3/src/main/java",
+                "transport-native-unix-common/src/main/java",
+            ],
+            "CWE-670": [
+                "handler-ssl-ocsp/src/main/java",
+                "handler/src/main/java",
+                "handler-proxy/src/main/java",
+            ],
+            "CWE-754": [
+                "handler-ssl-ocsp/src/main/java",
+                "handler/src/main/java",
+                "handler-proxy/src/main/java",
+            ],
+            "CWE-835": [
+                "transport-classes-epoll/src/main/java",
+                "common/src/main/java",
+                "codec-compression/src/main/java",
+                "resolver-dns/src/main/java",
+                "resolver-dns-classes-macos/src/main/java",
+            ],
+        }
+    )
 
     @property
     def dockerfile(self):
@@ -3357,6 +3474,56 @@ CMD ["/bin/bash"]"""
 
     def log_parser(self, log: str) -> dict[str, str]:
         return parse_log_maven_surefire(log)
+
+
+
+
+
+@dataclass
+class Springframework0c25d817(JavaProfile):
+    owner: str = "spring-projects"
+    repo: str = "spring-framework"
+    commit: str = "0c25d817bdd7959f17a225cfdc92d6403284f13d"
+    test_cmd: str = "./gradlew :spring-core:test --rerun-tasks --continue --no-daemon --console=plain || true; find . -type f -name 'TEST-*.xml' -exec cat {} +"
+    timeout: int = 400
+
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "spring-webflux/src/main/java",
+                "spring-messaging/src/main/java",
+                "spring-expression/src/main/java",
+                "spring-core/src/main/java",
+                "spring-beans/src/main/java",
+                "spring-aop/src/main/java",
+            ],
+            "CWE-193": [
+                "spring-context-indexer/src/main/java",
+                "spring-expression/src/main/java",
+                "spring-core/src/main/java",
+                "spring-beans/src/main/java",
+                "spring-aop/src/main/java",
+                "spring-jdbc/src/main/java",
+                "spring-r2dbc/src/main/java",
+            ],
+        }
+    )
+    @property
+    def dockerfile(self):
+        return f"""FROM eclipse-temurin:25-jdk
+RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
+RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
+WORKDIR /{ENV_NAME}
+RUN ./gradlew :spring-core:assemble -x javadoc --no-daemon --console=plain
+CMD ["/bin/bash"]"""
+    def log_parser(self, log: str) -> dict[str, str]:
+        return parse_log_gradle_junit_xml(log)
+
+
+
+
+
+
 
 
 for name, obj in list(globals().items()):
