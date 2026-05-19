@@ -296,6 +296,17 @@ class Ripgrep4519153e(RustProfile):
     eval_sets: set[str] = field(
         default_factory=lambda: {"SWE-bench/SWE-bench_Multilingual"}
     )
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "crates/searcher/src",
+                "crates/regex/src",
+                "crates/globset/src",
+                "crates/core",
+                "crates/core/flags",
+            ],
+        }
+    )
 
     @property
     def dockerfile(self):
@@ -310,6 +321,7 @@ WORKDIR /{ENV_NAME}
 RUN cargo build --release
 CMD ["/bin/bash"]
 """
+
 
 
 @dataclass
