@@ -2760,54 +2760,35 @@ CMD ["/bin/bash"]"""
 class Nest3c6c2855(TypeScriptProfile):
     owner: str = "nestjs"
     repo: str = "nest"
-    commit: str = "8ee0aa52a04410a34b49fe9a80b3857ba738468b"
+    commit: str = "3c6c285561f56c2f9e0301f0b8bbf7b2c1395806"
     test_cmd: str = "npm test"
     bug_gen_dirs_include: dict[str, list[str]] = field(
         default_factory=lambda: {
-            "CWE-1333": [
-                "tools/gulp/tasks",
-                "packages/core/router",
-                "packages/core/middleware",
-                "packages/microservices/server",
-                "packages/platform-fastify/adapters",
-                "packages/common/pipes",
-                "packages/websockets/errors",
-            ],
-            "CWE-193": [
-                "packages/microservices/helpers",
-                "packages/core/interceptors",
-                "packages/common/pipes",
-                "packages/platform-fastify/adapters",
-                "packages/core/inspector",
-                "packages/platform-socket.io/adapters",
-                "packages/core/repl",
-            ],
             "CWE-20": [
                 "packages/common/pipes",
-                "packages/core/guards",
                 "packages/microservices/deserializers",
-                "packages/core/pipes",
-            ],
-            "CWE-670": [
                 "packages/core/router",
-                "packages/core/middleware",
-                "packages/microservices/server",
-                "packages/microservices/client",
+                "packages/platform-express/adapters",
                 "packages/platform-fastify/adapters",
             ],
-            "CWE-682": [
-                "packages/core/services",
-                "packages/platform-socket.io/adapters",
-                "packages/common/pipes",
-                "packages/core/interceptors",
-            ],
             "CWE-754": [
-                "packages/core/exceptions",
-                "packages/websockets/exceptions",
-                "packages/microservices/exceptions",
+                "packages/core/injector",
+                "packages/core/router",
                 "packages/core/middleware",
-                "packages/core/errors",
+                "packages/core/exceptions",
+                "packages/microservices/server",
+                "packages/microservices/client",
+                "packages/microservices/helpers",
+            ],
+            "CWE-670": [
+                "packages/core/injector",
+                "packages/core/router",
+                "packages/core/middleware",
+                "packages/core/exceptions",
+                "packages/microservices/server",
+                "packages/microservices/client",
                 "packages/common/pipes",
+                "packages/platform-fastify/adapters",
             ],
         }
     )

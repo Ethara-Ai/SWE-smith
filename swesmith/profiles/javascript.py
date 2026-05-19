@@ -408,6 +408,73 @@ class Anythingllm5b2808e5(JavaScriptProfile):
     owner: str = "Mintplex-Labs"
     repo: str = "anything-llm"
     commit: str = "5b2808e5b18aa396e28337ab76de2f0c1be8aeed"
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "frontend/src/utils",
+                "frontend/src/utils/chat",
+                "frontend/src/hooks",
+                "frontend/src/components/WorkspaceChat",
+                "frontend/src/pages/GeneralSettings",
+                "collector/processSingleFile/convert",
+            ],
+            "CWE-193": [
+                "server/utils/PasswordRecovery",
+                "server/utils/vectorDbProviders/chromacloud",
+                "collector/processSingleFile/convert/asPDF",
+                "server/endpoints",
+                "server/jobs",
+                "collector/processSingleFile/convert",
+                "collector/utils/extensions/WebsiteDepth",
+            ],
+            "CWE-20": [
+                "frontend/src/utils/piperTTS",
+                "collector/utils/url",
+                "server/endpoints",
+                "server/utils/EmbeddingEngines/liteLLM",
+                "server/utils/EmbeddingEngines/mistral",
+                "server/utils/agentFlows/executors",
+            ],
+            "CWE-670": [
+                "server/utils/AiProviders/openRouter",
+                "server/utils/middleware",
+                "collector/processSingleFile/convert/asPDF",
+                "server/endpoints/utils",
+                "server/jobs",
+                "collector/processLink/convert",
+                "server/utils/MCP",
+            ],
+            "CWE-682": [
+                "collector/processSingleFile/convert",
+                "server/endpoints",
+                "server/endpoints/utils",
+                "server/jobs",
+                "server/utils/BackgroundWorkers",
+                "collector/processSingleFile/convert/asPDF",
+                "server/utils/middleware",
+                "server/utils/vectorDbProviders/chromacloud",
+            ],
+            "CWE-754": [
+                "server/utils/PasswordRecovery",
+                "server/utils/middleware",
+                "collector/utils/url",
+                "server/endpoints",
+                "server/endpoints/utils",
+                "server/utils/EmbeddingEngines/cohere",
+                "server/utils/EmbeddingEngines/liteLLM",
+                "server/utils/EmbeddingEngines/mistral",
+            ],
+            "CWE-835": [
+                "server/utils/BackgroundWorkers",
+                "collector/processSingleFile/convert/asPDF",
+                "server/jobs",
+                "collector/utils/extensions/WebsiteDepth",
+                "server/utils/EmbeddingEngines/cohere",
+                "server/utils/EmbeddingEngines/liteLLM",
+                "server/utils/vectorDbProviders/chromacloud",
+            ],
+        }
+    )
     test_cmd: str = "yarn test"
 
     @property
@@ -419,7 +486,8 @@ WORKDIR /{ENV_NAME}
 RUN yarn install
 RUN cd server && yarn install
 RUN cd collector && yarn install
-RUN cd server && npx prisma generate
+RUN printf '#!/bin/sh\\nif [ ! -d /testbed/server/node_modules/.prisma ]; then cd /testbed/server && npx prisma generate >/dev/null 2>&1 || true; fi\\nexec "$@"\\n' > /usr/local/bin/entrypoint.sh && chmod +x /usr/local/bin/entrypoint.sh
+ENTRYPOINT [\"/usr/local/bin/entrypoint.sh\"]
 CMD [\"/bin/bash\"]
 """
 
@@ -432,6 +500,41 @@ class Bluebirdc220cfe4(JavaScriptProfile):
     owner: str = "petkaantonov"
     repo: str = "bluebird"
     commit: str = "c220cfe480868e2f5c5de4fe8bb3b04b97588d7f"
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-193": [
+                "benchmark/doxbee-sequential",
+                "benchmark/doxbee-sequential-errors",
+                "benchmark/lib",
+                "tools",
+                "tools/job-runner",
+            ],
+            "CWE-682": [
+                "benchmark",
+                "benchmark/doxbee-sequential-errors",
+                "benchmark/lib",
+                "benchmark/madeup-parallel",
+                "tools",
+                "tools/job-runner",
+            ],
+            "CWE-754": [
+                "benchmark",
+                "benchmark/doxbee-sequential",
+                "benchmark/doxbee-sequential-errors",
+                "benchmark/lib",
+                "benchmark/madeup-parallel",
+                "tools",
+                "tools/job-runner",
+            ],
+            "CWE-835": [
+                "benchmark/doxbee-sequential",
+                "benchmark/doxbee-sequential-errors",
+                "benchmark/lib",
+                "benchmark/madeup-parallel",
+                "tools",
+            ],
+        }
+    )
     test_cmd: str = "npm test"
 
     @property
@@ -454,6 +557,20 @@ class Corejsc97f42dd(JavaScriptProfile):
     owner: str = "zloirock"
     repo: str = "core-js"
     commit: str = "c97f42dd89a71dcfc6cac002f3efeb8575471e1f"
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "packages/core-js/internals",
+                "packages/core-js/modules",
+                "packages/core-js-compat",
+            ],
+            "CWE-682": [
+                "packages/core-js/internals",
+                "packages/core-js/modules",
+                "packages/core-js-compat",
+            ],
+        }
+    )
     test_cmd: str = "npm run test-unit-node"
 
     @property
@@ -474,32 +591,64 @@ CMD [\"/bin/bash\"]
 
 
 @dataclass
-class Infernof1a7fa2f(JavaScriptProfile):
-    owner: str = "infernojs"
-    repo: str = "inferno"
-    commit: str = "f1a7fa2f1d6823989b30ffda410b340eb5ed3963"
-    test_cmd: str = "npm test"
-
-    @property
-    def dockerfile(self):
-        return f"""FROM node:22-bullseye
-RUN apt update && apt install -y git
-RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
-WORKDIR /{ENV_NAME}
-RUN npm install
-RUN npm run build
-CMD [\"/bin/bash\"]
-"""
-
-    def log_parser(self, log: str) -> dict[str, str]:
-        return parse_log_jest(log)
-
-
-@dataclass
 class Kitf294e962(JavaScriptProfile):
     owner: str = "sveltejs"
     repo: str = "kit"
     commit: str = "f294e9628ba9ced27846a8e47101d4bf21543ad9"
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "packages/enhanced-img/src",
+                "packages/adapter-node",
+                "packages/adapter-cloudflare",
+                "packages/adapter-vercel",
+                "packages/adapter-vercel/files",
+                "packages/kit/src/core",
+                "packages/kit/src/runtime",
+                "packages/kit/src/utils",
+            ],
+            "CWE-193": [
+                "packages/enhanced-img/src",
+                "packages/adapter-vercel",
+                "packages/adapter-node/src",
+                "packages/kit/src/core",
+                "packages/adapter-cloudflare",
+                "packages/adapter-netlify",
+                "packages/kit/src/exports",
+                "packages/kit/src/runtime",
+            ],
+            "CWE-20": [
+                "packages/adapter-auto",
+                "packages/adapter-vercel",
+                "packages/adapter-node/src",
+                "packages/adapter-cloudflare",
+                "packages/enhanced-img/src",
+                "packages/kit/src/exports",
+                "packages/kit/src/core",
+                "packages/package/src",
+            ],
+            "CWE-682": [
+                "packages/enhanced-img/src",
+                "packages/adapter-node",
+                "packages/adapter-node/src",
+                "packages/adapter-vercel",
+                "packages/kit/src/exports",
+                "packages/package/src",
+                "packages/kit/src/core",
+                "packages/kit/src/utils",
+            ],
+            "CWE-754": [
+                "packages/adapter-auto",
+                "packages/adapter-vercel",
+                "packages/adapter-cloudflare",
+                "packages/adapter-node/src",
+                "packages/enhanced-img/src",
+                "packages/kit/src/exports",
+                "packages/kit/src/runtime",
+                "packages/kit/src/core",
+            ],
+        }
+    )
     test_cmd: str = "pnpm run test:kit"
 
     @property
@@ -516,33 +665,6 @@ CMD [\"/bin/bash\"]
 
     def log_parser(self, log: str) -> dict[str, str]:
         return parse_log_vitest(log)
-
-
-@dataclass
-class Lighthouse7d8dcf50(JavaScriptProfile):
-    owner: str = "GoogleChrome"
-    repo: str = "lighthouse"
-    commit: str = "7d8dcf5004950cad3faa20664e4a7cf2817bd653"
-    test_cmd: str = "yarn unit --reporter spec"
-
-    @property
-    def dockerfile(self):
-        return f"""FROM node:22-bullseye
-RUN apt update && apt install -y git chromium libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxrandr2 libgbm1 libasound2 libpangocairo-1.0-0 libpango-1.0-0 libcairo2 libgtk-3-0
-RUN mv /usr/bin/chromium /usr/bin/chromium-real && \\
-    printf '#!/bin/sh\\nexec /usr/bin/chromium-real --no-sandbox --disable-setuid-sandbox --disable-dev-shm-usage "$@"\\n' > /usr/bin/chromium && \\
-    chmod +x /usr/bin/chromium
-RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
-WORKDIR /{ENV_NAME}
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
-RUN corepack enable && yarn install
-RUN yarn build-report
-CMD [\"/bin/bash\"]
-"""
-
-    def log_parser(self, log: str) -> dict[str, str]:
-        return parse_log_mocha(log)
 
 
 @dataclass
@@ -669,6 +791,72 @@ class Mongoose91de1aed(JavaScriptProfile):
     owner: str = "Automattic"
     repo: str = "mongoose"
     commit: str = "91de1aed4aa5b05675708b8384f18f4b88dc942d"
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "lib/types",
+                "lib/cast",
+                "lib/helpers/query",
+                "lib/helpers/populate",
+                "lib/helpers/update",
+                "lib/helpers/schema",
+            ],
+            "CWE-193": [
+                "lib/helpers/populate",
+                "lib/types/array/methods",
+                "lib/helpers/projection",
+                "lib/cursor",
+                "lib/helpers/aggregate",
+            ],
+            "CWE-20": [
+                "lib/cast",
+                "lib/helpers/query",
+                "lib/schema/operators",
+                "lib/helpers/model",
+                "lib/helpers/populate",
+                "lib/cursor",
+                "lib/helpers/update",
+                "lib/helpers/aggregate",
+            ],
+            "CWE-670": [
+                "lib/helpers/populate",
+                "lib/helpers/projection",
+                "lib/helpers/document",
+                "lib/helpers/update",
+                "lib/helpers/aggregate",
+                "lib/helpers/schema",
+                "lib/helpers/discriminator",
+                "lib/helpers/query",
+            ],
+            "CWE-682": [
+                "lib/cast",
+                "lib/helpers/update",
+                "lib/drivers/node-mongodb-native",
+                "lib/helpers/cursor",
+                "lib/helpers/schema",
+                "lib/helpers/populate",
+            ],
+            "CWE-754": [
+                "lib/cast",
+                "lib/helpers/query",
+                "lib/schema/operators",
+                "lib/cursor",
+                "lib/helpers/update",
+                "lib/helpers/document",
+                "lib/helpers/model",
+                "lib/drivers/node-mongodb-native",
+            ],
+            "CWE-835": [
+                "lib/helpers/document",
+                "lib/helpers/aggregate",
+                "lib/helpers/projection",
+                "lib/helpers/populate",
+                "lib/helpers/discriminator",
+                "lib/helpers/update",
+                "lib/helpers/schema",
+            ],
+        }
+    )
     test_cmd: str = "npm test -- --reporter spec"
 
     @property
@@ -760,6 +948,26 @@ class Reactvirtualizedc7377154(JavaScriptProfile):
     owner: str = "bvaughn"
     repo: str = "react-virtualized"
     commit: str = "c737715486f724586aee8870ebea1e9efb7b0bfe"
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-193": [
+                "source/vendor",
+                "source/Grid/utils",
+                "source/Collection",
+                "source/Masonry",
+                "source/InfiniteLoader",
+            ],
+            "CWE-682": [
+                "source/WindowScroller/utils",
+                "source/vendor",
+                "source/MultiGrid",
+                "source/utils",
+                "source/CellMeasurer",
+                "source/Grid/utils",
+                "source/Masonry",
+            ],
+        }
+    )
     test_cmd: str = "yarn test"
 
     @property
@@ -1574,6 +1782,62 @@ class Eleventy6043b6c8(JavaScriptProfile):
     owner: str = "11ty"
     repo: str = "eleventy"
     commit: str = "6043b6c835f598fae461e4405c8ee02223a01586"
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-1333": [
+                "src/Util",
+                "src/Plugins",
+                "src/Adapters/Packages",
+            ],
+            "CWE-193": [
+                "src/Benchmark",
+                "src/Data",
+                "src/Errors",
+                "src/Filters",
+                "src/Plugins",
+                "src/Util",
+                "src/Util/Objects",
+            ],
+            "CWE-20": [
+                "src/Engines",
+                "src/Data",
+                "src/Plugins",
+                "src/Util",
+                "src/Errors",
+                "src/Util/Objects",
+                "src/Engines/Util",
+                "src/Filters",
+            ],
+            "CWE-682": [
+                "src/Benchmark",
+                "src/Engines",
+                "src/Errors",
+                "src/Plugins",
+                "src/Util",
+                "src/Util/Objects",
+            ],
+            "CWE-754": [
+                "src/Errors",
+                "src/Plugins",
+                "src/Engines",
+                "src/Data",
+                "src/Util",
+                "src/Adapters/Packages",
+                "src/Benchmark",
+                "src/Engines/Util",
+            ],
+            "CWE-835": [
+                "src/Benchmark",
+                "src/Data",
+                "src/Engines",
+                "src/Errors",
+                "src/Filters",
+                "src/Plugins",
+                "src/Util",
+                "src/Util/Objects",
+            ],
+        }
+    )
     test_cmd: str = "npm test"
 
     @property
@@ -1916,6 +2180,39 @@ class Enzyme61e1b47c(JavaScriptProfile):
     owner: str = "enzymejs"
     repo: str = "enzyme"
     commit: str = "61e1b47c4bdc4509b2ac286c0d3ae3df172d26f0"
+    bug_gen_dirs_include: dict[str, list[str]] = field(
+        default_factory=lambda: {
+            "CWE-20": [
+                "packages/enzyme-adapter-react-helper/src",
+                "packages/enzyme-adapter-utils/src",
+                "packages/enzyme/src",
+                "packages/enzyme-adapter-react-16.3/src",
+                "packages/enzyme-adapter-react-13/src",
+                "packages/enzyme-adapter-react-14/src",
+                "packages/enzyme-adapter-react-15.4/src",
+                "packages/enzyme-adapter-react-15/src",
+            ],
+            "CWE-682": [
+                "packages/enzyme-adapter-utils/src",
+                "packages/enzyme-adapter-react-16.3/src",
+                "packages/enzyme-adapter-react-16.2/src",
+                "packages/enzyme/src",
+                "packages/enzyme-adapter-react-16.1/src",
+                "packages/enzyme-adapter-react-16/src",
+                "packages/enzyme-adapter-react-helper/src",
+            ],
+            "CWE-754": [
+                "packages/enzyme-adapter-react-helper/src",
+                "packages/enzyme/src",
+                "packages/enzyme-adapter-utils/src",
+                "packages/enzyme-adapter-react-13/src",
+                "packages/enzyme-adapter-react-16.3/src",
+                "packages/enzyme-adapter-react-14/src",
+                "packages/enzyme-adapter-react-15.4/src",
+                "packages/enzyme-adapter-react-15/src",
+            ],
+        }
+    )
     test_cmd: str = "npm run react 16 && npm run test:only -- --reporter spec"
 
     @property
