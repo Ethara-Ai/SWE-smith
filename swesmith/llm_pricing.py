@@ -5,7 +5,7 @@ Environment variables
 - SWESMITH_COST_BASE_MODEL: Global override for the base model used in pricing.
   When set, ALL cost lookups use this model regardless of the ARN map.
   To use as a fallback instead, leave unset and rely on SWESMITH_ARN_MODEL_MAP.
-  Default (if unset): "bedrock/anthropic.claude-opus-4-7"
+  Default (if unset): "bedrock/anthropic.claude-opus-4-6-v1"
 - SWESMITH_ARN_MODEL_MAP: JSON mapping of ARN -> base model ID.
   Example: '{"bedrock/converse/arn:...": "bedrock/anthropic.claude-opus-4-7"}'
 - SWESMITH_DISABLE_COST_REGISTRATION: Set to "1"/"true"/"yes" to skip
@@ -25,7 +25,7 @@ from litellm.cost_calculator import completion_cost as _litellm_completion_cost
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_BASE_MODEL = os.getenv("SWESMITH_COST_BASE_MODEL", "bedrock/anthropic.claude-opus-4-7")
+DEFAULT_BASE_MODEL = os.getenv("SWESMITH_COST_BASE_MODEL", "bedrock/anthropic.claude-opus-4-6-v1")
 
 
 def _load_arn_model_map() -> dict[str, str]:
@@ -52,17 +52,17 @@ _registered = False
 def _get_pricing_entry() -> dict[str, Any]:
     """Build a litellm pricing entry from litellm's own model cost data.
 
-    Reads pricing for ``anthropic.claude-opus-4-7`` from litellm's bundled
+    Reads pricing for ``anthropic.claude-opus-4-6-v1`` from litellm's bundled
     model cost map (which is kept up-to-date with upstream pricing).
     """
-    native = litellm.model_cost.get("anthropic.claude-opus-4-7")
+    native = litellm.model_cost.get("anthropic.claude-opus-4-6-v1")
     if not (
         isinstance(native, dict)
         and isinstance(native.get("input_cost_per_token"), (int, float))
         and isinstance(native.get("output_cost_per_token"), (int, float))
     ):
         logger.warning(
-            "litellm.model_cost missing 'anthropic.claude-opus-4-7' entry. "
+            "litellm.model_cost missing 'anthropic.claude-opus-4-6-v1' entry. "
             "Model registration will be skipped. Upgrade litellm if cost "
             "tracking breaks.",
         )
@@ -125,7 +125,7 @@ def _base_model_for(model: str | None) -> str:
     2. Per-ARN mapping from SWESMITH_ARN_MODEL_MAP
     3. DEFAULT_BASE_MODEL constant (read once at import time)
     """
-    if DEFAULT_BASE_MODEL != "bedrock/anthropic.claude-opus-4-7":
+    if DEFAULT_BASE_MODEL != "bedrock/anthropic.claude-opus-4-6-v1":
         # Env var was explicitly set at import time — honour as global override.
         return DEFAULT_BASE_MODEL
 
