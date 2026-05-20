@@ -2137,6 +2137,7 @@ RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
 
 RUN git clone https://github.com/{self.mirror_name} /{ENV_NAME}
 WORKDIR /{ENV_NAME}
+ENV JAVA_TOOL_OPTIONS=""
 RUN mvn clean install -B -q -DskipTests
 CMD ["/bin/bash"]"""
 
